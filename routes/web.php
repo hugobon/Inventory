@@ -18,8 +18,13 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+//=========================
+// Agent
+//=========================
+Route::get('/home/agent', 'Agent\AgentController@fn_get_view');
 
 //=========================
 // Supplier
 //=========================
 Route::get('supplier', 'Supplier\SupplierController@show_page');
+
