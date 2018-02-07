@@ -15,9 +15,67 @@
         <!-- EOF CSS INCLUDE -->                                    
     </head>
     <body>
+		<div class="page-container">
+            
+            <!-- START PAGE SIDEBAR -->
+            <div class="page-sidebar">
+                <!-- START X-NAVIGATION -->
+                <ul class="x-navigation">
+                    <li class="xn-logo">
+                        <a href="javascript:;"> SKG WORLD </a>
+                        <a href="javascript:;" class="x-navigation-control"></a>
+                    </li>
+                    <li class="xn-title">Navigation</li>
+                    <li class="<?php echo in_array(request()->path(), array("dashboard")) ? "active" : "" ; ?>">
+                        <a href="javascript:;"><span class="fa fa-desktop"></span> <span class="xn-text">Dashboard</span></a>                        
+                    </li>                    
+                    <li class="xn-openable <?php echo in_array(request()->path(), array("product/listing","product/form","product")) ? "active" : "" ; ?>">
+                        <a href="javascript:;"><span class="fa fa-truck"></span> <span class="xn-text">Inventory </span></a>
+                        <ul>
+                            <li class="xn-openable <?php echo in_array(request()->path(), array("product/listing","product/form","product")) ? "active" : "" ; ?>">
+                                <a href="javascript:;"><span class="fa fa-puzzle-piece"></span> Product </a>
+                                <ul>
+                                    <li class="<?php echo in_array(request()->path(), array("product/listing")) ? "active" : "" ; ?>">
+										<a href="{{ url('product/listing') }}"><span class="fa fa-list-alt"></span> Product List </a>
+									</li>
+                                    <li class="<?php echo in_array(request()->path(), array("product/form")) ? "active" : "" ; ?>">
+										<a href="{{ url('product/form') }}"><span class="fa fa-plus"></span> New Product </a>
+									</li>
+                                </ul>
+                            </li>
+                            <li class="xn-openable">
+                                <a href="javascript:;"><span class="glyphicon glyphicon-shopping-cart"></span> Stock </a>
+                                <ul>
+                                    <li><a href="javascript:;"><span class="glyphicon glyphicon-list-alt"></span> Current Stock </a></li>
+                                    <li><a href="javascript:;"><span class="fa fa-search"></span> Stock Balance Report </a></li>
+                                </ul>
+                            </li>
+                            <li><a href="javascript:;"><span class="fa fa-book"></span> Audit Trail </a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <!-- END X-NAVIGATION -->
+            </div>
+            <!-- END PAGE SIDEBAR -->
+            
+            <!-- PAGE CONTENT -->
+            <div class="page-content">
+                
+                <!-- START X-NAVIGATION VERTICAL -->
+                <ul class="x-navigation x-navigation-horizontal x-navigation-panel">
+                    <!-- SIGN OUT -->
+                    <li class="xn-icon-button pull-right">
+                        <a href="javascript:;" class="mb-control" data-box="#mb-signout"><span class="fa fa-sign-out"></span></a>                        
+                    </li> 
+                    <!-- END SIGN OUT -->
+                </ul>
+                <!-- END X-NAVIGATION VERTICAL -->  
 
-        @yield('content')
-
+				@yield('content')                      
+            </div>            
+            <!-- END PAGE CONTENT -->
+        </div>
+        <!-- END PAGE CONTAINER -->
         <!-- MESSAGE BOX-->
         <div class="message-box animated fadeIn" data-sound="alert" id="mb-signout">
             <div class="mb-container">
@@ -29,7 +87,7 @@
                     </div>
                     <div class="mb-footer">
                         <div class="pull-right">
-                            <a href="pages-login.html" class="btn btn-success btn-lg">Yes</a>
+                            <a href="{{ url('logout') }}" class="btn btn-success btn-lg">Yes</a>
                             <button class="btn btn-default btn-lg mb-control-close">No</button>
                         </div>
                     </div>
