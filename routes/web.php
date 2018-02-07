@@ -17,6 +17,10 @@ Route::get('/', function () {
 
 Auth::routes();
 
+Route::get('logout', function () {
+    return view('welcome');
+});
+
 Route::get('/home', 'HomeController@index')->name('home');
 //=========================
 // Agent
@@ -27,4 +31,13 @@ Route::get('/home/agent', 'Agent\AgentController@fn_get_view');
 // Supplier
 //=========================
 Route::get('supplier', 'Supplier\SupplierController@show_page');
+
+//=========================
+// Inventory
+//=========================
+Route::get('product', function () {
+   return redirect("product/listing");
+});
+Route::get('product/listing', 'Inventory\Product@listing');
+Route::get('product/form', 'Inventory\Product@form');
 
