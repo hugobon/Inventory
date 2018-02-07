@@ -26,19 +26,19 @@
                         <a href="javascript:;" class="x-navigation-control"></a>
                     </li>
                     <li class="xn-title">Navigation</li>
-                    <li class="<?php echo in_array(request()->path(), array("dashboard")) ? "active" : "" ; ?>">
-                        <a href="javascript:;"><span class="fa fa-desktop"></span> <span class="xn-text">Dashboard</span></a>                        
+                    <li class="<?php echo in_array(request()->path(), array("home")) ? "active bg-green" : "" ; ?>">
+                        <a href="{{ url('home') }}"><span class="fa fa-desktop"></span> <span class="xn-text">Dashboard</span></a>                        
                     </li>                    
-                    <li class="xn-openable <?php echo in_array(request()->path(), array("product/listing","product/form","product")) ? "active" : "" ; ?>">
+                    <li class="xn-openable <?php echo in_array(request()->path(), array("product/listing","product/form","product")) ? "active bg-green" : "" ; ?>">
                         <a href="javascript:;"><span class="fa fa-truck"></span> <span class="xn-text">Inventory </span></a>
                         <ul>
-                            <li class="xn-openable <?php echo in_array(request()->path(), array("product/listing","product/form","product")) ? "active" : "" ; ?>">
+                            <li class="xn-openable <?php echo in_array(request()->path(), array("product/listing","product/form","product")) ? "active bg-green" : "" ; ?>">
                                 <a href="javascript:;"><span class="fa fa-puzzle-piece"></span> Product </a>
                                 <ul>
-                                    <li class="<?php echo in_array(request()->path(), array("product/listing")) ? "active" : "" ; ?>">
+                                    <li class="<?php echo in_array(request()->path(), array("product/listing")) ? "active bg-green" : "" ; ?>">
 										<a href="{{ url('product/listing') }}"><span class="fa fa-list-alt"></span> Product List </a>
 									</li>
-                                    <li class="<?php echo in_array(request()->path(), array("product/form")) ? "active" : "" ; ?>">
+                                    <li class="<?php echo in_array(request()->path(), array("product/form")) ? "active bg-green" : "" ; ?>">
 										<a href="{{ url('product/form') }}"><span class="fa fa-plus"></span> New Product </a>
 									</li>
                                 </ul>
@@ -59,10 +59,15 @@
             <!-- END PAGE SIDEBAR -->
             
             <!-- PAGE CONTENT -->
-            <div class="page-content">
+            <div class="page-content">  
                 
                 <!-- START X-NAVIGATION VERTICAL -->
                 <ul class="x-navigation x-navigation-horizontal x-navigation-panel">
+                    <!-- TOGGLE NAVIGATION -->
+                    <li class="xn-icon-button">
+                        <a href="#" class="x-navigation-minimize"><span class="fa fa-dedent"></span></a>
+                    </li>
+                    <!-- END TOGGLE NAVIGATION -->
                     <!-- SIGN OUT -->
                     <li class="xn-icon-button pull-right">
                         <a href="javascript:;" class="mb-control" data-box="#mb-signout"><span class="fa fa-sign-out"></span></a>                        
@@ -126,8 +131,10 @@
         <!-- END THIS PAGE PLUGINS-->
 
         <!-- START TEMPLATE -->
+        <script type="text/javascript" src="{!! asset('joli/js/settings.js') !!}"></script>
         <script type="text/javascript" src="{!! asset('joli/js/plugins.js') !!}"></script>        
-        <script type="text/javascript" src="{!! asset('joli/js/actions.js') !!}"></script>        
+        <script type="text/javascript" src="{!! asset('joli/js/actions.js') !!}"></script>
+        <script type="text/javascript" src="{!! asset('joli/js/demo_dashboard.js') !!}"></script>    
         <!-- END TEMPLATE -->
     </body>
 </html>
