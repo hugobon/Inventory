@@ -25,7 +25,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 //=========================
 // Agent
 //=========================
-Route::get('/home/agent', 'Agent\AgentController@fn_get_view');
+Route::get('agent', 'Agent\AgentController@fn_get_view');
 
 //=========================
 // Supplier
