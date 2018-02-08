@@ -5,7 +5,7 @@
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
 	<li><a href="javascript:;">Inventory</a></li>                    
-	<li class="{{ url('product') }}">Product</li>
+	<li ><a href="javascript:;">Product</a></li>
 	<li class="active">Form</li>
 </ul>
 <!-- END BREADCRUMB -->
@@ -24,7 +24,8 @@
 					<div class="row">
 						<div class="col-md-6">
 							<div class="col-md-12">
-								<p> Product </p>
+								<h3> Product </h3>
+								<hr />
 							</div>
 							<div class="form-group">
 								<label class="col-md-3 control-label"> Code </label>
@@ -52,21 +53,59 @@
 						</div>
 						<div class="col-md-6">
 							<div class="col-md-12">
-								<p> Sales Info </p>
+								<h3> Sales Info </h3>
+								<hr />
 							</div>
 							<div class="form-group">
-								<label class="col-md-3 control-label"> Code </label>
-								<div class="col-md-9">                        
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-md-3 control-label"> Type </label>
+								<label class="col-md-3 control-label"> West Malaysia </label>
 								<div class="col-md-9">
+									<div class="input-group">
+										<span class="input-group-addon">RM</span>
+										<input type="text" class="form-control product-price_wm" placeholder="0.00" name="price_wm" value="" />
+									</div>
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-md-3 control-label"> Description </label>
-								<div class="col-md-9">                         
+								<label class="col-md-3 control-label"> East Malaysia </label>
+								<div class="col-md-9">
+									<div class="input-group">
+										<span class="input-group-addon">RM</span>
+										<input type="text" class="form-control product-price_em" placeholder="0.00" name="price_em" value="" />
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label"> Staff Price </label>
+								<div class="col-md-9">
+									<div class="input-group">
+										<span class="input-group-addon">RM</span>
+										<input type="text" class="form-control product-price_staff" placeholder="0.00" name="price_staff" value="" />
+									</div>
+								</div>
+								
+							</div>
+						</div>
+					</div>
+					<br /> &nbsp;
+					<div class="row">
+						<div class="col-md-6">
+							<div class="col-md-12">
+								<h3> Promotion </h3>
+								<hr />
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label"> Range Date </label>
+								<div class="col-md-9">
+									<div class="col-md-12">
+										<div class="input-daterange input-group" id="datepicker">
+											<input type="text" class="input-sm form-control start_promotion" name="start_promotion" />
+											<span class="input-group-addon">to</span>
+											<input type="text" class="input-sm form-control end_promotion" name="end_promotion" />
+										</div>
+									</div>
+									<div class="form-group">
+										<small><a href="javascript:;" class="btn btn-default btn-xs"> Reset</a><small>
+									<div>
 								</div>
 							</div>
 						</div>
@@ -82,5 +121,15 @@
 	</div>
 </div>
  <!-- END PAGE CONTENT WRAPPER -->
-
+<script>
+$(function() {
+	$('.input-daterange').datepicker({
+		format: "dd/mm/yyyy",
+		autoclose: true,
+		clearBtn: true,
+		keyboardNavigation: false,
+		todayHighlight: true,
+	});
+});
+</script>
 @endsection

@@ -12,7 +12,9 @@
         
         <!-- CSS INCLUDE -->        
         <link rel="stylesheet" type="text/css" id="theme" href="{!! asset('joli/css/theme-default.css') !!}"/>
-        <!-- EOF CSS INCLUDE -->                                    
+		<link rel="stylesheet" type="text/css" id="theme" href="{!! asset('joli/css/bootstrap/bootstrap-datepicker.css') !!}"/>
+        <link rel="stylesheet" type="text/css" id="theme" href="{!! asset('joli/css/bootstrap/bootstrap-datepicker.css.map') !!}"/>
+		<!-- EOF CSS INCLUDE -->                                    
     </head>
     <body>
 		<div class="page-container">
@@ -75,7 +77,11 @@
                     <!-- END SIGN OUT -->
                 </ul>
                 <!-- END X-NAVIGATION VERTICAL -->  
-
+				 <!-- START PLUGINS -->
+					<script type="text/javascript" src="{!! asset('joli/js/plugins/jquery/jquery.min.js') !!}"></script>
+					<script type="text/javascript" src="{!! asset('joli/js/plugins/jquery/jquery-ui.min.js') !!}"></script>
+					<script type="text/javascript" src="{!! asset('joli/js/plugins/bootstrap/bootstrap.min.js') !!}"></script>        
+					<!-- END PLUGINS -->
 				@yield('content')                      
             </div>            
             <!-- END PAGE CONTENT -->
@@ -104,13 +110,7 @@
         <!-- START PRELOADS -->
         <audio id="audio-alert" src="{!! asset('joli/audio/alert.mp3') !!}" preload="auto"></audio>
         <audio id="audio-fail" src="{!! asset('joli/audio/fail.mp3') !!}" preload="auto"></audio>
-        <!-- END PRELOADS -->    
-        
-        <!-- START PLUGINS -->
-        <script type="text/javascript" src="{!! asset('joli/js/plugins/jquery/jquery.min.js') !!}"></script>
-        <script type="text/javascript" src="{!! asset('joli/js/plugins/jquery/jquery-ui.min.js') !!}"></script>
-        <script type="text/javascript" src="{!! asset('joli/js/plugins/bootstrap/bootstrap.min.js') !!}"></script>        
-        <!-- END PLUGINS -->
+        <!-- END PRELOADS -->
 
         <!-- START THIS PAGE PLUGINS-->        
         <script type='text/javascript' src="{!! asset('joli/js/plugins/icheck/icheck.min.js') !!}"></script>        
@@ -123,7 +123,8 @@
         <script type="text/javascript" src="{!! asset('joli/js/plugins/rickshaw/rickshaw.min.js') !!}"></script>
         <script type='text/javascript' src="{!! asset('joli/js/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js') !!}"></script>
         <script type='text/javascript' src="{!! asset('joli/js/plugins/jvectormap/jquery-jvectormap-world-mill-en.js') !!}"></script>                
-        <script type='text/javascript' src="{!! asset('joli/js/plugins/bootstrap/bootstrap-datepicker.js') !!}"></script>                
+   
+		<script type='text/javascript' src="{!! asset('joli/js/plugins/datepicker/bootstrap-datepicker.min.js') !!}"></script>		
         <script type="text/javascript" src="{!! asset('joli/js/plugins/owl/owl.carousel.min.js') !!}"></script>                 
         
         <script type="text/javascript" src="{!! asset('joli/js/plugins/moment.min.js') !!}"></script>
