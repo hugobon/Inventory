@@ -37,9 +37,14 @@ Route::get('supplier/supplierDO', 'Supplier\SupplierController@supplierDO_page')
 //=========================
 // Inventory
 //=========================
-Route::get('product', function () {
-   return redirect("product/listing");
-});
+Route::get('product', function () {  return redirect("product/listing"); });
 Route::get('product/listing', 'Inventory\Product@listing');
 Route::get('product/form', 'Inventory\Product@form');
+Route::get('product/edit/{x?}', 'Inventory\Product@edit');
+Route::get('product/view/{x?}', 'Inventory\Product@view');
+Route::post('product/insert', 'Inventory\Product@insert');
+Route::post('product/update/{x?}', 'Inventory\Product@update');
+Route::post('product/check_existcode', 'Inventory\Product@check_existcode');
+Route::get('product/delete/{x?}', 'Inventory\Product@delete');
+
 
