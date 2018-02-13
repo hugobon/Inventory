@@ -25,12 +25,14 @@ Route::get('/home', 'HomeController@index')->name('home');
 //=========================
 // Agent
 //=========================
-Route::get('/home/agent', 'Agent\AgentController@fn_get_view');
+Route::get('agent', 'Agent\AgentController@fn_get_view');
 
 //=========================
 // Supplier
 //=========================
-Route::get('supplier', 'Supplier\SupplierController@show_page');
+Route::get('supplier/supplierDetail', 'Supplier\SupplierController@supplierDetail_page');
+Route::get('supplier/stockIn', 'Supplier\SupplierController@stockIn_page');
+Route::get('supplier/supplierDO', 'Supplier\SupplierController@supplierDO_page');
 
 //=========================
 // Inventory

@@ -55,6 +55,22 @@
                             <li><a href="javascript:;"><span class="fa fa-book"></span> Audit Trail </a></li>
                         </ul>
                     </li>
+                    <li class="xn-openable <?php echo in_array(request()->path(), array()) ? "active" : "" ; ?>">
+                        <a href="javascript:;"><span class="fa fa-truck"></span> <span class="xn-text">Agent </span></a>
+                        <ul>
+                            <li>
+                                <a href="{{ url('agent') }}"><span class="fa fa-puzzle-piece"></span> Register Agent </a>
+                            </li>
+                            <li class="xn-openable">
+                                <a href="javascript:;"><span class="glyphicon glyphicon-shopping-cart"></span>Agent Order Stock </a>
+                                <ul>
+                                    <li><a href="javascript:;"><span class="glyphicon glyphicon-list-alt"></span> Current Stock </a></li>
+                                    <li><a href="javascript:;"><span class="fa fa-search"></span> Stock Balance Report </a></li>
+                                </ul>
+                            </li>
+                            <li><a href="javascript:;"><span class="fa fa-book"></span> Audit Trail </a></li>
+                        </ul>
+                    </li>
                 </ul>
                 <!-- END X-NAVIGATION -->
             </div>
@@ -67,7 +83,7 @@
                 <ul class="x-navigation x-navigation-horizontal x-navigation-panel">
                     <!-- TOGGLE NAVIGATION -->
                     <li class="xn-icon-button">
-                        <a href="#" class="x-navigation-minimize"><span class="fa fa-dedent"></span></a>
+                        <a href="javascript:;" class="x-navigation-minimize"><span class="fa fa-dedent"></span></a>
                     </li>
                     <!-- END TOGGLE NAVIGATION -->
                     <!-- SIGN OUT -->
