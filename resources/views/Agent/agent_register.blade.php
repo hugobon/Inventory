@@ -7,8 +7,8 @@
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
 	<li><a href="javascript:;">Home</a></li>                    
-	<li class="{{ url('product') }}">Agent</li>
-	<li class="{{ url('product') }}">Agent Register</li>
+	<li class="{{ url('agent') }}">Agent</li>
+	<li class="{{ url('agent') }}">Agent Register</li>
 </ul>
 <!-- END BREADCRUMB -->
 <!-- PAGE CONTENT WRAPPER -->
@@ -16,7 +16,7 @@
 	<div class="row">
 		<div class="col-md-12">
 			<div class="panel panel-default">
-				<form class="form-horizontal" method="POST" action="{{ url('product/save') }}" >
+				<form class="form-horizontal" method="post" action="{{ url('agent/save') }}">
 					<div class="panel-heading">
 						<h3 class="panel-title"><strong>Register</strong> Form </h3>
 						<ul class="panel-controls">
@@ -31,7 +31,7 @@
 								<div class="form-group">
 									<label class="col-md-3 control-label"> Agent Type</label>
 									<div class="col-md-9">        
-										<select name="agent_type" class="form-control agent-type">
+										<select name="agent_type" id="agent_type" class="form-control agent-type">
 											<option value="">Chooese Value</option>
 											<option value="Personal">Personal</option>
 											<option value="Business">Business</option>
@@ -77,7 +77,23 @@
 								<div class="form-group">
 									<label class="col-md-3 control-label"> ID Type </label>
 									<div class="col-md-9">
-										<input type="text" class="form-control agent-Idtype" name="agent_id_type" id="agent_id_type" value="" />   
+										<select name="agent__id_type" id="agent__id_type" class="form-control agent-idtype">
+											<option value="">Chooese Value</option>
+											<option value="Personal">IC</option>
+											<option value="Business">Passport</option>
+										</select>   
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-md-3 control-label"> Agent ID </label>
+									<div class="col-md-9">
+										<input type="text" class="form-control agent-id" name="agent_id" id="agent_id" value="" />   
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-md-3 control-label"> ID Type </label>
+									<div class="col-md-9">
+										<input type="file" class="form-control agent-idphoto" name="agent_photo_id" id="agent_photo_id" value="" />   
 									</div>
 								</div>
 							</div>
@@ -261,7 +277,7 @@
 									<label class="col-md-3 control-label"> Payment Type </label>
 									<div class="col-md-9"> 
 										<select name="agent_payment_type" class="form-control agent-payment-type">
-											<option value="x">Chooese Value</option>
+											<option value="">Chooese Value</option>
 										</select> 
 									</div>
 								</div>
@@ -269,8 +285,10 @@
 						</div>
 					</div>
 					<div class="panel-footer">
-						<a class="btn btn-default" href="{{ url('product/form') }}">Clear Form</a>                             
-						<button class="btn btn-primary pull-right" onclick="fn_sumbit_agent_detail()">Submit</button>
+						<a class="btn btn-default" href="{{ url('product/form') }}">Clear Form</a>
+						<!-- <input type="button" name="" value="Submit" class="btn btn-primary pull-right" onclick="fn_sumbit_agent_detail()"/>                          -->
+						<button class="btn btn-primary pull-right">Submit</button>
+						<input type="hidden" name="_token" value="{{ csrf_token() }}">
 					</div>
 				</form>
 			</div>
