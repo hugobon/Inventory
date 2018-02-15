@@ -26,6 +26,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 // Agent
 //=========================
 Route::get('agent', 'Agent\AgentController@fn_get_view');
+Route::post('agent/save', 'Agent\AgentController@fn_save_agent_record');
 
 //=========================
 // Supplier
