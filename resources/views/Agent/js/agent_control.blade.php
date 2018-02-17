@@ -2,7 +2,8 @@
 
 	function fn_sumbit_agent_detail(){
 
-		var lv_agent_type = document.getElementById('agent_type');
+		var lv_agent_type = document.getElementById('agent_type').value;
+		// var strUser = lv_agent_type.options[lv_agent_type.selectedIndex].value;
 		// var lv_agent_name = document.getElementById('agent_name').value;
 		// var lv_agent_username = document.getElementById('agent_username').value;
 		// var lv_agent_dateofbirth = document.getElementById('agent_dateofbirth').value;
