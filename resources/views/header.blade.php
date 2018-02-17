@@ -37,10 +37,10 @@
                             <li class="xn-openable <?php echo in_array(Request::segment(1), array("product")) ? "active" : "" ; ?>">
                                 <a href="javascript:;"><span class="fa fa-puzzle-piece"></span> Product </a>
                                 <ul>
-                                    <li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("product/listing","product/view")) ? "active" : "" ; ?>">
+                                    <li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("product/listing","product/search")) ? "active" : "" ; ?>">
 										<a href="{{ url('product/listing') }}"><span class="fa fa-list-alt"></span> Product List </a>
 									</li>
-                                    <li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("product/form","product/edit")) ? "active" : "" ; ?>">
+                                    <li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("product/form","product/edit","product/view")) ? "active" : "" ; ?>">
 										<a href="{{ url('product/form') }}"><span class="fa fa-plus"></span> New Product </a>
 									</li>
                                 </ul>
@@ -69,6 +69,19 @@
                                 </ul>
                             </li>
                             <li><a href="javascript:;"><span class="fa fa-book"></span> Audit Trail </a></li>
+                        </ul>
+                    </li>
+					<li class="xn-openable <?php echo in_array(Request::segment(1), array("configuration")) ? "active" : "" ; ?>">
+                        <a href="javascript:;"><span class="fa fa-cogs"></span> <span class="xn-text"> configuration </span></a>
+                        <ul>
+                            <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("configuration/gst")) ? "active" : "" ; ?>">
+								<a href="{{ url('configuration/gst') }}"><span class="fa fa-book"></span> Tax GST </a>
+							</li>
+                        </ul>
+						<ul >
+                            <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("configuration/stockadjustment")) ? "active" : "" ; ?>">
+								<a href="{{ url('configuration/stockadjustment') }}"><span class="fa fa-book"></span> Stock Adjustment </a>
+							</li>
                         </ul>
                     </li>
                 </ul>
