@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use App\inventory\product_m;
-use App\configuration\tax_m;
+use App\configuration\config_tax_m;
 
 class Product extends Controller{
 
@@ -19,7 +19,6 @@ class Product extends Controller{
 		$productdata = New product_m;
 		$data = array(
 			'countproduct' => $productdata->count(),
-			'startcount' => 0,
 			'productArr' => $productdata->orderBy('id', 'desc')->paginate(10),
 			'typeArr' => array( '0' => '', '1' => 'By Item','2' => 'Package(Long Term)','3' => 'Monthly Promotion' ),
 			'status' => array( '1' => 'On','0' => 'Off'),
@@ -66,7 +65,6 @@ class Product extends Controller{
 		
 		$data = array(
 			'countproduct' => $countproduct,
-			'startcount' => 0,
 			'productArr' => $productArr,
 			'typeArr' => array( '0' => '', '1' => 'By Item','2' => 'Package(Long Term)','3' => 'Monthly Promotion' ),
 			'status' => array( '1' => 'On','0' => 'Off'),
@@ -95,7 +93,7 @@ class Product extends Controller{
 	
 	public function form(){
 		# get Tax GST percentage
-		$taxgst = tax_m::where('code', 'gst')->first();
+		$taxgst = config_tax_m::where('code', 'gst')->first();
 		if($taxgst == false)
 			$gstpercentage = 6;
 		else
@@ -111,7 +109,7 @@ class Product extends Controller{
 			return redirect("product/listing")->with("errorid"," Not Found ");
 		
 		# get Tax GST percentage		
-		$taxgst = tax_m::where('code', 'gst')->first();
+		$taxgst = config_tax_m::where('code', 'gst')->first();
 		if($taxgst == false)
 			$gstpercentage = 6;
 		else
@@ -129,7 +127,7 @@ class Product extends Controller{
 		$data['typestr'] =  array( '0' => '', '1' => 'By Item','2' => 'Package(Long Term)','3' => 'Monthly Promotion' );
 		
 		# get Tax GST percentage		
-		$taxgst = tax_m::where('code', 'gst')->first();
+		$taxgst = config_tax_m::where('code', 'gst')->first();
 		if($taxgst == false)
 			$gstpercentage = 6;
 		else
@@ -168,6 +166,9 @@ class Product extends Controller{
 		if($start_promotion != null)
 			$end_promotion = $this->datepicker2mysql($postdata->input("end_promotion"));
 		
+		$quantity_min = 0;
+		if($postdata->input("quantity_min") > 0)
+			$quantity_min = $postdata->input("quantity_min");
 		$data = array(
 			'code' => $code,
 			'type' => $postdata->input("type"),
@@ -178,6 +179,7 @@ class Product extends Controller{
 			'last_purchase' => $postdata->input("last_purchase"),
 			'picture_name' => '',
 			'picture_path' => '',
+			'quantity_min' => $quantity_min,
 			'start_promotion' => $start_promotion,
 			'end_promotion' => $end_promotion,
 			'created_by' => 1,
@@ -251,6 +253,7 @@ class Product extends Controller{
 			'price_em' => $postdata->input("price_em"),
 			'price_staff' => $postdata->input("price_staff"),
 			'last_purchase' => $postdata->input("last_purchase"),
+			'quantity_min' => $postdata->input("quantity_min"),
 			'start_promotion' => $start_promotion,
 			'end_promotion' => $end_promotion,
 			'updated_by' => 1,
@@ -301,25 +304,31 @@ class Product extends Controller{
     }
 	
     public function delete($data = ''){
-        $datadecode = unserialize(base64_decode($data));
-		$deleteid = isset($datadecode['deleteid']) ? $datadecode['deleteid'] : 0;
-		$checkproduct = product_m::where('id', $deleteid)->first();
-		if($checkproduct == false)
-			return redirect("product/listing")->with("errorid"," Data not found");
-		
-		$search = isset($datadecode['search']) ? $datadecode['search'] : '';
-		
-		if(product_m::where('id', $deleteid)->delete()){
-			if($checkproduct['picture_path'] != ''){
-				# remove image after delete
-				Storage::delete('public/' . $checkproduct['picture_path']);
+		if(@unserialize(base64_decode($data)) == true){
+			$datadecode = unserialize(base64_decode($data));
+			$delete = isset($datadecode['delete']) ? $datadecode['delete'] : 0;
+			$deleteid = isset($datadecode['deleteid']) ? $datadecode['deleteid'] : 0;
+			if($delete == 'product' && $deleteid > 0){
+				$checkproduct = product_m::where('id', $deleteid)->first();
+				if($checkproduct == false)
+					return redirect("product/listing")->with("errorid"," Data not found");
+				
+				$search = isset($datadecode['search']) ? $datadecode['search'] : '';
+				
+				if(product_m::where('id', $deleteid)->delete()){
+					if($checkproduct['picture_path'] != ''){
+						# remove image after delete
+						Storage::delete('public/' . $checkproduct['picture_path']);
+					}
+					if($search != '')
+						return redirect("product/search/" . $search)->with("info","Product " . $checkproduct['code'] . "  (" . $checkproduct['description'] . " ) Deleted Successfully!!");
+					else
+						return redirect("product/listing")->with("info","Product " . $checkproduct['code'] . "  (" . $checkproduct['description'] . " ) Deleted Successfully!!");
+					
+				}
 			}
-			if($search != '')
-				return redirect("product/search/" . $search)->with("info","Product " . $checkproduct['code'] . "  (" . $checkproduct['description'] . " ) Deleted Successfully!!");
-			else
-				return redirect("product/listing")->with("info","Product " . $checkproduct['code'] . "  (" . $checkproduct['description'] . " ) Deleted Successfully!!");
-			
 		}
+		return redirect("product/listing");
     }
 	
 	function datepicker2mysql($date_dmY){

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Configuration;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\configuration\stockadjustment_m;
+use App\configuration\config_stockadjustment_m;
 
 class Stockadjustment extends Controller
 {
@@ -13,11 +13,11 @@ class Stockadjustment extends Controller
     }
 	
 	public function listing(){
-		$adjustmentdata = New stockadjustment_m;
+		$stockadjustmentdata = New config_stockadjustment_m;
 		$data = array(
-			'countadjustment' => $adjustmentdata->count(),
+			'countadjustment' => $stockadjustmentdata->count(),
 			'startcount' => 0,
-			'adjustmentArr' => $adjustmentdata->orderBy('id', 'desc')->paginate(10),
+			'adjustmentArr' => $stockadjustmentdata->orderBy('id', 'desc')->paginate(10),
 			'status' => array( '1' => 'Active','0' => 'Inactive'),
 		);
 		return view('Configuration/stockadjustment_listing',$data);
@@ -33,31 +33,31 @@ class Stockadjustment extends Controller
 		if($search == '' && $search_status == '')
 			return redirect('configuration/stockadjustment');
 		
-		$adjustmentdata = New stockadjustment_m;
+		$stockadjustmentdata = New config_stockadjustment_m;
 		if($search != '' && $search_status != ''){
-			$countadjustment = $adjustmentdata->where(function ($q) use($search){
+			$countadjustment = $stockadjustmentdata->where(function ($q) use($search){
 											$q->where('adjustment','LIKE','%'. $search .'%')
 												->orWhere('remarks','LIKE','%'. $search .'%');
 										})
 										->where('status',$search_status)
 										->count();
-			$adjustmentArr = $adjustmentdata->where(function ($q) use($search){
+			$adjustmentArr = $stockadjustmentdata->where(function ($q) use($search){
 											$q->where('adjustment','LIKE','%'. $search .'%')
 												->orWhere('remarks','LIKE','%'. $search .'%');
 										})
 										->where('status',$search_status)->orderBy('id', 'desc')->paginate(10);
 		}
 		else if($search != ''){
-			$countadjustment = $adjustmentdata->where('adjustment','LIKE','%'. $search .'%')
+			$countadjustment = $stockadjustmentdata->where('adjustment','LIKE','%'. $search .'%')
 										->orWhere('remarks','LIKE','%'. $search .'%')
 										->count();
-			$adjustmentArr = $adjustmentdata->where('adjustment','LIKE','%'. $search .'%')
+			$adjustmentArr = $stockadjustmentdata->where('adjustment','LIKE','%'. $search .'%')
 										->orWhere('remarks','LIKE','%'. $search .'%')->orderBy('id', 'desc')->paginate(10);
 		}
 		else{
-			$countadjustment = $adjustmentdata->where('status',$search_status)
+			$countadjustment = $stockadjustmentdata->where('status',$search_status)
 										->count();
-			$adjustmentArr = $adjustmentdata->where('status',$search_status)->orderBy('id', 'desc')->paginate(10);
+			$adjustmentArr = $stockadjustmentdata->where('status',$search_status)->orderBy('id', 'desc')->paginate(10);
 		}
 		
 		$data = array(
@@ -89,7 +89,7 @@ class Stockadjustment extends Controller
     }
 	
     public function save(Request $postdata){
-		$adjustmentdata = New stockadjustment_m;
+		$stockadjustmentdata = New config_stockadjustment_m;
 		$data = array(
 			'adjustment' => $postdata->input("adjustment"),
 			'remarks' => $postdata->input("remarks"),
@@ -100,20 +100,20 @@ class Stockadjustment extends Controller
 			
 		$base64 = $postdata->input("base64");
 		if($base64 == '' || @unserialize(base64_decode($base64)) == false){
-			#insert new stock Adjustment
+			#insert new stock stockadjustment
 			$data['created_by'] = 1;
 			$data['created_at'] = date('Y-m-d H:i:s');
-			$adjustmentdata->insert($data);
+			$stockadjustmentdata->insert($data);
 			
 			return redirect('configuration/stockadjustment')->with("info","Success Submit " . $postdata->input("adjustment") . "");
 		}
 		else{
-			# update stock Adjustment
+			# update stock stockadjustment
 			$datadecode = unserialize(base64_decode($base64));
 			$selectid = isset($datadecode['selectid']) ? $datadecode['selectid'] : 0;
 			$search = isset($datadecode['search']) ? $datadecode['search'] : '';
 			
-			$adjustmentdata->where('id',$selectid)->update($data);
+			$stockadjustmentdata->where('id',$selectid)->update($data);
 			if($search != '')
 				return redirect('configuration/stockadjustment/search/' . $search)->with("info","Success Save " . $postdata->input("adjustment") . "");
 			else
@@ -122,27 +122,29 @@ class Stockadjustment extends Controller
 	}
 
     public function delete($data = ''){
-		$adjustmentdata = New stockadjustment_m;
-        $datadecode = unserialize(base64_decode($data));
-		$selectid = isset($datadecode['selectid']) ? $datadecode['selectid'] : 0;
-		
-		$checkadjustment = $adjustmentdata->where('id', $selectid)->first();
-		if($checkadjustment == false)
-			return redirect('configuration/stockadjustment')->with("errorid"," Data not found");
-		
-		$search = isset($datadecode['search']) ? $datadecode['search'] : '';
-		
-		if($checkadjustment['picture_path'] != ''){
-			# remove image after delete
-			Storage::delete('public/' . $checkadjustment['picture_path']);
-		}
-		
-		if($adjustmentdata->where('id', $selectid)->delete()){
-			if($search != '')
-				return redirect('configuration/stockadjustment/search/' . $search)->with("info","Stock Adjustment " . $checkadjustment['adjustment'] . " Deleted Successfully!!");
-			else
-				return redirect('configuration/stockadjustment')->with("info","Stock Adjustment " . $checkadjustment['adjustment'] . "  Deleted Successfully!!");
+		if(@unserialize(base64_decode($data)) == true){
+			$stockadjustmentdata = New config_stockadjustment_m;
+			$datadecode = unserialize(base64_decode($data));
+			$selectid = isset($datadecode['selectid']) ? $datadecode['selectid'] : 0;
 			
+			$checkstockadjustment = $stockadjustmentdata->where('id', $selectid)->first();
+			if($checkstockadjustment == false)
+				return redirect('configuration/stockadjustment')->with("errorid"," Data not found");
+			
+			$search = isset($datadecode['search']) ? $datadecode['search'] : '';
+			
+			if($checkstockadjustment['picture_path'] != ''){
+				# remove image after delete
+				Storage::delete('public/' . $checkstockadjustment['picture_path']);
+			}
+			
+			if($stockadjustmentdata->where('id', $selectid)->delete()){
+				if($search != '')
+					return redirect('configuration/stockadjustment/search/' . $search)->with("info","Stock stockadjustment " . $checkstockadjustment['adjustment'] . " Deleted Successfully!!");
+				else
+					return redirect('configuration/stockadjustment')->with("info","Stock stockadjustment " . $checkstockadjustment['adjustment'] . "  Deleted Successfully!!");
+				
+			}
 		}
     }
 }

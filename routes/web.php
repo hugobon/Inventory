@@ -50,8 +50,13 @@ Route::post('product/insert', 'Inventory\Product@insert');
 Route::post('product/update/{x?}', 'Inventory\Product@update');
 Route::post('product/check_existcode', 'Inventory\Product@check_existcode');
 Route::get('product/delete/{x?}', 'Inventory\Product@delete');
-// Stock
-Route::get('stock', function () {   });
+// Stock Adjustment
+Route::get('stock/adjustment', function () {  return redirect("stock/adjustment/listing"); });
+Route::get('stock/adjustment/listing', 'Inventory\Stockadjustment@listing');
+Route::get('stock/adjustment/search/{x?}', 'Inventory\Stockadjustment@search');
+Route::post('stock/adjustment/form_search', 'Inventory\Stockadjustment@form_search');
+Route::post('stock/adjustment/submit', 'Inventory\Stockadjustment@submit');
+Route::get('stock/adjustment/delete/{x?}', 'Inventory\Stockadjustment@delete');
 
 //=========================
 // Configuration :: Aqi

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Configuration;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\configuration\tax_m;
+use App\configuration\config_tax_m;
 
 class Gst extends Controller{
     public function index(){
@@ -12,7 +12,7 @@ class Gst extends Controller{
     }
 	
     public function view(){
-        $taxdata = New tax_m;
+        $taxdata = New config_tax_m;
 		$data =  $taxdata->where('code', 'gst')->first();
 		if($data == false){
 			#create if gst not found
@@ -33,7 +33,7 @@ class Gst extends Controller{
     }
 	
 	public function form(){
-        $taxdata = New tax_m;
+        $taxdata = New config_tax_m;
 		$data =  $taxdata->where('code', 'gst')->first();
 		if($data == false){
 			#create if gst not found
@@ -54,7 +54,7 @@ class Gst extends Controller{
     }
 	
 	public function update(Request $postdata){
-		$taxdata = New tax_m;
+		$taxdata = New config_tax_m;
 		$this->validate($postdata,[
 			'percent' => 'required',
 		]);
@@ -84,7 +84,7 @@ class Gst extends Controller{
 				'updated_by' => 1,
 				'updated_at' => date('Y-m-d H:i:s'),
 			);
-			$taxdata = New tax_m;
+			$taxdata = New config_tax_m;
 			$taxdata->where('code','gst')->update($data);
 		}
 		
