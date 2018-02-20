@@ -31,7 +31,7 @@
                     <li class="<?php echo in_array(request()->path(), array("home")) ? "active" : "" ; ?>">
                         <a href="{{ url('home') }}"><span class="fa fa-desktop"></span> <span class="xn-text">Dashboard</span></a>                        
                     </li>                    
-                    <li class="xn-openable <?php echo in_array(Request::segment(1), array("product")) ? "active" : "" ; ?>">
+                    <li class="xn-openable <?php echo in_array(Request::segment(1), array("product","stock")) ? "active" : "" ; ?>">
                         <a href="javascript:;"><span class="fa fa-truck"></span> <span class="xn-text">Inventory </span></a>
                         <ul>
                             <li class="xn-openable <?php echo in_array(Request::segment(1), array("product")) ? "active" : "" ; ?>">
@@ -45,9 +45,12 @@
 									</li>
                                 </ul>
                             </li>
-                            <li class="xn-openable">
+                            <li class="xn-openable <?php echo in_array(Request::segment(1), array("stock")) ? "active" : "" ; ?>"" >
                                 <a href="javascript:;"><span class="glyphicon glyphicon-shopping-cart"></span> Stock </a>
                                 <ul>
+									<li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("stock/adjustment")) ? "active" : "" ; ?>">
+										<a href="{{ url('stock/adjustment/listing') }}"><span class="glyphicon glyphicon-list-alt"></span> Stock Adjustment </a>
+									</li>
                                     <li><a href="javascript:;"><span class="glyphicon glyphicon-list-alt"></span> Current Stock </a></li>
                                     <li><a href="javascript:;"><span class="fa fa-search"></span> Stock Balance Report </a></li>
                                 </ul>

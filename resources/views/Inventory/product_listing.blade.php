@@ -99,7 +99,7 @@
 								
 								@foreach($productArr->all() as $key => $row)
 									<?php
-										$rowarr = array('deleteid' => $row->id,'search' => Request::segment(3));
+										$rowarr = array('delete' => 'product','deleteid' => $row->id,'search' => Request::segment(3));
 										$base64data = trim(base64_encode(serialize($rowarr)), "=.");
 									?>
 									<tr>

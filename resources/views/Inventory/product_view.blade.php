@@ -89,9 +89,9 @@ if(isset($id) && $id > 0){
 								<div class="col-md-9">
 									<div class="col-md-12">
 									<label class="col-md-3 control-label"> Start: </label>
-									<label class="col-md-8 control-label text-left">{{ isset($start_promotion) && !in_array($start_promotion, array('0000-00-00','')) ? date('d/m/Y', strtotime($start_promotion)) : '' }}</label>
+									<label class="col-md-8 control-label text-left">{{ isset($start_promotion) && !in_array($start_promotion, array('0000-00-00','')) ? date('d/m/Y', strtotime($start_promotion)) : ' &nbsp; ' }}</label>
 									<label class="col-md-3 control-label"> End: </label>
-									<label class="col-md-8 control-label text-left">{{ isset($end_promotion) && !in_array($end_promotion, array('0000-00-00','')) ? date('d/m/Y', strtotime($end_promotion)) : '' }}</label>
+									<label class="col-md-8 control-label text-left">{{ isset($end_promotion) && !in_array($end_promotion, array('0000-00-00','')) ? date('d/m/Y', strtotime($end_promotion)) : ' &nbsp; ' }}</label>
 
 									
 									</div>
