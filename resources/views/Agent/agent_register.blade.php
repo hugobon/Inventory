@@ -106,7 +106,7 @@
 									<div class="col-md-9">
 										<label for="file-input">
 										<img id="profile-photo" src="{{ asset('register-photo.png') }}" width="170" height="150"> </label>
-										<input type="file" id="file-input" onchange="readURL(this);"/>                     
+										<input type="file" id="file-input" name="agent_profile_photo" onchange="readURL(this);"/>                     
 									</div>
 								</div>
 							</div>
@@ -171,7 +171,7 @@
 								<div class="form-group">
 									<label class="col-md-3 control-label"> Bank Account </label>
 									<div class="col-md-9">
-										<input type="text" class="form-control agent-bank-name" name="agent_bank_name" id="agent_bank_name" value="" />                     
+										<input type="text" class="form-control agent-bank-name" name="agent_bank_acc_no" id="agent_bank_acc_no" value="" />                     
 									</div>
 								</div>
 								<div class="form-group">
@@ -220,39 +220,17 @@
 										<input type="password" class="form-control agent-sec-pass" name="agent_secqurity_pass" id="agent_secqurity_pass" value="" />   
 									</div>
 								</div>
-								<div class="form-group">
-									<label class="col-md-3 control-label"> Country </label>
-									<div class="col-md-9">
-										<input type="text" class="form-control agent-country" name="agent_address_country" id="agent_address_country" value="" />   
-									</div>
-								</div>
 							</div>
 							<div class="col-md-6">
 								<div class="col-md-12">
-									<p><span id="form-title"> Bank Account Info. </span></p>
+									<p><span id="form-title"> Payment Detail </span></p>
 								</div>
 								<div class="form-group">
-									<label class="col-md-3 control-label"> Bank Name </label>
-									<div class="col-md-9">
-										<input type="text" class="form-control agent-bank-name" name="agent_bank_name" id="agent_bank_name" value="" />                     
-									</div>
-								</div>
-								<div class="form-group">
-									<label class="col-md-3 control-label"> Bank Account </label>
-									<div class="col-md-9">
-										<input type="text" class="form-control agent-bank-name" name="agent_bank_name" id="agent_bank_name" value="" />                     
-									</div>
-								</div>
-								<div class="form-group">
-									<label class="col-md-3 control-label"> Bank Account Name </label>
-									<div class="col-md-9">
-										<input type="text" class="form-control agent-bank-acc-name" name="agent_bank_acc_name" id="agent_bank_acc_name" value="" />                     
-									</div>
-								</div>
-								<div class="form-group">
-									<label class="col-md-3 control-label"> Bank Account Type </label>
-									<div class="col-md-9">
-										<input type="text" class="form-control agent-bank-acc-type" name="agent_bank_acc_type" id="agent_bank_acc_type" value="" />                     
+									<label class="col-md-3 control-label"> Payment Type </label>
+									<div class="col-md-9"> 
+										<select name="agent_payment_type" class="form-control agent-payment-type">
+											<option value="">Chooese Value</option>
+										</select> 
 									</div>
 								</div>
 							</div>
@@ -266,19 +244,6 @@
 									<label class="col-md-3 control-label"> Benifical Name </label>
 									<div class="col-md-9">        
 										<input type="text" class="form-control agent-benifical-name" name="agent_call_name" id="agent_call_name" value="" />                    
-									</div>
-								</div>
-							</div>
-							<div class="col-md-6">
-								<div class="col-md-12">
-									<p><span id="form-title"> Payment Detail </span></p>
-								</div>
-								<div class="form-group">
-									<label class="col-md-3 control-label"> Payment Type </label>
-									<div class="col-md-9"> 
-										<select name="agent_payment_type" class="form-control agent-payment-type">
-											<option value="">Chooese Value</option>
-										</select> 
 									</div>
 								</div>
 							</div>
