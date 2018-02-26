@@ -43,6 +43,9 @@
                                     <li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("product/form","product/edit","product/view")) ? "active" : "" ; ?>">
 										<a href="{{ url('product/form') }}"><span class="fa fa-plus"></span> New Product </a>
 									</li>
+									<li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("product/package_form","product/package_edit","product/package_view")) ? "active" : "" ; ?>">
+										<a href="{{ url('product/package_form') }}"><span class="fa fa-plus"></span> New Product Package </a>
+									</li>
                                 </ul>
                             </li>
                             <li class="xn-openable <?php echo in_array(Request::segment(1), array("stock")) ? "active" : "" ; ?>"" >

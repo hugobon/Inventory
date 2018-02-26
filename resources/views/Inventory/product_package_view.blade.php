@@ -32,7 +32,7 @@ if(isset($id) && $id > 0){
 <ul class="breadcrumb">
 	<li><a href="{{ url('home') }}">Home</a></li>                    
 	<li ><a href="{{ url('product/listing') }}">Product Listing</a></li>
-	<li class="active">View Product</li>
+	<li class="active">View Product Package</li>
 </ul>
 <!-- END BREADCRUMB -->
 <!-- PAGE CONTENT WRAPPER -->
@@ -53,9 +53,9 @@ if(isset($id) && $id > 0){
 					<ul class="panel-controls">
 					</ul>
 					<div class="actions pull-right">
-						<a href="{{ url('product/form') }}" class="btn btn-default  btn-sm btn-circle" title="Add New Product" >
-							<i class="fa fa-plus"></i> New Product </a>
-						<a href="{{ url('product/edit/' . $id) }}" class="btn btn-default  btn-sm btn-circle" title="Edit {{ $code .' ('. $description .')' }}" >
+						<a href="{{ url('product/package_form') }}" class="btn btn-default  btn-sm btn-circle" title="Add New Product" >
+							<i class="fa fa-plus"></i> New Product Package</a>
+						<a href="{{ url('product/package_edit/' . $id) }}" class="btn btn-default  btn-sm btn-circle" title="Edit {{ $code .' ('. $description .')' }}" >
 							<i class="fa fa-pencil"></i> Edit </a>
 					</div>
 				</div>
@@ -92,6 +92,41 @@ if(isset($id) && $id > 0){
 								<label class="col-md-3 control-label"> Category: </label>
 								<div class="col-md-9 control-label text-left">{{ isset($category) ? $category : '' }}</div>
 							</div>
+						</div>
+					</div>
+					<br /> &nbsp;
+					<div class="row">
+						<div class="col-md-12">
+							<h3> Product List </h3>
+							<hr />
+						</div>
+						<div class="col-md-12">
+							<table class="table table-striped">
+								<thead>
+									<tr>
+										<th class="text-center">#</th>
+										<th class="col-md-5"> Product</th>
+										<th class="col-md-2"> Quantity</th>
+										<th class="col-md-4"> Description </th>
+									</tr>
+								</thead>
+								<tbody class="tbody-product">
+									@if(isset($product_list) && count($product_list) > 0)
+										@foreach($product_list->all() as $key => $row)
+										<tr class="">
+											<td class="text-center">1</td>
+											<td>{{ isset($productArr[$row->product_id]) ? $productArr[$row->product_id] : '' }}</td>
+											<td>{{ $row->quantity }}</td>
+											<td>{{ $row->description }}</td>
+										</tr>
+										@endforeach
+									@else
+									<tr class="">
+										<td class="text-center" colspan="4"> Product Not Found ! </td>
+									</tr>
+									@endif
+								</tbody>
+							</table>
 						</div>
 					</div>
 					<br /> &nbsp;
@@ -161,7 +196,7 @@ if(isset($id) && $id > 0){
 					<div class="row">
 						<br /> &nbsp;
 						<div class="col-md-12">
-							<h3> Gallery <a href="{{ url('product/edit/' . $id . '/1') }}" class="btn btn-default  pull-right btn-sm btn-circle" title="Edit Gallery {{ $code .' ('. $description .')' }}" >
+							<h3> Gallery <a href="{{ url('product/package_edit/' . $id . '/1') }}" class="btn btn-default  pull-right btn-sm btn-circle" title="Edit Gallery {{ $code .' ('. $description .')' }}" >
 									<i class="fa fa-pencil"></i> Edit </a></h3>
 								
 							<hr />

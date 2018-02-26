@@ -1,15 +1,15 @@
 <?php 
-# Create by: Bhaihaqi		2018-02-05
-# Modify by: Bhaihaqi		2018-02-13
+# Create by: Bhaihaqi		2018-02-26
+# Modify by: Bhaihaqi		2018-02-28
 
-$formurl = "insert";
+$formurl = "package_insert";
 $clearurl = "form";
-$titlehead = "New Product";
+$titlehead = "New Product Package";
 if(isset($id) && $id > 0){
 	#set update
-	$formurl = "update/" . $id;
+	$formurl = "package_update/" . $id;
 	$clearurl = "edit/" . $id;
-	$titlehead = "Edit Product";
+	$titlehead = "Edit Product Package";
 	
 	$wm_gst = $wm_aftergst = $em_gst = $em_aftergst = $staff_gst = $staff_aftergst = 0;
 	if($price_wm > 0){
@@ -38,6 +38,7 @@ if(isset($id) && $id > 0){
 		top: 0; bottom: 0; left: 0; right: 0; margin: auto; }
 select{cursor:pointer;}
 .required{ color: #ff0000;}
+.has-error .form-control {border-color: #E04B4A !important;}
 </style>
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
@@ -83,14 +84,14 @@ select{cursor:pointer;}
 				<div class="tab-pane {{ $tabform }}" id="tab-form">
 						<form id="submit_form" class="form-horizontal" method="POST" action="{{ url('product/' . $formurl) }}" enctype="multipart/form-data" >
 						{{ csrf_field() }}
-						<h3 class="panel-title"><strong>Product</strong> Form </h3>
+						<h3 class="panel-title"><strong>Product</strong> Package Form </h3>
 						<div class="panel-body">
 							<div class="alert alert-danger alert-dismissable alert_modal" hidden>
 								already exists
 							</div>
 							<div class="row">
 								<div class="col-md-12">
-									<h3> Product info </h3>
+									<h3> Product Package info </h3>
 									<hr />
 								</div>
 								<div class="col-md-6">
@@ -103,12 +104,8 @@ select{cursor:pointer;}
 									</div>
 									<div class="form-group">
 										<label class="col-md-3 control-label"> Type <span class="required">*</span></label>
-										<div class="col-md-9">        
-											<select class="form-control product-type" name="type" >
-												<option value=""></option>
-												<option value="1" {{ isset($type) && $type == 1 ? "selected" : "" }}> By Item </option>
-												<option value="3" {{ isset($type) && $type == 3 ? "selected" : "" }}> Monthly Promotion </option>
-											</select>
+										<div class="col-md-9">
+											<div class="form-control">Package</div>
 										</div>
 									</div>
 									<div class="form-group">
@@ -140,6 +137,82 @@ select{cursor:pointer;}
 											<input type="text" class="form-control product-category" name="category" value="{{ isset($category) ? $category : '' }}" />   
 										</div>
 									</div>
+								</div>
+							</div>
+							<br /> &nbsp;
+							<div class="row">
+								<div class="col-md-12">
+									<h3> Product List </h3>
+									<hr />
+								</div>
+								<div class="col-md-12">
+									<table class="table table-striped">
+										<thead>
+											<tr>
+												<th class="text-center">#</th>
+												<th class="col-md-5"> Product <span class="required">*</span></th>
+												<th class="col-md-2"> Quantity <span class="required">*</span></th>
+												<th class="col-md-4"> Description </th>
+												<th class="text-center">
+													<a href="javascript:;" title="Add New Row Product"
+													class="btn btn-success btn-xs add-product " ><span class="fa fa-plus"></span></a>
+												</th>
+											</tr>
+										</thead>
+										<tbody class="tbody-product">
+											@if(isset($product_list) && count($product_list) > 0)
+												@foreach($product_list->all() as $key => $row)
+												<tr class="row-productlist">
+													<td class="text-center product-number">1</td>
+													<td>
+														<input type="hidden" class="packageid" name="packageid[]" value="{{ $row->id }}" />
+														<select class="form-control productid" name="productid[]" >
+															<option value=""> </option>
+															@if(count($productArr) > 0)
+																@foreach($productArr as $productid => $productname)
+																	<option value="{{ $productid }}"  {{ $row->product_id == $productid ? "selected" : "" }} >
+																	{{ $productname }}</option>
+																@endforeach
+															@endif
+														</select>
+													</td>
+													<td><input type="text" class="form-control productquantity mask_number" 
+														name="productquantity[]" value="{{ $row->quantity }}" /></td>
+													<td><input type="text" class="form-control productdescription" 
+														name="productdescription[]" value="{{ $row->description }}" /></td>
+													<td class="text-center">
+														<a href="javascript:;" title="Remove This Row Product"
+														class="btn btn-danger btn-xs remove-product" ><span class="fa fa-times"></span></a>
+													</td>
+												</tr>
+												@endforeach
+											@else
+											<tr class="row-productlist">
+												<td class="text-center product-number">1</td>
+												<td>
+													<input type="hidden" class="packageid" name="packageid[]" value="" />
+													<select class="form-control productid" name="productid[]" >
+														<option value=""> </option>
+														@if(count($productArr) > 0)
+															@foreach($productArr as $productid => $productname)
+																<option value="{{ $productid }}" >
+																{{ $productname }}</option>
+															@endforeach
+														@endif
+													</select>
+												</td>
+												<td><input type="text" class="form-control productquantity mask_number" 
+													name="productquantity[]" value="" /></td>
+												<td><input type="text" class="form-control productdescription" 
+													name="productdescription[]" value="" /></td>
+												<td class="text-center">
+													<a href="javascript:;" title="Remove This Row Product"
+													class="btn btn-danger btn-xs remove-product" ><span class="fa fa-times"></span></a>
+												</td>
+											</tr>
+											@endif
+										</tbody>
+									</table>
 								</div>
 							</div>
 							<br /> &nbsp;
@@ -379,7 +452,6 @@ errorPlacement: function(error,element) { return true;},
 ignore: [],
 rules: {                                            
 		code: { required: true, minlength: 3,},
-		type: { required: true,},
 		description: { required: true,},
 		price_wm: { required: true,},
 		price_em: { required: true,},
@@ -405,6 +477,13 @@ function reload_image(baseid){
 	}).done(function(){
 	});
 }
+
+function product_number(){
+	for(i = 0; i < $('.row-productlist').length; i++){
+		$($('.row-productlist')[i]).find('.product-number').html((i + 1));
+	}
+}
+
 $(function() {
 	$(".mask_year").inputmask({
 		"mask": "9",
@@ -484,6 +563,23 @@ $(function() {
 	});
 	
 	$("#submit_form").submit(function(){
+		var show = true;
+		for(i = 0; i < $('.row-productlist').length; i++){
+			$($('.row-productlist')[i]).find('select[name="productid[]"]').closest('td').removeClass('has-error');
+			$($('.row-productlist')[i]).find('input[name="productquantity[]"]').closest('td').removeClass('has-error');
+			productid = $($('.row-productlist')[i]).find('select[name="productid[]"]').val().trim();
+			if(productid == ""){
+				$($('.row-productlist')[i]).find('select[name="productid[]"]').closest('td').addClass('has-error');
+				show = false;
+			}
+			productquantity = $($('.row-productlist')[i]).find('input[name="productquantity[]"]').val().trim();
+			if(productquantity == "" || productquantity == 0){
+				$($('.row-productlist')[i]).find('input[name="productquantity[]"]').closest('td').addClass('has-error');
+				show = false;
+			}
+		}
+		if(show == false)
+			return false;
 		productcode = $(".product-code").val().trim();
 		code_exist = 0;
 		$.ajax({
@@ -613,6 +709,50 @@ $(function() {
 		})
 		return false;
 	});
+	
+	$('body').on('click', '.add-product', function(){
+		var show = true;
+		for(i = 0; i < $('.row-productlist').length; i++){
+			$($('.row-productlist')[i]).find('select[name="productid[]"]').closest('td').removeClass('has-error');
+			$($('.row-productlist')[i]).find('input[name="productquantity[]"]').closest('td').removeClass('has-error');
+			productid = $($('.row-productlist')[i]).find('select[name="productid[]"]').val().trim();
+			if(productid == ""){
+				$($('.row-productlist')[i]).find('select[name="productid[]"]').closest('td').addClass('has-error');
+				show = false;
+			}
+			productquantity = $($('.row-productlist')[i]).find('input[name="productquantity[]"]').val().trim();
+			if(productquantity == "" || productquantity == 0){
+				$($('.row-productlist')[i]).find('input[name="productquantity[]"]').closest('td').addClass('has-error');
+				show = false;
+			}
+		}
+		if(show == true){
+			var new_row = $($('.row-productlist')[0]).clone();
+			new_row.find('input[name="packageid[]"]').val("");
+			new_row.find('select[name="productid[]"]').val("");
+			new_row.find('input[name="productdescription[]"]').val("");
+			new_row.find('input[name="productquantity[]"]').val("");
+			new_row.find('input[name="productquantity[]"]').inputmask({"mask": "9","repeat": 10,'rightAlign': true,"greedy": false});
+			$('.tbody-product').append(new_row);
+			product_number();
+		}
+	});
+	
+	$('body').on('click', '.remove-product', function(){
+		var row_length = $('.row-productlist').length;
+		if(row_length == 1){
+			var row_1 = $('.row-productlist');
+			row_1.find('input[name="packageid[]"]').val("");
+			row_1.find('select[name="productid[]"]').val("");
+			row_1.find('input[name="productdescription[]"]').val("");
+			row_1.find('input[name="productquantity[]"]').val("");
+		}
+		else{
+			$(this).closest('.row-productlist').remove();
+			product_number();
+		}
+	});
 });
 </script>
+ 
 @endsection
