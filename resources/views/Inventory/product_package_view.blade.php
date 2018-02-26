@@ -54,7 +54,7 @@ if(isset($id) && $id > 0){
 					</ul>
 					<div class="actions pull-right">
 						<a href="{{ url('product/package_form') }}" class="btn btn-default  btn-sm btn-circle" title="Add New Product" >
-							<i class="fa fa-plus"></i> New Product Package</a>
+							<i class="fa fa-plus"></i> Product Package</a>
 						<a href="{{ url('product/package_edit/' . $id) }}" class="btn btn-default  btn-sm btn-circle" title="Edit {{ $code .' ('. $description .')' }}" >
 							<i class="fa fa-pencil"></i> Edit </a>
 					</div>

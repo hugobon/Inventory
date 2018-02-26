@@ -41,10 +41,13 @@
 										<a href="{{ url('product/listing') }}"><span class="fa fa-list-alt"></span> Product List </a>
 									</li>
                                     <li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("product/form","product/edit","product/view")) ? "active" : "" ; ?>">
-										<a href="{{ url('product/form') }}"><span class="fa fa-plus"></span> New Product </a>
+										<a href="{{ url('product/form') }}"><span class="fa fa-plus"></span> Product </a>
 									</li>
 									<li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("product/package_form","product/package_edit","product/package_view")) ? "active" : "" ; ?>">
-										<a href="{{ url('product/package_form') }}"><span class="fa fa-plus"></span> New Product Package </a>
+										<a href="{{ url('product/package_form') }}"><span class="fa fa-plus"></span> Product Package </a>
+									</li>
+									<li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("product/promotion")) ? "active" : "" ; ?>">
+										<a href="{{ url('product/promotion/listing') }}"><span class="fa fa-plus"></span> Product Promotion </a>
 									</li>
                                 </ul>
                             </li>

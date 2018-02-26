@@ -53,12 +53,16 @@ Route::get('product/package_edit/{x?}/{y?}', 'Inventory\Product@package_edit');
 Route::get('product/package_view/{x?}', 'Inventory\Product@package_view');
 Route::post('product/package_insert', 'Inventory\Product@package_insert');
 Route::post('product/package_update/{x?}', 'Inventory\Product@package_update');
-
 Route::get('product/reload_image/{x?}', 'Inventory\Product@reload_image');
 Route::post('product/upload_image/{x?}', 'Inventory\Product@upload_image');
 Route::post('product/check_existcode', 'Inventory\Product@check_existcode');
 Route::get('product/delete/{x?}', 'Inventory\Product@delete');
 Route::get('product/delete_image/{x?}', 'Inventory\Product@delete_image');
+// Product promotion
+Route::get('product/promotion', function () {  return redirect("promotion/listing"); });
+Route::get('product/promotion/listing', 'Inventory\Product_promotion@listing');
+Route::get('product/promotion/search/{x?}', 'Inventory\Product_promotion@search');
+Route::post('product/promotion/form_search', 'Inventory\Product_promotion@form_search');
 // Stock Adjustment
 Route::get('stock/adjustment', function () {  return redirect("stock/adjustment/listing"); });
 Route::get('stock/adjustment/listing', 'Inventory\Stockadjustment@listing');
