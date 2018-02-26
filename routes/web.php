@@ -23,29 +23,62 @@ Route::get('/', function () {
 
 Route::get('/home', 'HomeController@index')->name('home');
 //=========================
-// Agent
+// Agent :: Amin
 //=========================
 Route::get('agent', 'Agent\AgentController@fn_get_view');
-Route::post('agent/save', 'Agent\AgentController@fn_save_agent_record');
+Route::post('agent/save', 'Agent\AgentController@fn_save_agent_record')->name('agent_view');
 
 //=========================
-// Supplier
+// Supplier :: Zul
 //=========================
 Route::get('supplier/supplierDetail', 'Supplier\SupplierController@supplierDetail_page');
 Route::get('supplier/stockIn', 'Supplier\SupplierController@stockIn_page');
 Route::get('supplier/supplierDO', 'Supplier\SupplierController@supplierDO_page');
 
 //=========================
-// Inventory
+// Inventory :: Aqi
 //=========================
+// Product
 Route::get('product', function () {  return redirect("product/listing"); });
 Route::get('product/listing', 'Inventory\Product@listing');
+Route::get('product/search/{x?}', 'Inventory\Product@search');
+Route::post('product/form_search', 'Inventory\Product@form_search');
 Route::get('product/form', 'Inventory\Product@form');
-Route::get('product/edit/{x?}', 'Inventory\Product@edit');
+Route::get('product/edit/{x?}/{y?}', 'Inventory\Product@edit');
 Route::get('product/view/{x?}', 'Inventory\Product@view');
 Route::post('product/insert', 'Inventory\Product@insert');
 Route::post('product/update/{x?}', 'Inventory\Product@update');
+Route::get('product/package_form', 'Inventory\Product@package_form');
+Route::get('product/package_edit/{x?}/{y?}', 'Inventory\Product@package_edit');
+Route::get('product/package_view/{x?}', 'Inventory\Product@package_view');
+Route::post('product/package_insert', 'Inventory\Product@package_insert');
+Route::post('product/package_update/{x?}', 'Inventory\Product@package_update');
+
+Route::get('product/reload_image/{x?}', 'Inventory\Product@reload_image');
+Route::post('product/upload_image/{x?}', 'Inventory\Product@upload_image');
 Route::post('product/check_existcode', 'Inventory\Product@check_existcode');
 Route::get('product/delete/{x?}', 'Inventory\Product@delete');
+Route::get('product/delete_image/{x?}', 'Inventory\Product@delete_image');
+// Stock Adjustment
+Route::get('stock/adjustment', function () {  return redirect("stock/adjustment/listing"); });
+Route::get('stock/adjustment/listing', 'Inventory\Stockadjustment@listing');
+Route::get('stock/adjustment/search/{x?}', 'Inventory\Stockadjustment@search');
+Route::post('stock/adjustment/form_search', 'Inventory\Stockadjustment@form_search');
+Route::post('stock/adjustment/submit', 'Inventory\Stockadjustment@submit');
+Route::get('stock/adjustment/delete/{x?}', 'Inventory\Stockadjustment@delete');
 
+//=========================
+// Configuration :: Aqi
+//=========================
+Route::get('configuration', function () {  return redirect("home"); });
+// Tax GST
+Route::get('configuration/gst', 'Configuration\Gst@view');
+Route::get('configuration/gst/form', 'Configuration\Gst@form');
+Route::post('configuration/gst/update', 'Configuration\Gst@update');
+// Stock Adjustment stockadjustment
+Route::get('configuration/stockadjustment', 'Configuration\Stockadjustment@listing');
+Route::get('configuration/stockadjustment/search/{x?}', 'Configuration\Stockadjustment@search');
+Route::post('configuration/stockadjustment/form_search', 'Configuration\Stockadjustment@form_search');
+Route::get('configuration/stockadjustment/delete/{x?}', 'Configuration\Stockadjustment@delete');
+Route::post('configuration/stockadjustment/save', 'Configuration\Stockadjustment@save');
 
