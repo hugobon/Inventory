@@ -44,12 +44,21 @@ Route::get('product/listing', 'Inventory\Product@listing');
 Route::get('product/search/{x?}', 'Inventory\Product@search');
 Route::post('product/form_search', 'Inventory\Product@form_search');
 Route::get('product/form', 'Inventory\Product@form');
-Route::get('product/edit/{x?}', 'Inventory\Product@edit');
+Route::get('product/edit/{x?}/{y?}', 'Inventory\Product@edit');
 Route::get('product/view/{x?}', 'Inventory\Product@view');
 Route::post('product/insert', 'Inventory\Product@insert');
 Route::post('product/update/{x?}', 'Inventory\Product@update');
+Route::get('product/package_form', 'Inventory\Product@package_form');
+Route::get('product/package_edit/{x?}/{y?}', 'Inventory\Product@package_edit');
+Route::get('product/package_view/{x?}', 'Inventory\Product@package_view');
+Route::post('product/package_insert', 'Inventory\Product@package_insert');
+Route::post('product/package_update/{x?}', 'Inventory\Product@package_update');
+
+Route::get('product/reload_image/{x?}', 'Inventory\Product@reload_image');
+Route::post('product/upload_image/{x?}', 'Inventory\Product@upload_image');
 Route::post('product/check_existcode', 'Inventory\Product@check_existcode');
 Route::get('product/delete/{x?}', 'Inventory\Product@delete');
+Route::get('product/delete_image/{x?}', 'Inventory\Product@delete_image');
 // Stock Adjustment
 Route::get('stock/adjustment', function () {  return redirect("stock/adjustment/listing"); });
 Route::get('stock/adjustment/listing', 'Inventory\Stockadjustment@listing');
