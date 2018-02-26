@@ -28,26 +28,29 @@
                         <a href="javascript:;" class="x-navigation-control"></a>
                     </li>
                     <li class="xn-title">Navigation</li>
-                    <li class="<?php echo in_array(request()->path(), array("home")) ? "active bg-green" : "" ; ?>">
+                    <li class="<?php echo in_array(request()->path(), array("home")) ? "active" : "" ; ?>">
                         <a href="{{ url('home') }}"><span class="fa fa-desktop"></span> <span class="xn-text">Dashboard</span></a>                        
                     </li>                    
-                    <li class="xn-openable <?php echo in_array(request()->path(), array("product/listing","product/form","product")) ? "active bg-green" : "" ; ?>">
+                    <li class="xn-openable <?php echo in_array(Request::segment(1), array("product","stock")) ? "active" : "" ; ?>">
                         <a href="javascript:;"><span class="fa fa-truck"></span> <span class="xn-text">Inventory </span></a>
                         <ul>
-                            <li class="xn-openable <?php echo in_array(request()->path(), array("product/listing","product/form","product")) ? "active bg-green" : "" ; ?>">
+                            <li class="xn-openable <?php echo in_array(Request::segment(1), array("product")) ? "active" : "" ; ?>">
                                 <a href="javascript:;"><span class="fa fa-puzzle-piece"></span> Product </a>
                                 <ul>
-                                    <li class="<?php echo in_array(request()->path(), array("product/listing")) ? "active bg-green" : "" ; ?>">
+                                    <li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("product/listing","product/search")) ? "active" : "" ; ?>">
 										<a href="{{ url('product/listing') }}"><span class="fa fa-list-alt"></span> Product List </a>
 									</li>
-                                    <li class="<?php echo in_array(request()->path(), array("product/form")) ? "active bg-green" : "" ; ?>">
+                                    <li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("product/form","product/edit","product/view")) ? "active" : "" ; ?>">
 										<a href="{{ url('product/form') }}"><span class="fa fa-plus"></span> New Product </a>
 									</li>
                                 </ul>
                             </li>
-                            <li class="xn-openable">
+                            <li class="xn-openable <?php echo in_array(Request::segment(1), array("stock")) ? "active" : "" ; ?>"" >
                                 <a href="javascript:;"><span class="glyphicon glyphicon-shopping-cart"></span> Stock </a>
                                 <ul>
+									<li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("stock/adjustment")) ? "active" : "" ; ?>">
+										<a href="{{ url('stock/adjustment/listing') }}"><span class="glyphicon glyphicon-list-alt"></span> Stock Adjustment </a>
+									</li>
                                     <li><a href="javascript:;"><span class="glyphicon glyphicon-list-alt"></span> Current Stock </a></li>
                                     <li><a href="javascript:;"><span class="fa fa-search"></span> Stock Balance Report </a></li>
                                 </ul>
@@ -71,6 +74,33 @@
                             <li><a href="javascript:;"><span class="fa fa-book"></span> Audit Trail </a></li>
                         </ul>
                     </li>
+                    <li class="xn-openable <?php echo in_array(request()->path(), array("supplier/supplierDetail","supplier/stockIn","supplier/supplierDO")) ? "active" : "" ; ?>">
+                        <a href="javascript:;"><span class="fa fa-truck"></span> <span class="xn-text">Supplier</span></a>
+                        <ul>
+                            <li><a href="{{ url('supplier/supplierDetail') }}"><span class="fa fa-puzzle-piece"></span>Supplier Detail</a></li>
+                            <li><a href="{{ url('supplier/stockIn') }}"><span class="fa fa-puzzle-piece"></span>Stock In</a></li>
+                            <li><a href="{{ url('supplier/supplierDO') }}"><span class="fa fa-puzzle-piece"></span>Delivery Order</a></li>
+                            <!-- <li class="xn-openable">
+                                <a href="javascript:;"><span class="glyphicon glyphicon-shopping-cart"></span>Agent Order Stock </a>
+                                <ul>
+                                    <li><a href="javascript:;"><span class="glyphicon glyphicon-list-alt"></span> Current Stock </a></li>
+                                    <li><a href="javascript:;"><span class="fa fa-search"></span> Stock Balance Report </a></li>
+                                </ul>
+                            </li>
+                            <li><a href="javascript:;"><span class="fa fa-book"></span> Audit Trail </a></li> -->
+					<li class="xn-openable <?php echo in_array(Request::segment(1), array("configuration")) ? "active" : "" ; ?>">
+                        <a href="javascript:;"><span class="fa fa-cogs"></span> <span class="xn-text"> configuration </span></a>
+                        <ul>
+                            <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("configuration/gst")) ? "active" : "" ; ?>">
+								<a href="{{ url('configuration/gst') }}"><span class="fa fa-book"></span> Tax GST </a>
+							</li>
+                        </ul>
+						<ul >
+                            <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("configuration/stockadjustment")) ? "active" : "" ; ?>">
+								<a href="{{ url('configuration/stockadjustment') }}"><span class="fa fa-book"></span> Stock Adjustment </a>
+							</li>
+                        </ul>
+                    </li>
                 </ul>
                 <!-- END X-NAVIGATION -->
             </div>
@@ -83,7 +113,7 @@
                 <ul class="x-navigation x-navigation-horizontal x-navigation-panel">
                     <!-- TOGGLE NAVIGATION -->
                     <li class="xn-icon-button">
-                        <a href="#" class="x-navigation-minimize"><span class="fa fa-dedent"></span></a>
+                        <a href="javascript:;" class="x-navigation-minimize"><span class="fa fa-dedent"></span></a>
                     </li>
                     <!-- END TOGGLE NAVIGATION -->
                     <!-- SIGN OUT -->
@@ -144,11 +174,9 @@
         <script type="text/javascript" src="{!! asset('joli/js/plugins/owl/owl.carousel.min.js') !!}"></script>                 
         
         <script type="text/javascript" src="{!! asset('joli/js/plugins/moment.min.js') !!}"></script>
-        <script type="text/javascript" src="{!! asset('joli/js/plugins/daterangepicker/daterangepicker.js') !!}"></script>
         <!-- END THIS PAGE PLUGINS-->
 
         <!-- START TEMPLATE -->
-        <script type="text/javascript" src="{!! asset('joli/js/settings.js') !!}"></script>
         <script type="text/javascript" src="{!! asset('joli/js/plugins.js') !!}"></script>        
         <script type="text/javascript" src="{!! asset('joli/js/actions.js') !!}"></script>
         <script type="text/javascript" src="{!! asset('joli/js/demo_dashboard.js') !!}"></script>    
