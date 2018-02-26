@@ -43,3 +43,7 @@ Route::get('product', function () {
 Route::get('product/listing', 'Inventory\Product@listing');
 Route::get('product/form', 'Inventory\Product@form');
 
+//=========================
+// Stock
+//=========================
+ Route::get('stock', 'Stock\StockController@showPage');
