@@ -3,11 +3,30 @@
 # Modify by: Bhaihaqi		2018-02-13
 
 $formurl = "insert";
+$clearurl = "form";
 $titlehead = "New Product";
+$havefile = 0;
 if(isset($id) && $id > 0){
 	#set update
 	$formurl = "update/" . $id;
+	$clearurl = "edit/" . $id;
 	$titlehead = "Edit Product";
+	if($picture_path != null AND $picture_path != '')
+		$havefile = 1;
+	
+	$wm_gst = $wm_aftergst = $em_gst = $em_aftergst = $staff_gst = $staff_aftergst = 0;
+	if($price_wm > 0){
+		$wm_gst = ($price_wm / 100) * $gstpercentage;
+		$wm_aftergst = $price_wm + $wm_gst;
+	}
+	if($price_em > 0){
+		$em_gst = ($price_em / 100) * $gstpercentage;
+		$em_aftergst = $price_em + $em_gst;
+	}
+	if($price_staff > 0){
+		$staff_gst = ($price_staff / 100) * $gstpercentage;
+		$staff_aftergst = $price_staff + $staff_gst;
+	}
 }
 ?>
 
@@ -15,14 +34,15 @@ if(isset($id) && $id > 0){
 @section('title',$titlehead)
 @section('content')
 <style>
-.mask_decimal, .mask_number, .mask_percentage, .tax-gst{max-width:200px;}
+.mask_decimal, .mask_number, .mask_percentage, .tax-gst, .aftergst-info, .gst-info{max-width:150px;}
 .uppercase{text-transform: uppercase;}
 .view-picture{ height: 250px; width: 100%; display: inline-block; position: relative; }
 .view-picture img { max-height: 98%; max-width: 98%; width: auto; height: auto; position: absolute;
 		top: 0; bottom: 0; left: 0; right: 0; margin: auto; }
 select{cursor:pointer;}
 .required{ color: #ff0000;}
-</style><!-- START BREADCRUMB -->
+</style>
+<!-- START BREADCRUMB -->
 <ul class="breadcrumb">
 	<li><a href="{{ url('home') }}">Home</a></li>                    
 	<li ><a href="{{ url('product/listing') }}">Product Listing</a></li>
@@ -41,6 +61,12 @@ select{cursor:pointer;}
 					<h3 class="panel-title"><strong>Product</strong> Form </h3>
 					<ul class="panel-controls">
 					</ul>
+					<?php if(isset($id) && $id > 0){ ?>
+					<div class="actions pull-right">
+						<a href="{{ url('product/view/' . $id) }}" class="btn btn-default  btn-sm btn-circle">
+					<i class="fa fa-eye"></i> View </a>
+					</div>
+					<?php } ?>
 				</div>
 				<div class="panel-body"> 
 					<div class="row">
@@ -114,72 +140,129 @@ select{cursor:pointer;}
 							<div class="form-group">
 								<label class="col-md-1 control-label"></label>
 								<div class="col-md-10">
-									<div class="form-control view-picture pull-center"></div>
+									<div class="form-control view-picture pull-center">
+										<?php if($havefile == 1){ ?>
+										<img src="{{ url('storage/' . $picture_path) }}" />
+										<?php } ?>
+									</div>
 								</div>							
 							</div>
 							<div class="form-group">
 								<label class="col-md-1 control-label"> </label>
-								<div class="col-md-10">
-									<input type="file" class="fileinput upload-picture" name="filename1" id="filename1"/>
-								</div>								
+								<div class="col-md-10 button-browse" {{ $havefile == 1 ? 'hidden' : ''}} >
+									<input type='hidden' name="upload_status" id="upload_status" value="{{ $havefile == 1 ? '0' : '1'}}" />
+									<input type="file" class="fileinput upload-picture" name="upload_image" id="filename1" accept="image/*" />
+								</div>
+								<div class="col-md-10 button-remove" {{ $havefile == 0 ? 'hidden' : ''}} >
+									<a href='javascript:;' id="remove-picture" class='btn btn-danger' />Remove</a> &nbsp; {{ isset($picture_name) ? $picture_name : '' }}
+								</div>									
 							</div>
 						</div>
 					</div>
 					<br /> &nbsp;
 					<div class="row">
-						<div class="col-md-6">
+						<div class="col-md-8">
 							<div class="col-md-12">
 								<h3> Sales Info </h3>
 								<hr />
 							</div>
 							<div class="form-group">
-								<label class="col-md-4 control-label"> West Malaysia <span class="required">*</span></label>
-								<div class="col-md-8">
+								<label class="col-md-3 control-label"><br /> West Malaysia <span class="required">*</span></label>
+								<div class="col-md-3">
+									<span class="help-block"> Price </span>
 									<div class="input-group">
 										<span class="input-group-addon">RM</span>
-										<input type="text" class="form-control product-price_wm mask_decimal" placeholder="0.00" name="price_wm" value="{{ isset($price_wm) ? number_format($price_wm, 2, '.', '') : '' }}" />
+										<input type="text" class="sales-info form-control product-price_wm mask_decimal" placeholder="0.00" name="price_wm" value="{{ isset($price_wm) ? number_format($price_wm, 2, '.', '') : '' }}" />
+									</div>
+								</div>
+								<div class="col-md-3">
+									<span class="help-block"> GST {{ $gstpercentage }} %</span>
+									<div class="input-group">
+										<span class="input-group-addon">RM</span>
+										<div class="gst-info form-control text-right" >
+											{{ isset($wm_gst) ? number_format($wm_gst, 2, '.', '') : '0.00' }}
+										</div>
+									</div>
+								</div>
+								<div class="col-md-3">
+									<span class="help-block">After GST </span>
+									<div class="input-group">
+										<span class="input-group-addon">RM</span>
+										<div class="aftergst-info form-control text-right" >
+											{{ isset($wm_aftergst) ? number_format($wm_aftergst, 2, '.', '') : '0.00' }}
+										</div>
 									</div>
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-md-4 control-label"> East Malaysia <span class="required">*</span></label>
-								<div class="col-md-8">
+								<label class="col-md-3 control-label"><br /> East Malaysia <span class="required">*</span></label>
+								<div class="col-md-3">
+									<span class="help-block"> Price </span>
 									<div class="input-group">
 										<span class="input-group-addon">RM</span>
-										<input type="text" class="form-control product-price_em mask_decimal" placeholder="0.00" name="price_em" value="{{ isset($price_em) ? number_format($price_em, 2, '.', '') : '' }}" />
+										<input type="text" class="sales-info form-control product-price_em mask_decimal" placeholder="0.00" name="price_em" value="{{ isset($price_em) ? number_format($price_em, 2, '.', '') : '' }}" />
+									</div>
+								</div>
+								<div class="col-md-3">
+									<span class="help-block"> GST {{ $gstpercentage }} %</span>
+									<div class="input-group">
+										<span class="input-group-addon">RM</span>
+										<div class="gst-info form-control text-right" >
+											{{ isset($em_gst) ? number_format($em_gst, 2, '.', '') : '0.00' }}
+										</div>
+									</div>
+								</div>
+								<div class="col-md-3">
+									<span class="help-block">After GST </span>
+									<div class="input-group">
+										<span class="input-group-addon">RM</span>
+										<div class="aftergst-info form-control text-right" >
+											{{ isset($em_aftergst) ? number_format($em_aftergst, 2, '.', '') : '0.00' }}
+										</div>
 									</div>
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-md-4 control-label"> Staff Price </label>
-								<div class="col-md-8">
+								<label class="col-md-3 control-label"><br /> Staff Price <span class="required">*</span></label>
+								<div class="col-md-3">
+									<span class="help-block"> Price </span>
 									<div class="input-group">
 										<span class="input-group-addon">RM</span>
-										<input type="text" class="form-control product-price_staff mask_decimal" placeholder="0.00" name="price_staff" value="{{ isset($price_staff) ? number_format($price_staff, 2, '.', '') : '' }}" />
+										<input type="text" class="sales-info form-control product-price_staff mask_decimal" placeholder="0.00" name="price_staff" value="{{ isset($price_staff) ? number_format($price_staff, 2, '.', '') : '' }}" />
 									</div>
 								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-md-4 control-label tax-gst"> Tax GST </label>
-								<div class="col-md-8">
+								<div class="col-md-3">
+									<span class="help-block"> GST {{ $gstpercentage }} %</span>
 									<div class="input-group">
-										<input type="text" class="form-control tax_gst mask_decimal" placeholder="0.00" name="tax_gst" value="{{ isset($tax_gst) ? $tax_gst : '' }}" readonly />
-										<span class="input-group-addon"> % </span>
+										<span class="input-group-addon">RM</span>
+										<div class="gst-info form-control text-right" >
+											{{ isset($staff_gst) ? number_format($staff_gst, 2, '.', '') : '0.00' }}
+										</div>
+									</div>
+								</div>
+								<div class="col-md-3">
+									<span class="help-block">After GST </span>
+									<div class="input-group">
+										<span class="input-group-addon">RM</span>
+										<div class="aftergst-info form-control text-right" >
+											{{ isset($staff_aftergst) ? number_format($staff_aftergst, 2, '.', '') : '0.00' }}
+										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-						<div class="col-md-6">
+						<div class="col-md-4">
 							<div class="col-md-12">
 								<h3> Purchasing Info </h3>
 								<hr />
 							</div>
 							<div class="form-group">
-								<label class="col-md-4 control-label"> Last Purchase Price </label>
-								<div class="col-md-8">
+								<label class="col-md-6 control-label"> Last Purchase Price </label>
+								<div class="col-md-6">
 									<div class="input-group">
 										<span class="input-group-addon">RM</span>
-										<input type="text" class="form-control product-last_purchase mask_decimal" placeholder="0.00" name="last_purchase" value="{{ isset($last_purchase) ? $last_purchase : '' }}" />
+										<input type="text" class="form-control product-last_purchase mask_decimal" placeholder="0.00" 
+										name="last_purchase" value="{{ isset($last_purchase) ? number_format($last_purchase, 2, '.', '') : '0.00' }}" />
 									</div>
 								</div>
 							</div>
@@ -189,11 +272,20 @@ select{cursor:pointer;}
 								<hr />
 							</div>
 							<div class="form-group">
-								<label class="col-md-4 control-label"> Stock Quantity</label>
-								<div class="col-md-8">
+								<label class="col-md-6 control-label"> Stock Reminder </label>
+								<div class="col-md-6">
 									<div class="input-group ">
 										<span class="input-group-addon"><i class="glyphicon glyphicon-bookmark"></i></span>
-										<input type="text" class="form-control product-quantity mask_number" placeholder="0" name="quantity" value="{{ isset($quantity) ? $quantity : '' }}" readonly />
+										<input type="text" class="form-control product-quantity_min mask_number" placeholder="0" name="quantity_min" value="{{ isset($quantity_min) ? $quantity_min : '' }}" />
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-6 control-label"> Stock Quantity</label>
+								<div class="col-md-6">
+									<div class="input-group ">
+										<span class="input-group-addon"><i class="glyphicon glyphicon-bookmark"></i></span>
+										<input type="text" class="form-control product-quantity mask_number" placeholder="0" value="{{ isset($quantity) ? $quantity : '' }}" readonly />
 									</div>
 								</div>
 							</div>
@@ -201,8 +293,8 @@ select{cursor:pointer;}
 					</div>
 				</div>
 				<div class="panel-footer">
-					<a class="btn btn-default" href="{{ url('product/form') }}">Clear Form</a>                                    
-					<button class="btn btn-primary pull-right">Submit</button>
+					<a class="btn btn-default" href="{{ url('product/' . $clearurl ) }}">{{ isset($id) && $id > 0 ? 'Reset' : 'Clear Form' }}</a>                                    
+					<button type="submit" class="btn btn-primary pull-right">Submit</button>
 				</div>
 				</form>
 			</div>
@@ -217,6 +309,7 @@ select{cursor:pointer;}
 <script>
 var baseurl = '{{ url('') }}';
 var baseid = '{{ isset($id) && $id > 0 ? $id : 0 }}';
+var gstpercentage = '{{ $gstpercentage }}';
 var jvalidate = $("#submit_form").validate({
 errorPlacement: function(error,element) { return true;},
 ignore: [],
@@ -229,8 +322,14 @@ rules: {
 		price_staff: { required: true,},
 	}                                        
 });
+function setnumber_decimal(numberd){
+	if(numberd > 0){
+		v = parseFloat(numberd);
+		return v.toFixed(2);
+	}
+	return 0.00;
+}
 $(function() {
-	$.validator.messages.required = '';
 	$(".mask_number").inputmask({
 		"mask": "9",
 		"repeat": 10,
@@ -252,6 +351,20 @@ $(function() {
 		'digits':'2',
 		'rightAlign': true,
 		'autoGroup': true,
+	});
+	
+	$('body').on('change', '.sales-info', function(){
+		var numberd = $(this).val();
+		$(this).val(setnumber_decimal(numberd));
+		
+		var gst = 0;
+		var aftergst = 0;
+		if(numberd > 0){
+			gst = (parseFloat(numberd) / 100) * gstpercentage;
+			aftergst = parseFloat(numberd) + parseFloat(gst);
+		}
+		$(this).closest('.form-group').find('.gst-info').html(setnumber_decimal(gst));
+		$(this).closest('.form-group').find('.aftergst-info').html(setnumber_decimal(aftergst));
 	});
 	
 	$('.promotion .input-daterange').datepicker({
@@ -289,6 +402,14 @@ $(function() {
 		else{
 			$(this).closest('.image').find(".view-picture").find('img').remove();
 		}
+	});
+	
+	// remove image
+	$('#submit_form').on('click', '#remove-picture', function(){
+		$(this).closest('.image').find(".view-picture").find('img').remove();
+		$(this).closest('.button-remove').hide();
+		$(this).closest('.image').find('.button-browse').show();
+		$(this).closest('.image').find('#upload_status').val(1);
 	});
 	
 	$('#submit_form').on('change', 'input, select', function(){

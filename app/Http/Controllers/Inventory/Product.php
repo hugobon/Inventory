@@ -4,36 +4,141 @@
 namespace App\Http\Controllers\Inventory;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use App\inventory\product_m;
+use App\configuration\config_tax_m;
 
-class Product extends Controller
-{
+class Product extends Controller{
 
-    public function index()
-    {
+    public function index(){
         return redirect('product/listing');
     }
 	
-	public function listing()
-    {
+	public function listing(){
+		$productdata = New product_m;
 		$data = array(
-			'countproduct' => product_m::count(),
-			'startcount' => 0,
-			'productArr' => product_m::All(),
+			'countproduct' => $productdata->count(),
+			'productArr' => $productdata->orderBy('id', 'desc')->paginate(10),
 			'typeArr' => array( '0' => '', '1' => 'By Item','2' => 'Package(Long Term)','3' => 'Monthly Promotion' ),
 			'status' => array( '1' => 'On','0' => 'Off'),
 		);
         return view('Inventory/product_listing',$data);
     }
 	
-	public function form()
-    {
-        return view('Inventory/product_form');
+	public function search($x = ''){
+		if($x == '' || @unserialize(base64_decode($x)) == false)
+			return redirect('product/listing');
+			
+		$datadecode = unserialize(base64_decode($x));
+		$search = isset($datadecode['search']) ? $datadecode['search'] : '';
+		$type = isset($datadecode['type']) ? $datadecode['type'] : '';
+		if($search == '' && $type == '')
+			return redirect('product/listing');
+		
+		$productdata = New product_m;
+		if($search != '' && $type != ''){
+			$countproduct = $productdata->where(function ($q) use($search){
+											$q->where('code','LIKE','%'. $search .'%')
+												->orWhere('description','LIKE','%'. $search .'%');
+										})
+										->where('type',$type)
+										->count();
+			$productArr = $productdata->where(function ($q) use($search){
+											$q->where('code','LIKE','%'. $search .'%')
+												->orWhere('description','LIKE','%'. $search .'%');
+										})
+										->where('type',$type)->orderBy('id', 'desc')->paginate(10);
+		}
+		else if($search != ''){
+			$countproduct = $productdata->where('code','LIKE','%'. $search .'%')
+										->orWhere('description','LIKE','%'. $search .'%')
+										->count();
+			$productArr = $productdata->where('code','LIKE','%'. $search .'%')
+										->orWhere('description','LIKE','%'. $search .'%')->orderBy('id', 'desc')->paginate(10);
+		}
+		else{
+			$countproduct = $productdata->where('type',$type)
+										->count();
+			$productArr = $productdata->where('type',$type)->orderBy('id', 'desc')->paginate(10);
+		}
+		
+		$data = array(
+			'countproduct' => $countproduct,
+			'productArr' => $productArr,
+			'typeArr' => array( '0' => '', '1' => 'By Item','2' => 'Package(Long Term)','3' => 'Monthly Promotion' ),
+			'status' => array( '1' => 'On','0' => 'Off'),
+			'search' => $search,
+			'type' => $type,
+		);
+        return view('Inventory/product_listing',$data);
     }
 	
-	public function insert(Request $postdata)
-    {
+	public function form_search(Request $postdata){
+		$search = trim($postdata->input("search"));
+		$type = trim($postdata->input("type"));
+		
+		if($search == '' && $type == '')
+			return redirect('product/listing');
+			
+		$rowdata = array(
+			'search' => $search,
+			'type' => $type,
+		);
+		
+		$base64data = trim(base64_encode(serialize($rowdata)), "=.");
+		
+        return redirect('product/search/' . $base64data);
+    }
+	
+	public function form(){
+		# get Tax GST percentage
+		$taxgst = config_tax_m::where('code', 'gst')->first();
+		if($taxgst == false)
+			$gstpercentage = 6;
+		else
+			$gstpercentage = $taxgst['percent'];
+			
+		$data['gstpercentage'] = $gstpercentage;
+		return view('Inventory/product_form',$data);
+    }
+	
+	public function edit($id){
+		$data = product_m::where('id', $id)->first();
+		if($data == false)
+			return redirect("product/listing")->with("errorid"," Not Found ");
+		
+		# get Tax GST percentage		
+		$taxgst = config_tax_m::where('code', 'gst')->first();
+		if($taxgst == false)
+			$gstpercentage = 6;
+		else
+			$gstpercentage = $taxgst['percent'];
+			
+		$data['gstpercentage'] = $gstpercentage;
+		return view('Inventory/product_form',$data);
+    }
+	
+	public function view($id){
+		$data = product_m::where('id', $id)->first();
+		if($data == false)
+			return redirect("product/listing")->with("errorid"," Not Found ");
+			
+		$data['typestr'] =  array( '0' => '', '1' => 'By Item','2' => 'Package(Long Term)','3' => 'Monthly Promotion' );
+		
+		# get Tax GST percentage		
+		$taxgst = config_tax_m::where('code', 'gst')->first();
+		if($taxgst == false)
+			$gstpercentage = 6;
+		else
+			$gstpercentage = $taxgst['percent'];
+			
+		$data['gstpercentage'] = $gstpercentage;
+		
+		return view('Inventory/product_view',$data);
+    }
+	
+	public function insert(Request $postdata){
 		$this->validate($postdata,[
 			'code' => 'required',
 			'type' => 'required',
@@ -42,6 +147,7 @@ class Product extends Controller
 			'price_em' => 'required',
 			'price_staff' => 'required',
 		]);
+		
 		
 		#uppercase & Replacing multiple spaces with a single space
 		$code = trim(preg_replace('!\s+!', ' ', strtoupper($postdata->input("code"))));
@@ -56,8 +162,13 @@ class Product extends Controller
 		
 		#change datepicker to mysql date
 		$start_promotion = $this->datepicker2mysql($postdata->input("start_promotion"));
-		$end_promotion = $this->datepicker2mysql($postdata->input("end_promotion"));
+		$end_promotion = null;
+		if($start_promotion != null)
+			$end_promotion = $this->datepicker2mysql($postdata->input("end_promotion"));
 		
+		$quantity_min = 0;
+		if($postdata->input("quantity_min") > 0)
+			$quantity_min = $postdata->input("quantity_min");
 		$data = array(
 			'code' => $code,
 			'type' => $postdata->input("type"),
@@ -65,6 +176,10 @@ class Product extends Controller
 			'price_wm' => $postdata->input("price_wm"),
 			'price_em' => $postdata->input("price_em"),
 			'price_staff' => $postdata->input("price_staff"),
+			'last_purchase' => $postdata->input("last_purchase"),
+			'picture_name' => '',
+			'picture_path' => '',
+			'quantity_min' => $quantity_min,
 			'start_promotion' => $start_promotion,
 			'end_promotion' => $end_promotion,
 			'created_by' => 1,
@@ -73,33 +188,38 @@ class Product extends Controller
 			'updated_at' => date('Y-m-d H:i:s'),
 		);
 		$productdata = New product_m;
-		$productdata->insert($data);
+		$id = $productdata->insertGetId($data);
 		
-		return redirect("product/listing")->with("info","Success Submit " . $postdata->input("description") . "");
-    }
-	
-    public function edit($id)
-    {
-		$data = product_m::where('id', $id)->first();
-		if($data == false)
-			return redirect("product/listing")->with("errorid"," Not Found ");
-			
-		return view('Inventory/product_form',$data);
-    }
-	
-	public function view($id)
-    {
-		$data = product_m::where('id', $id)->first();
-		if($data == false)
-			return redirect("product/listing")->with("errorid"," Not Found ");
-			
-		$data['typestr'] =  array( '0' => '', '1' => 'By Item','2' => 'Package(Long Term)','3' => 'Monthly Promotion' );
-		return view('Inventory/product_view',$data);
-    }
-	
-    public function update(Request $postdata, $id)
-    {
+		# if have new upload image
+		if($postdata->hasFile('upload_image')) {
+			$picture_name = $postdata->file('upload_image')->getClientOriginalName();
+			$picture_type = $postdata->file('upload_image')->getMimeType();
+			$pictureArr = explode("/",$picture_type); # check if image or not
+			if($pictureArr[0] == 'image'){
+				$new_pname = date('YmdHis') . "_" . str_replace(' ','', $picture_name);
+				
+				$path = Storage::putFileAs(
+					'public/product_image/' . $id , $postdata->file('upload_image'), $new_pname
+				);
+				if($path){
+					$data = array(
+						'picture_name' => $picture_name,
+						'picture_path' => 'product_image/' . $id . '/' . $new_pname,
+					);
+					#update
+					$productdata->where('id',$id)->update($data);
+				}
+			}
+		}
 		
+		return redirect("product/view/" . $id )->with("info","Success Submit " . $postdata->input("description") . "");
+    }
+	
+    public function update(Request $postdata, $id){
+		$checkproduct = product_m::where('id', $id)->first();
+		if($checkproduct == false)
+			return redirect("product/listing")->with("errorid"," Data Not Found ");
+			
 		$this->validate($postdata,[
 			'code' => 'required',
 			'type' => 'required',
@@ -108,7 +228,6 @@ class Product extends Controller
 			'price_em' => 'required',
 			'price_staff' => 'required',
 		]);
-		
 		
 		#uppercase & Replacing multiple spaces with a single space
 		$code = trim(preg_replace('!\s+!', ' ', strtoupper($postdata->input("code"))));
@@ -133,18 +252,46 @@ class Product extends Controller
 			'price_wm' => $postdata->input("price_wm"),
 			'price_em' => $postdata->input("price_em"),
 			'price_staff' => $postdata->input("price_staff"),
+			'last_purchase' => $postdata->input("last_purchase"),
+			'quantity_min' => $postdata->input("quantity_min"),
 			'start_promotion' => $start_promotion,
 			'end_promotion' => $end_promotion,
-			'created_by' => 1,
-			'created_at' => date('Y-m-d H:i:s'),
+			'updated_by' => 1,
+			'updated_at' => date('Y-m-d H:i:s'),
 		);
+		
+		# if have new upload image
+		if($postdata->input("upload_status") == 1){
+			if($checkproduct['picture_path'] != ''){
+				# remove old image if exist
+				Storage::delete('public/' . $checkproduct['picture_path']);
+			}
+			$data['picture_name'] = '';
+			$data['picture_path'] = '';
+			if($postdata->hasFile('upload_image')) {
+				$picture_name = $postdata->file('upload_image')->getClientOriginalName();
+				$picture_type = $postdata->file('upload_image')->getMimeType();
+				$pictureArr = explode("/",$picture_type); # check if image or not
+				if($pictureArr[0] == 'image'){
+					$new_pname = date('YmdHis') . "_" . str_replace(' ','', $picture_name);
+					
+					$path = Storage::putFileAs(
+						'public/product_image/' . $id , $postdata->file('upload_image'), $new_pname
+					);
+					if($path){
+						$data['picture_name'] = $picture_name;
+						$data['picture_path'] = 'product_image/' . $id . '/' . $new_pname;
+					}
+				}
+			}
+		}
+		
 		$productdata->where('id',$id)->update($data);
 		
 		return redirect("product/view/" . $id)->with("info","Success Save " . $postdata->input("description") . "");
     }
 	
-	public function check_existcode(Request $postdata)
-    {
+	public function check_existcode(Request $postdata){
 		$id = $postdata->input("id");
 		#uppercase & Replacing multiple spaces with a single space
 		$code = trim(preg_replace('!\s+!', ' ', strtoupper($postdata->input("code"))));
@@ -155,19 +302,33 @@ class Product extends Controller
 		else
 			return 0;
     }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function delete($data)
-    {
-        $datadecode = unserialize(base64_decode($data));
-		product_m::where('id', $datadecode['deleteid'])->delete();
-		
-		return redirect("product/listing")->with("info","Product " . $datadecode['code'] . "  (" . $datadecode['description'] . " ) Deleted Successfully!!");
+	
+    public function delete($data = ''){
+		if(@unserialize(base64_decode($data)) == true){
+			$datadecode = unserialize(base64_decode($data));
+			$delete = isset($datadecode['delete']) ? $datadecode['delete'] : 0;
+			$deleteid = isset($datadecode['deleteid']) ? $datadecode['deleteid'] : 0;
+			if($delete == 'product' && $deleteid > 0){
+				$checkproduct = product_m::where('id', $deleteid)->first();
+				if($checkproduct == false)
+					return redirect("product/listing")->with("errorid"," Data not found");
+				
+				$search = isset($datadecode['search']) ? $datadecode['search'] : '';
+				
+				if(product_m::where('id', $deleteid)->delete()){
+					if($checkproduct['picture_path'] != ''){
+						# remove image after delete
+						Storage::delete('public/' . $checkproduct['picture_path']);
+					}
+					if($search != '')
+						return redirect("product/search/" . $search)->with("info","Product " . $checkproduct['code'] . "  (" . $checkproduct['description'] . " ) Deleted Successfully!!");
+					else
+						return redirect("product/listing")->with("info","Product " . $checkproduct['code'] . "  (" . $checkproduct['description'] . " ) Deleted Successfully!!");
+					
+				}
+			}
+		}
+		return redirect("product/listing");
     }
 	
 	function datepicker2mysql($date_dmY){
