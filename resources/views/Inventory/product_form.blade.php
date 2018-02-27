@@ -144,7 +144,7 @@ select{cursor:pointer;}
 							</div>
 							<br /> &nbsp;
 							<div class="row">
-								<div class="col-md-8">
+								<div class="col-md-7">
 									<div class="col-md-12">
 										<h3> Sales Info </h3>
 										<hr />
@@ -232,7 +232,7 @@ select{cursor:pointer;}
 										</div>
 									</div>
 								</div>
-								<div class="col-md-4">
+								<div class="col-md-5">
 									<div class="col-md-12">
 										<h3> Purchasing Info </h3>
 										<hr />
@@ -267,7 +267,7 @@ select{cursor:pointer;}
 											<div class="input-group ">
 												<span class="input-group-addon"><i class="glyphicon glyphicon-bookmark"></i></span>
 												<?php if(isset($id) && $id > 0){ ?>
-												<div class="form-control text-right" />{{ isset($quantity) ? $quantity : '' }}</div>
+												<div class="form-control text-right" >{{ isset($quantity) ? $quantity : '' }}</div>
 												<?php }else{ ?>
 												<input type="text" class="form-control product-quantity mask_number" placeholder="0" 
 												name="quantity" value="{{ isset($quantity) ? $quantity : '' }}"  />

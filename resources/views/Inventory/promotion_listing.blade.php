@@ -41,7 +41,7 @@
 				<div class="panel-heading">
 					<h3 class="panel-title">Product Promotion Listing</h3>
 					<div class="actions pull-right">
-						<a href="javascript:;" class="btn btn-default  btn-sm btn-circle add-promotion" title="Add New Product Promotion" >
+						<a href="{{ url('product/promotion/form') }}" class="btn btn-default  btn-sm btn-circle add-promotion" title="Add New Product Promotion" >
 					<i class="fa fa-plus"></i> Product Promotion </a>
 					</div>
 				</div>
@@ -140,8 +140,8 @@
 								@endforeach
 							@else
 							<tr>
-								<td colspan="8" class="text-center"> No Data Found <br />
-								<a href="javascript:;" class="add-promotion" ><span class="fa fa-plus"></span> Add new Product Promotion</a></td>
+								<td colspan="9" class="text-center"> No Data Found <br />
+								<a href="{{ url('product/promotion/form') }}" class="add-promotion" ><span class="fa fa-plus"></span> Add new Product Promotion</a></td>
 							</tr>
 							@endif
 							</tbody>

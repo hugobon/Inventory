@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\inventory\product_m;
 use App\inventory\product_promotion_m;
 use App\inventory\product_promotion_gift_m;
+use App\configuration\config_tax_m;
 
 class Product_promotion extends Controller
 {
@@ -93,15 +94,25 @@ class Product_promotion extends Controller
         return redirect('product/promotion/search/' . $base64data);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
+    public function form(){
+		# get Tax GST percentage
+		$taxgst = config_tax_m::where('code', 'gst')->first();
+		if($taxgst == false)
+			$gstpercentage = 6;
+		else
+			$gstpercentage = $taxgst['percent'];
+		
+		$productdata = New product_m;
+		$datap = $productdata->orderBy('code', 'asc')->get();
+		$productArr = array();
+		if(count($datap) > 0){
+			foreach($datap->all() as $key => $row)
+				$productArr[$row->id] = $row->code . ' (' . $row->description . ')';
+		}
+		$data = array();
+		$data['gstpercentage'] = $gstpercentage;
+		$data['productArr'] = $productArr;
+		return view('Inventory/product_promotion_form',$data);
     }
 
     /**

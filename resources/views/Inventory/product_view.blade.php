@@ -96,7 +96,7 @@ if(isset($id) && $id > 0){
 					</div>
 					<br /> &nbsp;
 					<div class="row">
-						<div class="col-md-8">
+						<div class="col-md-7">
 							<h3> Sales Info </h3>
 							<hr />
 							<div class="panel-body">
@@ -134,7 +134,7 @@ if(isset($id) && $id > 0){
 								</div>
 							</div>	
 						</div>
-						<div class="col-md-4">
+						<div class="col-md-5">
 							<div class="col-md-12">
 								<h3> Purchasing Info </h3>
 								<hr />
