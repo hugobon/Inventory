@@ -68,12 +68,16 @@
                         <a href="javascript:;"><span class="fa fa-truck"></span> <span class="xn-text">Agent </span></a>
                         <ul>
                             <li>
-                                <a href="{{ url('agent') }}"><span class="fa fa-puzzle-piece"></span> Register Agent </a>
+                                <a href="{{ url('agent/register') }}"><span class="fa fa-puzzle-piece"></span> Register Agent </a>
                             </li>
                             <li class="xn-openable">
-                                <a href="javascript:;"><span class="glyphicon glyphicon-shopping-cart"></span>Agent Order Stock </a>
+                                <a href="javascript:;"><span class="glyphicon glyphicon-shopping-cart"></span>Agent Option </a>
                                 <ul>
-                                    <li><a href="javascript:;"><span class="glyphicon glyphicon-list-alt"></span> Current Stock </a></li>
+                                    <li>
+                                        <a href="{{ url('agent/order_stock/12221112') }}"><span class="glyphicon glyphicon-list-alt"></span> Configure </a>
+                                        <a href="javascript:;"><span class="glyphicon glyphicon-list-alt"></span> Select Product </a>
+                                        <a href="javascript:;"><span class="glyphicon glyphicon-list-alt"></span> Purchase Report </a>
+                                    </li>
                                     <li><a href="javascript:;"><span class="fa fa-search"></span> Stock Balance Report </a></li>
                                 </ul>
                             </li>

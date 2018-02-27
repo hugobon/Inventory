@@ -25,8 +25,11 @@ Route::get('/home', 'HomeController@index')->name('home');
 //=========================
 // Agent :: Amin
 //=========================
-Route::get('agent', 'Agent\AgentController@fn_get_view');
-Route::post('agent/save', 'Agent\AgentController@fn_save_agent_record')->name('agent_view');
+Route::get('agent/register', 'Agent\AgentController@fn_get_view');
+Route::post('agent/save', 'Agent\AgentController@fn_save_agent_record');
+Route::get('agent/view','Agent\AgentController@fn_view_agent_record');
+Route::get('agent/order_stock/{agent_id?}', 'Agent\AgentController@fn_get_agent_order_stock');
+Route::post('agent/save_agent_order_stock', 'Agent\AgentController@fn_save_agent_order_stock');
 
 //=========================
 // Supplier :: Zul

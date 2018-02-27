@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\agentmaster;
+use App\users;
+use App\agent_order_stock;
+use Auth;
 
 class AgentController extends Controller
 {
@@ -47,6 +50,9 @@ class AgentController extends Controller
 
     		];
 
+    		$data['created_by'] = Auth::user()->name;
+    		$data['created_at'] = \Carbon\Carbon::now();
+
     		// echo "<pre>";
     		// echo print_r($data);
     		// echo "</pre>";
@@ -64,6 +70,104 @@ class AgentController extends Controller
     		$return['status'] = '02';
 
     	}
-    	return redirect('agent');
+    	return redirect('agent/view');
+    }
+
+    function fn_view_agent_record(){
+
+    	try{
+
+    		// $data = agentmaster::
+    		$data = [
+
+    			'name' => "amin"
+    		];
+
+    		$return['message'] = 'succssfuly';
+    		$return['status'] = '01';
+    	}
+    	catch(\Exception $e){
+
+    		$return['message'] = $e->getMessage();
+    		$return['status'] = '02';
+    	}
+
+    	return view('Agent.agent_view')->with($data);
+    }
+
+    public function fn_get_agent_order_stock($agent_id = null){
+
+        try{
+
+           $data = agent_order_stock::select('agent_id','country','delivery_type','optional','poscode','city','state')
+                                ->where('agent_id',$agent_id)
+                                ->first();
+
+            $return['message'] = 'succssfuly';
+            $return['status'] = '01';
+        }
+        catch(\Exception $e){
+
+            $return['message'] = $e->getMessage();
+            $return['status'] = '02';
+        }
+
+        
+        if(isset($data)){
+            // return $data;
+            return view('Agent.agent_order_stock',['return' => $return,'data' => $data]);
+        }
+        else{
+
+            $data = [ 
+
+                'agent_id' => $agent_id,
+                'country' => "",
+                'delivery_type' => "",
+                'optional' => "",
+                'poscode' => "",
+                'city' => "",
+                'state' => ""
+             ];
+            // return $data;
+            return view('Agent.agent_order_stock',['return' => $return,'data' => $data]);
+        }
+    }
+
+    public function fn_save_agent_order_stock(Request $request){
+
+        try{
+
+            $data = [
+
+                'agent_id' => $request->get('agent_id'),
+                'country' => $request->get('country'),
+                'delivery_type' => $request->get('delivery_type'),
+                'optional' => $request->get('optional'),
+                'poscode' => $request->get('poscode'),
+                'city' => $request->get('city'),
+                'state' => $request->get('state')
+            ];
+
+            $data['created_by'] = Auth::user()->name;
+            $data['created_at'] = \Carbon\Carbon::now();
+
+            // print_r($data);
+            // die();
+
+            agent_order_stock::insert($data);
+
+            $return['message'] = 'succssfuly';
+            $return['status'] = '01';
+        }
+        catch(\Exception $e){
+
+            $return['message'] = $e->getMessage();
+            $return['status'] = '02';
+        }
+
+        // return $return;
+
+        return redirect('agent/order_stock')->with('return');
     }
 }
