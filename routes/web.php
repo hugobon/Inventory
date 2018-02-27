@@ -31,7 +31,11 @@ Route::post('agent/save', 'Agent\AgentController@fn_save_agent_record')->name('a
 //=========================
 // Supplier :: Zul
 //=========================
-Route::get('supplier/supplierDetail', 'Supplier\SupplierController@supplierDetail_page');
+Route::get('supplier/supplierDetail', 'Supplier\SupplierController@supplierDetail_show_page');
+Route::get('supplier/supplierDetail/form/{comp_code?}', 'Supplier\SupplierController@supplierDetail_form_page');
+Route::post('supplier/supplierDetail/create_comp', 'Supplier\SupplierController@fn_create_comp');
+Route::post('supplier/supplierDetail/update_comp', 'Supplier\SupplierController@fn_update_comp');
+Route::get('supplier/supplierDetail/view/{comp_code}', 'Supplier\SupplierController@fn_get_detail');
 Route::get('supplier/stockIn', 'Supplier\SupplierController@stockIn_page');
 Route::get('supplier/supplierDO', 'Supplier\SupplierController@supplierDO_page');
 

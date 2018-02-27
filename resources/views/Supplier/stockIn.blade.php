@@ -26,7 +26,7 @@
                         		<div class="form-group">
                         			<label class="col-md-3 control-label">Supplier Code</label>
                         			<div class="col-md-9">
-                        				<select class="form-control select">
+                        				<select class="form-control">
                                             <option>Option 1</option>
                                             <option>Option 2</option>
                                             <option>Option 3</option>
@@ -38,7 +38,7 @@
                         		<div class="form-group">
                         			<label class="col-md-3 control-label">Product Code</label>
                         			<div class="col-md-9">
-                        				<select class="form-control select">
+                        				<select class="form-control">
                                             <option>Option 1</option>
                                             <option>Option 2</option>
                                             <option>Option 3</option>
@@ -56,7 +56,7 @@
                         		<div class="form-group">
                         			<label class="col-md-3 control-label">Barcode List</label>
                         			<div class="col-md-9">
-                        				<select class="form-control select">
+                        				<select class="form-control">
                                             <option>Option 1</option>
                                             <option>Option 2</option>
                                             <option>Option 3</option>
@@ -68,7 +68,7 @@
                         		<div class="form-group">
                         			<label class="col-md-3 control-label">In Stock Date</label>
                         			<div class="col-md-9">
-                        				<div class="input-group date">
+                        				<div class="input-group">
                         					<span class="input-group-addon"><span class="fa fa-calendar"></span></span>
 	                        				<input type="text" name="qty" class="form-control datepicker">
                         				</div>
