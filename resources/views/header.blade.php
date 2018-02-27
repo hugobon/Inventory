@@ -47,7 +47,7 @@
 										<a href="{{ url('product/package_form') }}"><span class="fa fa-plus"></span> Product Package </a>
 									</li>
 									<li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("product/promotion")) ? "active" : "" ; ?>">
-										<a href="{{ url('product/promotion/listing') }}"><span class="fa fa-plus"></span> Product Promotion </a>
+										<a href="{{ url('product/promotion/listing') }}"><span class="fa fa-list"></span> Product Promotion </a>
 									</li>
                                 </ul>
                             </li>

@@ -65,7 +65,7 @@
 											<select class="form-control product-type" name="type" >
 												<option value=""> All </option>
 												<option value="1" {{ isset($type) && $type == 1 ? "selected" : "" }}> By Item </option>
-												<option value="2" {{ isset($type) && $type == 2 ? "selected" : "" }}> Package(Long Term)</option>
+												<option value="2" {{ isset($type) && $type == 2 ? "selected" : "" }}> Package </option>
 												<option value="3" {{ isset($type) && $type == 3 ? "selected" : "" }}> Monthly Promotion </option>
 											</select>
 										</div>

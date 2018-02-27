@@ -411,7 +411,7 @@ class Product extends Controller{
 			}
 		}
 		
-		return redirect("product/edit/" . $id . "/1" )->with("info","Success Submit " . $data['code'] . " (" . $data['description'] . ")");
+		return redirect("product/package_edit/" . $id . "/1" )->with("info","Success Submit " . $data['code'] . " (" . $data['description'] . ")");
     }
 	
     public function package_update(Request $postdata, $id = 0){

@@ -63,6 +63,7 @@ Route::get('product/promotion', function () {  return redirect("promotion/listin
 Route::get('product/promotion/listing', 'Inventory\Product_promotion@listing');
 Route::get('product/promotion/search/{x?}', 'Inventory\Product_promotion@search');
 Route::post('product/promotion/form_search', 'Inventory\Product_promotion@form_search');
+Route::get('product/promotion/form', 'Inventory\Product_promotion@form');
 // Stock Adjustment
 Route::get('stock/adjustment', function () {  return redirect("stock/adjustment/listing"); });
 Route::get('stock/adjustment/listing', 'Inventory\Stockadjustment@listing');
