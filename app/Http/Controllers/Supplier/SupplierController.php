@@ -19,30 +19,40 @@ class SupplierController extends Controller
 			
 			$tbody = "";
 			$totalList = count($supdetail);
-			foreach($supdetail as $k => $v){
-				$tbody.= "<tr>";
-				$tbody.= "<td>".$v['comp_code']."</td>";
-				$tbody.= "<td>".$v['comp_name']."</td>";
-				$tbody.= "<td>".$v['tel']."</td>";
-				$tbody.= "<td>".$v['fax']."</td>";
-				$tbody.= "<td>".$v['attn_no']."</td>";
-				$tbody.= "<td>".$v['email']."</td>";
-				/*$tbody.= "<td>
-							<a href=".url('supplier/supplierDetail/view/'.$v['comp_code'])." title=' View ".$v['comp_code']." (".$v['comp_name'].") 
-							class='btn btn-info btn-rounded'><span class='fa fa-eye'></span></a>
-						 </td>";
-				$tbody.= "<td>
-							<a href=".url('product/edit/'.$row->id)." 
-							title=" Edit {{ $row->code.' ('.$row->description.')' }}"
-							class="btn btn-primary btn-rounded" ><span class="fa fa-edit"></span></a>
-						 </td>
-										
-										<td>
-											<a href="javascript:;" data-base64="{{ $base64data }}" data-code="{{ $row->code }}" data-description="{{ $row->description }}"
-											title=" Remove {{ $row->code.' ('.$row->description.')' }}"
-											class="btn btn-danger btn-rounded confirm-delete" ><span class="glyphicon glyphicon-trash"></span></a>
-										</td>*/
-				$tbody.= "</tr>";
+			if($totalList > 0){
+				foreach($supdetail as $k => $v){
+					$tbody.= "<tr>";
+					$tbody.= "<td>".$v['comp_code']."</td>";
+					$tbody.= "<td>".$v['comp_name']."</td>";
+					$tbody.= "<td>".$v['tel']."</td>";
+					$tbody.= "<td>".$v['fax']."</td>";
+					$tbody.= "<td>".$v['attn_no']."</td>";
+					$tbody.= "<td>".$v['email']."</td>";
+					$tbody.= "<td>
+								<a href=".url('supplier/supplierDetail/view/'.$v['comp_code'])." title=' View ".$v['comp_code']." (".$v['comp_name'].")' 
+								class='btn btn-info btn-rounded'><span class='fa fa-eye'></span></a>
+								<a href=".url('supplier/supplierDetail/form/'.$v['comp_code'])." 
+								title=' Edit ".$v['comp_code']." (".$v['comp_name'].")'
+								class='btn btn-primary btn-rounded' ><span class='fa fa-edit'></span></a>
+								<a href=".url('#')." 
+								title=' Remove ".$v['comp_code']." (".$v['comp_name'].")'
+								class='btn btn-danger btn-rounded confirm-delete' ><span class='glyphicon glyphicon-trash'></span></a>
+							 </td>";
+					/*$tbody.= "<td>
+								<a href=".url('product/edit/'.$v['comp_code'])." 
+								title=' Edit ".$v['comp_code']." (".$v['comp_name'].")'
+								class='btn btn-primary btn-rounded' ><span class='fa fa-edit'></span></a>
+							 </td>";
+					$tbody.= "<td>
+								<a href=".url('product/edit/'.$v['comp_code'])." 
+								title=' Remove ".$v['comp_code']." (".$v['comp_name'].")'
+								class='btn btn-danger btn-rounded confirm-delete' ><span class='glyphicon glyphicon-trash'></span></a>
+							 </td>";*/
+					$tbody.= "</tr>";
+				}
+			}
+			else{
+				$tbody = "<tr><td colspan='7' align='center'>No Data Found</td></tr>";
 			}
 			
 			$outputData = [
@@ -51,7 +61,7 @@ class SupplierController extends Controller
 			];
 			
 		}catch(\Exception $e){
-			
+			return 'Error: '.$e->getMessage();
 		}		
 		
     	return view('Supplier.supplierDetail_listing', compact('outputData'));
