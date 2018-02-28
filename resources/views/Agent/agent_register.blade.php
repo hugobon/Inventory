@@ -53,25 +53,40 @@
 								<div class="form-group">
 									<label class="col-md-3 control-label"> Date Of Brith </label>
 									<div class="col-md-9">
-										<input type="text" class="form-control agent-dob" name="agent_dateofbirth" id="agent_dateofbirth" value="" />   
+										<input type="date" class="form-control agent-dob" name="agent_dateofbirth" id="agent_dateofbirth" value="" />   
 									</div>
 								</div>
 								<div class="form-group">
 									<label class="col-md-3 control-label"> Geder </label>
 									<div class="col-md-9">
-										<input type="text" class="form-control agent-gender" name="agent_gender" id="agent_gender" value="" />   
+										<select name="agent_gender" id="agent_gender" class="form-control agent-gender">
+											<option value="">Chooese Value</option>
+											<option value="Male">Male</option>
+											<option value="Female">Female</option>
+										</select>    
 									</div>
 								</div>
 								<div class="form-group">
 									<label class="col-md-3 control-label"> Marital Status </label>
 									<div class="col-md-9">
-										<input type="text" class="form-control agent-mritlstatus" name="agent_marital_status" id="agent_marital_status" value="" />   
+										<select class="form-control agent-mritlstatus" name="agent_marital_status" id="agent_marital_status">
+											<option value="">Chooese Value</option>
+											<option value="Single">Single</option>
+											<option value="Married">Married</option>
+											<option value="Divorced">Divorced</option>
+										</select>   
 									</div>
 								</div>
 								<div class="form-group">
 									<label class="col-md-3 control-label"> Race </label>
 									<div class="col-md-9">
-										<input type="text" class="form-control agent-race" name="agent_race" id="agent_race" value="" />   
+										<select class="form-control agent-race" name="agent_race" id="agent_race">  
+											<option value="">Chooese Value</option>
+											<option value="Malayu">Malayu</option>
+											<option value="Cina">Cina</option>
+											<option value="India">India</option>
+											<option value="Other">Other</option>
+										</select> 
 									</div>
 								</div>
 								<div class="form-group">
@@ -91,7 +106,7 @@
 									</div>
 								</div>
 								<div class="form-group">
-									<label class="col-md-3 control-label"> ID Type </label>
+									<label class="col-md-3 control-label"> Upload Image </label>
 									<div class="col-md-9">
 										<input type="file" class="form-control agent-idphoto" name="agent_photo_id" id="agent_photo_id" value="" />   
 									</div>

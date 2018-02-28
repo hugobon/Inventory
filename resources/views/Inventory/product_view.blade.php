@@ -54,7 +54,7 @@ if(isset($id) && $id > 0){
 					</ul>
 					<div class="actions pull-right">
 						<a href="{{ url('product/form') }}" class="btn btn-default  btn-sm btn-circle" title="Add New Product" >
-							<i class="fa fa-plus"></i> New Product </a>
+							<i class="fa fa-plus"></i> Product </a>
 						<a href="{{ url('product/edit/' . $id) }}" class="btn btn-default  btn-sm btn-circle" title="Edit {{ $code .' ('. $description .')' }}" >
 							<i class="fa fa-pencil"></i> Edit </a>
 					</div>
@@ -96,7 +96,7 @@ if(isset($id) && $id > 0){
 					</div>
 					<br /> &nbsp;
 					<div class="row">
-						<div class="col-md-8">
+						<div class="col-md-7">
 							<h3> Sales Info </h3>
 							<hr />
 							<div class="panel-body">
@@ -134,7 +134,7 @@ if(isset($id) && $id > 0){
 								</div>
 							</div>	
 						</div>
-						<div class="col-md-4">
+						<div class="col-md-5">
 							<div class="col-md-12">
 								<h3> Purchasing Info </h3>
 								<hr />

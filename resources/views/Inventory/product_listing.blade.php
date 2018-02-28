@@ -38,8 +38,10 @@
 				<div class="panel-heading">
 					<h3 class="panel-title">Product Listing</h3>
 					<div class="actions pull-right">
+						<a href="{{ url('product/package_form') }}" class="btn btn-default  btn-sm btn-circle" title="Add New Product" >
+							<i class="fa fa-plus"></i> Product Package </a>
 						<a href="{{ url('product/form') }}" class="btn btn-default  btn-sm btn-circle" title="Add New Product" >
-					<i class="fa fa-plus"></i> New Product </a>
+							<i class="fa fa-plus"></i> Product </a>
 					</div>
 				</div>
 				<div class="panel-body panel-body-table">
@@ -63,7 +65,7 @@
 											<select class="form-control product-type" name="type" >
 												<option value=""> All </option>
 												<option value="1" {{ isset($type) && $type == 1 ? "selected" : "" }}> By Item </option>
-												<option value="2" {{ isset($type) && $type == 2 ? "selected" : "" }}> Package(Long Term)</option>
+												<option value="2" {{ isset($type) && $type == 2 ? "selected" : "" }}> Package </option>
 												<option value="3" {{ isset($type) && $type == 3 ? "selected" : "" }}> Monthly Promotion </option>
 											</select>
 										</div>

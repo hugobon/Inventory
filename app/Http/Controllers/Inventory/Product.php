@@ -23,7 +23,6 @@ class Product extends Controller{
 			'countproduct' => $productdata->count(),
 			'productArr' => $productdata->orderBy('id', 'desc')->paginate(10),
 			'typeArr' => array( '0' => '', '1' => 'By Item','2' => 'Package ','3' => 'Monthly Promotion' ),
-			'status' => array( '1' => 'On','0' => 'Off'),
 		);
         return view('Inventory/product_listing',$data);
     }
@@ -68,8 +67,7 @@ class Product extends Controller{
 		$data = array(
 			'countproduct' => $countproduct,
 			'productArr' => $productArr,
-			'typeArr' => array( '0' => '', '1' => 'By Item','2' => 'Package(Long Term)','3' => 'Monthly Promotion' ),
-			'status' => array( '1' => 'On','0' => 'Off'),
+			'typeArr' => array( '0' => '', '1' => 'By Item','2' => 'Package','3' => 'Monthly Promotion' ),
 			'search' => $search,
 			'type' => $type,
 		);
@@ -143,7 +141,7 @@ class Product extends Controller{
 		if($data['type'] == 2)
 			return redirect("product/package_view/" . $id);
 			
-		$data['typestr'] =  array( '0' => '', '1' => 'By Item','2' => 'Package(Long Term)','3' => 'Monthly Promotion' );
+		$data['typestr'] =  array( '0' => '', '1' => 'By Item','2' => 'Package','3' => 'Monthly Promotion' );
 		
 		# get Tax GST percentage		
 		$taxgst = config_tax_m::where('code', 'gst')->first();
@@ -320,7 +318,7 @@ class Product extends Controller{
 		if($data == false)
 			return redirect("product/listing")->with("errorid"," Not Found ");
 			
-		$data['typestr'] =  array( '0' => '', '1' => 'By Item','2' => 'Package(Long Term)','3' => 'Monthly Promotion' );
+		$data['typestr'] =  array( '0' => '', '1' => 'By Item','2' => 'Package','3' => 'Monthly Promotion' );
 		
 		# get Tax GST percentage		
 		$taxgst = config_tax_m::where('code', 'gst')->first();
@@ -413,7 +411,7 @@ class Product extends Controller{
 			}
 		}
 		
-		return redirect("product/edit/" . $id . "/1" )->with("info","Success Submit " . $data['code'] . " (" . $data['description'] . ")");
+		return redirect("product/package_edit/" . $id . "/1" )->with("info","Success Submit " . $data['code'] . " (" . $data['description'] . ")");
     }
 	
     public function package_update(Request $postdata, $id = 0){

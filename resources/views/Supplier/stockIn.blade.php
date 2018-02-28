@@ -48,24 +48,42 @@
                         		<div class="form-group">
                         			<label class="col-md-3 control-label">Supplier Code</label>
                         			<div class="col-md-9">
+<<<<<<< HEAD
                         				<select class="form-control select" name="supplier_code">
                                             <option value="1">Option 1</option>
                                             <option value="2">Option 2</option>
                                             <option value="3">Option 3</option>
                                             <option value="4">Option 4</option>
                                             <option value="5">Option 5</option>
+=======
+                        				<select class="form-control">
+                                            <option>Option 1</option>
+                                            <option>Option 2</option>
+                                            <option>Option 3</option>
+                                            <option>Option 4</option>
+                                            <option>Option 5</option>
+>>>>>>> c8ae00ba01b212f8fde49d8a991d90380db1d2f4
                                         </select>
                         			</div>
                         		</div>
                         		<div class="form-group">
                         			<label class="col-md-3 control-label">Product Code</label>
                         			<div class="col-md-9">
+<<<<<<< HEAD
                         				<select class="form-control select" name="product_code">
                                             <option value="1">Option 1</option>
                                             <option value="2">Option 2</option>
                                             <option value="3">Option 3</option>
                                             <option value="4">Option 4</option>
                                             <option value="5">Option 5</option>
+=======
+                        				<select class="form-control">
+                                            <option>Option 1</option>
+                                            <option>Option 2</option>
+                                            <option>Option 3</option>
+                                            <option>Option 4</option>
+                                            <option>Option 5</option>
+>>>>>>> c8ae00ba01b212f8fde49d8a991d90380db1d2f4
                                         </select>
                         			</div>
                         		</div>
@@ -78,19 +96,28 @@
                         		<div class="form-group">
                         			<label class="col-md-3 control-label">Barcode List</label>
                         			<div class="col-md-9">
+<<<<<<< HEAD
                         				<select class="form-control select" name="barcode">
                                             <option value="1">Option 1</option>
                                             <option value="2">Option 2</option>
                                             <option value="3">Option 3</option>
                                             <option value="4">Option 4</option>
                                             <option value="5">Option 5</option>
+=======
+                        				<select class="form-control">
+                                            <option>Option 1</option>
+                                            <option>Option 2</option>
+                                            <option>Option 3</option>
+                                            <option>Option 4</option>
+                                            <option>Option 5</option>
+>>>>>>> c8ae00ba01b212f8fde49d8a991d90380db1d2f4
                                         </select>
                         			</div>
                         		</div>
                         		<div class="form-group">
                         			<label class="col-md-3 control-label">In Stock Date</label>
                         			<div class="col-md-9">
-                        				<div class="input-group date">
+                        				<div class="input-group">
                         					<span class="input-group-addon"><span class="fa fa-calendar"></span></span>
 	                        				<input type="text" name="instock_date" class="form-control datepicker">
                         				</div>
