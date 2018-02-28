@@ -6,7 +6,7 @@
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
     <li><a href="{{ url('home') }}">Home</a></li>
-    <li><a href="#">Supplier</a></li>
+    <li><a href="{{ url('supplier/supplierDetail') }}">Supplier</a></li>
     <li class="active">Supplier Detail</li>
 </ul>
 <!-- END BREADCRUMB -->                  
@@ -57,6 +57,7 @@
 										<th>Fax No.</th>
 										<th>Attn No.</th>
 										<th>Email</th>
+										<th></th>
 									<tr>
 								</thead>
 								<tbody>

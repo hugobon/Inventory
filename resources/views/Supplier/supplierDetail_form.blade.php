@@ -21,7 +21,7 @@ if(isset($outputData)){
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
     <li><a href="{{ url('home') }}">Home</a></li>
-    <li><a href="#">Supplier</a></li>
+    <li><a href="{{ url('supplier/supplierDetail') }}">Supplier</a></li>
     <li class="active">{!! $breadcrumb !!}</li>
 </ul>
 <!-- END BREADCRUMB -->
@@ -35,6 +35,12 @@ if(isset($outputData)){
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">{!! $title !!}</h3>
+						<?php if(isset($outputData)){ ?>
+							<div class="actions pull-right">
+								<a href="{{ url('supplier/supplierDetail/view/' . $outputData->comp_code) }}" class="btn btn-default  btn-sm btn-circle">
+								<i class="fa fa-eye"></i> View </a>
+							</div>
+						<?php } ?>
                     </div>
                     <div class="panel-body">
 						<div class="row">
@@ -42,7 +48,11 @@ if(isset($outputData)){
 								<div class="form-group">
 									<label class="col-md-3 control-label">Company Code</label>
 									<div class="col-md-9">
-										<input name="comp_code" type="text" class="form-control" value="{!! isset($outputData) ? $outputData->comp_code : '' !!}">
+										<?php if(isset($outputData)){ ?>
+											<input name="comp_code" type="text" class="form-control" value="{!! $outputData->comp_code !!}" readonly>
+										<?php }else{ ?>
+											<input name="comp_code" type="text" class="form-control" value="">
+										<?php } ?>
 									</div>
 								</div>
 								<div class="form-group">
