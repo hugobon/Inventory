@@ -86,3 +86,6 @@ Route::post('configuration/stockadjustment/save', 'Configuration\Stockadjustment
 // Stock
 //=========================
  Route::get('stock', 'Stock\StockController@showPage');
+ Route::post('stock/stockin_insert','Stock\StockController@insertStockIn');
+ Route::get('stock/listing', 'Stock\StockController@stockSupplierListing');
+ 
