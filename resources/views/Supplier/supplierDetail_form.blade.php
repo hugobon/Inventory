@@ -46,7 +46,7 @@ if(isset($outputData)){
 						<div class="row">
 							<div class="col-md-6">
 								<div class="form-group">
-									<label class="col-md-3 control-label">Company Code</label>
+									<label class="col-md-3 control-label">Supplier Code</label>
 									<div class="col-md-9">
 										<?php if(isset($outputData)){ ?>
 											<input name="comp_code" type="text" class="form-control" value="{!! $outputData->comp_code !!}" readonly>

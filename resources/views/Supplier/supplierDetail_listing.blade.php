@@ -51,7 +51,7 @@
 							<table class="table table-bordered">
 								<thead>
 									<tr>
-										<th>Company Code</th>
+										<th>Supplier Code</th>
 										<th>Company Name</th>
 										<th>Telephone</th>
 										<th>Fax No.</th>
