@@ -11,8 +11,6 @@ if(isset($id) && $id > 0){
 	$formurl = "update/" . $id;
 	$clearurl = "edit/" . $id;
 	$titlehead = "Edit Promotion";
-	if($picture_path != null AND $picture_path != '')
-		$havefile = 1;
 	
 	$wm_gst = $wm_aftergst = $em_gst = $em_aftergst = $staff_gst = $staff_aftergst = 0;
 	if($price_wm > 0){
@@ -33,6 +31,7 @@ if(isset($id) && $id > 0){
 @extends('header')
 @section('title',$titlehead)
 @section('content')
+<link rel="stylesheet" type="text/css" id="theme" href="{!! asset('joli/js/daterangepicker/daterangepicker.css') !!}"/>
 <style>
 .mask_decimal, .mask_number, .mask_percentage, .tax-gst, .aftergst-info, .gst-info{max-width:150px;}
 .uppercase{text-transform: uppercase;}
@@ -41,11 +40,12 @@ if(isset($id) && $id > 0){
 		top: 0; bottom: 0; left: 0; right: 0; margin: auto; }
 select{cursor:pointer;}
 .required{ color: #ff0000;}
+.datepromotion{ cursor:pointer !important; color:black !important;}
 </style>
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
 	<li><a href="{{ url('home') }}">Home</a></li>                    
-	<li ><a href="{{ url('Promotion/listing') }}">Promotion Listing</a></li>
+	<li ><a href="{{ url('product/promotion/listing') }}">Promotion Listing</a></li>
 	<li class="active">{{ $titlehead }}</li>
 </ul>
 <!-- END BREADCRUMB -->
@@ -61,12 +61,14 @@ select{cursor:pointer;}
 					<h3 class="panel-title"><strong>Promotion</strong> Form </h3>
 					<ul class="panel-controls">
 					</ul>
-					<?php if(isset($id) && $id > 0){ ?>
+					@if(isset($id) && $id > 0)
 					<div class="actions pull-right">
+						<a href="{{ url('product/promotion/form') }}" class="btn btn-default  btn-sm btn-circle" title="Add New Product" >
+							<i class="fa fa-plus"></i> Product Promotion </a>
 						<a href="{{ url('product/promotion/view/' . $id) }}" class="btn btn-default  btn-sm btn-circle">
-					<i class="fa fa-eye"></i> View </a>
+							<i class="fa fa-eye"></i> View </a>
 					</div>
-					<?php } ?>
+					@endif
 				</div>
 				<div class="panel-body"> 
 					<div class="row">
@@ -87,32 +89,37 @@ select{cursor:pointer;}
 							<h3> Details </h3>
 							<hr />
 						</div>
-						<div class="col-md-6">
+						<div class="col-md-12">
 							<div class="form-group">
-								<label class="col-md-3 control-label"> Product <span class="required">*</span></label>
-								<div class="col-md-9">        
-									<select class="form-control search-product" name="product_id" >
+								<label class="col-md-3 control-label"> Product / Package <span class="required">*</span></label>
+								<div class="col-md-7">
+									@if(isset($id) && $id > 0)
+										<div class="form-control">
+											{{ $productArr['code'] . ' (' . $productArr['description'] . ')' }}
+										</div>
+									@else
+									<select class="form-control select-product" name="product_id" >
 										<option value=""> </option>
 										@if(count($productArr) > 0)
-											@foreach($productArr as $productid => $productname)
-												<option value="{{ $productid }}" {{ isset($product_id) && $product_id == $productid ? "selected" : "" }}>
-												{{ $productname }}</option>
+											@foreach($productArr as $productid => $productdata)
+												<option value="{{ $productid }}" {{ isset($product_id) && $product_id == $productid ? "selected" : "" }}
+												data-desc="{{ $productdata['desc']  }}">
+												{{ $productdata['code'] }}</option>
 											@endforeach
 										@endif
-									</select>									
+									</select>
+									@endif
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-md-3 control-label"> Description <span class="required">*</span></label>
-								<div class="col-md-9">
-									<input type="text" class="form-control Promotion-description" name="description" value="{{ isset($description) ? $description : '' }}" />   
+								<label class="col-md-3 control-label"> Description </label>
+								<div class="col-md-7">
+									<input type="text" class="form-control promotion-description" name="description" value="{{ isset($description) ? $description : '' }}" />   
 								</div>
 							</div>
-						</div>
-						<div class="col-md-6">
 							<div class="form-group">
 								<label class="col-md-3 control-label"> Status </label>
-								<div class="col-md-9">        
+								<div class="col-md-7">        
 									<select class="form-control search-status" name="status" >
 										<option value="1" {{ isset($status) && $status == 1 ? "selected" : "" }} > On </option>
 										<option value="0" {{ isset($status) && $status == 0 ? "selected" : "" }}> Off </option>
@@ -120,17 +127,72 @@ select{cursor:pointer;}
 								</div>
 							</div>
 							<div class="form-group promotion">
-								<label class="col-md-3 control-label"> Range Date </label>
-								<div class="col-md-9">
-									<div class="input-daterange input-group" id="datepicker">
-										<input type="text" class="input-sm form-control start_promotion" name="start_promotion" 
-										value="{{ isset($start_promotion) && !in_array($start_promotion, array('0000-00-00','')) ? date('d/m/Y', strtotime($start_promotion)) : '' }}" />
-										<span class="input-group-addon">to</span>
-										<input type="text" class="input-sm form-control end_promotion" name="end_promotion" 
-										value="{{ isset($end_promotion) && !in_array($end_promotion, array('0000-00-00','')) ? date('d/m/Y', strtotime($end_promotion)) : '' }}" />
-									</div>
+								<label class="col-md-3 control-label"> Datetime Promotion <span class="required">*</span></label>
+								<div class="col-md-7">
+									<input type="text" class="form-control datepromotion" name="daterange" 
+									value="{{ isset($start) && isset($end) ? date('d/m/Y h:i A', strtotime($start)) . ' - '. date('d/m/Y h:i A', strtotime($end)) : '' }}" readonly />
 								</div>
 							</div>
+						</div>
+					</div>
+					<br /> &nbsp;
+					<div class="row">
+						<div class="col-md-12">
+							<h3> Gift </h3>
+							<hr />
+						</div>
+						<div class="col-md-12">
+							<table class="table table-striped">
+								<thead>
+									<tr>
+										<th class="text-center">#</th>
+										<th class="col-md-5"> Gift <span class="required">*</span></th>
+										<th class="col-md-2"> Quantity <span class="required">*</span></th>
+										<th class="col-md-4"> Description </th>
+										<th class="text-center">
+											<a href="javascript:;" title="Add New Row Product"
+											class="btn btn-success btn-xs add-gift " ><span class="fa fa-plus"></span></a>
+										</th>
+									</tr>
+								</thead>
+								<tbody class="tbody-product">
+									@if(isset($gift_list) && count($gift_list) > 0)
+										@foreach($gift_list->all() as $key => $row)
+										<tr class="row-giftlist">
+											<td class="text-center product-number">{{ ($key + 1) }}</td>
+											<td>
+												<input type="hidden" class="giftid" name="giftid[]" value="{{ $row->id }}" />
+												<input type="text" class="form-control promotiongift" 
+												name="promotiongift[]" value="{{ $row->gift }}" /></td>
+											<td><input type="text" class="form-control promotionquantity mask_number" 
+												name="promotionquantity[]" value="{{ $row->quantity }}" /></td>
+											<td><input type="text" class="form-control productdescription" 
+												name="promotiondescription[]" value="{{ $row->description }}" /></td>
+											<td class="text-center">
+												<a href="javascript:;" title="Remove This Row Gift"
+												class="btn btn-danger btn-xs remove-gift" ><span class="fa fa-times"></span></a>
+											</td>
+										</tr>
+										@endforeach
+									@else
+									<tr class="row-giftlist">
+										<td class="text-center product-number">1</td>
+										<td>
+											<input type="hidden" class="giftid" name="giftid[]" value="" />
+											<input type="text" class="form-control promotiongift" 
+											name="promotiongift[]" value="" /></td>
+										<td><input type="text" class="form-control promotionquantity mask_number" 
+											name="promotionquantity[]" value="" /></td>
+										<td><input type="text" class="form-control productdescription" 
+											name="promotiondescription[]" value="" /></td>
+										<td class="text-center">
+											<a href="javascript:;" title="Remove This Row Gift"
+											class="btn btn-danger btn-xs remove-gift" ><span class="fa fa-times"></span></a>
+										</td>
+									</tr>
+									@endif
+								</tbody>
+							</table>
 						</div>
 					</div>
 					<br /> &nbsp;
@@ -142,14 +204,14 @@ select{cursor:pointer;}
 						<div class="col-md-12">
 							<div class="form-group">
 								<label class="col-md-3 control-label"><br /> West Malaysia <span class="required">*</span></label>
-								<div class="col-md-3">
+								<div class="col-md-2">
 									<span class="help-block"> Price </span>
 									<div class="input-group">
 										<span class="input-group-addon">RM</span>
 										<input type="text" class="sales-info form-control product-price_wm mask_decimal" placeholder="0.00" name="price_wm" value="{{ isset($price_wm) ? number_format($price_wm, 2, '.', '') : '' }}" />
 									</div>
 								</div>
-								<div class="col-md-3">
+								<div class="col-md-2">
 									<span class="help-block"> GST {{ $gstpercentage }} %</span>
 									<div class="input-group">
 										<span class="input-group-addon">RM</span>
@@ -158,7 +220,7 @@ select{cursor:pointer;}
 										</div>
 									</div>
 								</div>
-								<div class="col-md-3">
+								<div class="col-md-2">
 									<span class="help-block">After GST </span>
 									<div class="input-group">
 										<span class="input-group-addon">RM</span>
@@ -169,14 +231,14 @@ select{cursor:pointer;}
 							</div>
 							<div class="form-group">
 								<label class="col-md-3 control-label"><br /> East Malaysia <span class="required">*</span></label>
-								<div class="col-md-3">
+								<div class="col-md-2">
 									<span class="help-block"> Price </span>
 									<div class="input-group">
 										<span class="input-group-addon">RM</span>
 										<input type="text" class="sales-info form-control product-price_em mask_decimal" placeholder="0.00" name="price_em" value="{{ isset($price_em) ? number_format($price_em, 2, '.', '') : '' }}" />
 									</div>
 								</div>
-								<div class="col-md-3">
+								<div class="col-md-2">
 									<span class="help-block"> GST {{ $gstpercentage }} %</span>
 									<div class="input-group">
 										<span class="input-group-addon">RM</span>
@@ -185,7 +247,7 @@ select{cursor:pointer;}
 										</div>
 									</div>
 								</div>
-								<div class="col-md-3">
+								<div class="col-md-2">
 									<span class="help-block">After GST </span>
 									<div class="input-group">
 										<span class="input-group-addon">RM</span>
@@ -196,7 +258,7 @@ select{cursor:pointer;}
 							</div>
 							<div class="form-group">
 								<label class="col-md-3 control-label"><br /> Staff Price <span class="required">*</span></label>
-								<div class="col-md-3">
+								<div class="col-md-2">
 									<span class="help-block"> Price </span>
 									<div class="input-group">
 										<span class="input-group-addon">RM</span>
@@ -204,7 +266,7 @@ select{cursor:pointer;}
 										name="price_staff" value="{{ isset($price_staff) ? number_format($price_staff, 2, '.', '') : '' }}" />
 									</div>
 								</div>
-								<div class="col-md-3">
+								<div class="col-md-2">
 									<span class="help-block"> GST {{ $gstpercentage }} %</span>
 									<div class="input-group">
 										<span class="input-group-addon">RM</span>
@@ -213,7 +275,7 @@ select{cursor:pointer;}
 										</div>
 									</div>
 								</div>
-								<div class="col-md-3">
+								<div class="col-md-2">
 									<span class="help-block">After GST </span>
 									<div class="input-group">
 										<span class="input-group-addon">RM</span>
@@ -237,7 +299,9 @@ select{cursor:pointer;}
  <!-- END PAGE CONTENT WRAPPER -->
 <script type="text/javascript" src="{!! asset('joli/js/plugins/inputmask/jquery.inputmask.bundle.min.js') !!}"></script>
 <script type="text/javascript" src="{!! asset('joli/js/plugins/bootstrap/bootstrap-file-input.js') !!}"></script>
-<script type="text/javascript" src="{!! asset('joli/js/plugins/jquery-validation/jquery.validate.js') !!}" ></script> 
+<script type="text/javascript" src="{!! asset('joli/js/plugins/jquery-validation/jquery.validate.js') !!}" ></script>
+<script type="text/javascript" src="{!! asset('joli/js/daterangepicker/moment.min.js') !!}" ></script> 
+<script type="text/javascript" src="{!! asset('joli/js/daterangepicker/daterangepicker.js') !!}" ></script>
 
 <script>
 var baseurl = '{{ url('') }}';
@@ -248,9 +312,7 @@ errorPlacement: function(error,element) { return true;},
 ignore: [],
 rules: {                                            
 		product_id: { required: true,},
-		description: { required: true,},
-		start_promotion:{ required: true,},
-		end_promotion:{ required: true,},
+		daterange:{ required: true,},
 		price_wm: { required: true,},
 		price_em: { required: true,},
 		price_staff: { required: true,},
@@ -263,6 +325,12 @@ function setnumber_decimal(numberd){
 	}
 	return 0.00;
 }
+function product_number(){
+	for(i = 0; i < $('.row-giftlist').length; i++){
+		$($('.row-giftlist')[i]).find('.product-number').html((i + 1));
+	}
+}
+
 $(function() {
 	$(".mask_number").inputmask({
 		"mask": "9",
@@ -273,14 +341,6 @@ $(function() {
 	
 	$(".mask_decimal").inputmask({
 		'mask':"9{0,14}.9{0,2}", 
-		'alias': 'decimal',
-		'digits':'2',
-		'rightAlign': true,
-		'autoGroup': true,
-	});
-	
-	$(".mask_percentage").inputmask({
-		'mask':"9{0,3}.9{0,2}", 
 		'alias': 'decimal',
 		'digits':'2',
 		'rightAlign': true,
@@ -323,11 +383,16 @@ $(function() {
 		}
 	});
 	
-	$('.promotion .input-daterange').datepicker({
-		format: "dd/mm/yyyy",
-		clearBtn: true,
-		autoclose: true,
-		todayHighlight: true
+	$('input[name="daterange"]').daterangepicker({
+        timePicker: true,
+        timePickerIncrement: 1,
+        locale: {
+            format: 'DD/MM/YYYY h:mm A'
+        }
+    });
+	$('#submit_form').on('change', '.select-product', function(){
+		datadesc = $(this).find(':selected').data('desc');
+		$('.promotion-description').val(datadesc);
 	});
 	
 	$('#submit_form').on('change', 'input, select', function(){
@@ -335,23 +400,48 @@ $(function() {
 	});
 	
 	$("#submit_form").submit(function(){
-		Promotioncode = $(".Promotion-code").val().trim();
-		code_exist = 0;
-		$.ajax({
-			url: baseurl + '/Promotion/check_existcode',
-			method: "POST",
-			data: {'code': Promotioncode,'id': baseid, '_token': '{{ csrf_token() }}',} ,
-			async: false,
-			success: function(result){
-				if(result == 1 || result == true)
-					code_exist = 1;
+	});
+	
+	$('body').on('click', '.add-gift', function(){
+		var show = true;
+		for(i = 0; i < $('.row-giftlist').length; i++){
+			$($('.row-giftlist')[i]).find('input[name="promotiongift[]"]').closest('td').removeClass('has-error');
+			$($('.row-giftlist')[i]).find('input[name="promotionquantity[]"]').closest('td').removeClass('has-error');
+			promotiongift = $($('.row-giftlist')[i]).find('input[name="promotiongift[]"]').val().trim();
+			if(promotiongift == ""){
+				$($('.row-giftlist')[i]).find('input[name="promotiongift[]"]').closest('td').addClass('has-error');
+				show = false;
 			}
-		});
-		if(code_exist == 1){
-			$(".Promotion-code").focus();
-			$("#submit_form").find(".alert_modal").html(" Promotion Code <b>"+Promotioncode.toUpperCase()+"</b> already exists . ");
-			$("#submit_form").find(".alert_modal").show();
-			return false;
+			productquantity = $($('.row-giftlist')[i]).find('input[name="promotionquantity[]"]').val().trim();
+			if(productquantity == "" || productquantity == 0){
+				$($('.row-giftlist')[i]).find('input[name="promotionquantity[]"]').closest('td').addClass('has-error');
+				show = false;
+			}
+		}
+		if(show == true){
+			var new_row = $($('.row-giftlist')[0]).clone();
+			new_row.find('input[name="giftid[]"]').val("");
+			new_row.find('input[name="promotiongift[]"]').val("");
+			new_row.find('input[name="promotiondescription[]"]').val("");
+			new_row.find('input[name="promotionquantity[]"]').val("");
+			new_row.find('input[name="promotionquantity[]"]').inputmask({"mask": "9","repeat": 10,'rightAlign': true,"greedy": false});
+			$('.tbody-product').append(new_row);
+			product_number();
+		}
+	});
+	
+	$('body').on('click', '.remove-gift', function(){
+		var row_length = $('.row-giftlist').length;
+		if(row_length == 1){
+			var row_1 = $('.row-giftlist');
+			row_1.find('input[name="giftid[]"]').val("");
+			row_1.find('input[name="promotiongift[]"]').val("");
+			row_1.find('input[name="promotiondescription[]"]').val("");
+			row_1.find('input[name="promotionquantity[]"]').val("");
+		}
+		else{
+			$(this).closest('.row-giftlist').remove();
+			product_number();
 		}
 	});
 });
