@@ -159,7 +159,7 @@ class Product extends Controller{
 				
 			$imagedata = New product_image_m;
 			$promotiondata = New product_promotion_m;
-			$data['imageArr'] = $imagedata->where('product_id',$id)->orderBy('id', 'desc')->get();
+			$data['imageArr'] = $imagedata->where('product_id',$id)->orderBy('status', 'desc')->orderBy('id', 'desc')->get();
 			$data['promotion_list'] = $promotiondata->where('product_id',$id)->orderBy('id', 'desc')->get();
 			$data['statusArr'] = array('1' => 'Active', '0' => 'Inactive');
 			$data['gstpercentage'] = $gstpercentage;
@@ -542,15 +542,21 @@ class Product extends Controller{
     }
 	
 	public function upload_image(Request $postdata,$id = 0){
+		$imagedata = New product_image_m;
 		$datajson = array(
 			'status' => 'Fail',
 			'remarks' => 'Product not Founds',
 		);
 		$checkproduct = product_m::where('id', $id)->first();
 		if($checkproduct == true){
+			$statusimg = 1;
+			$mainimage = $imagedata->where('product_id', $id)->where('status', 1)->first();
+			if($mainimage == true)
+				$statusimg = 0;
 			$data = array(
 				'product_id' => $id,
 				'description' => $postdata->input("description") != null ? $postdata->input("description") : '',
+				'status' => $statusimg,
 				'created_by' => 1,
 				'created_at' => date('Y-m-d H:i:s'),
 				'updated_by' => 1,
@@ -571,7 +577,6 @@ class Product extends Controller{
 						$data['file_name'] = $picture_name;
 						$data['path'] = 'product_image/' . $id . '/' . $new_pname;
 						$data['type'] = $picture_type;
-						$imagedata = New product_image_m;
 						$id = $imagedata->insertGetId($data);
 						
 						$datajson = array(
@@ -607,7 +612,7 @@ class Product extends Controller{
 		$checkproduct = product_m::where('id', $id)->first();
 		if($checkproduct == true){
 			$imagedata = New product_image_m;
-			$data['imageArr'] = $imagedata->where('product_id',$id)->orderBy('id', 'desc')->get();
+			$data['imageArr'] = $imagedata->where('product_id',$id)->orderBy('status', 'desc')->orderBy('id', 'desc')->get();
 			$data['productId'] = $id; 
 			$data['productName'] = $checkproduct['code'] . ' (' . $checkproduct['description'] . ') '; 
 			return view('Inventory/product_reload_image',$data);
@@ -677,6 +682,28 @@ class Product extends Controller{
 		}
 		return redirect("product/listing");
     }
+	
+	public function set_mainimage(Request $postdata){
+		$product_id = $postdata->input("product_id");
+		$imageid = $postdata->input("imageid");
+		if($product_id > 0 && $imageid > 0){
+			#set all 0
+			$data = array(
+				'status' => 0,
+			);
+			$imagedata = New product_image_m;
+			$imagedata->where('product_id',$product_id)->update($data);
+			# set 1
+			$data = array(
+				'status' => 1,
+				'updated_by' => 1,
+				'updated_at' => date('Y-m-d H:i:s'),
+			);
+			$imagedata->where('id',$imageid)->where('product_id',$product_id)->update($data);
+			return "success";
+		}
+		return "not found";
+	}
 	
 	public function delete_image($data = ''){
 		if(@unserialize(base64_decode($data)) == true){

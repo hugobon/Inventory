@@ -64,7 +64,8 @@ if(isset($id) && $id > 0){
 							<div class="form-group">
 								<label class="col-md-3 control-label"> Product / Package </label>
 								<div class="col-md-7 control-label text-left">
-									{{ $productArr['code'] . ' (' . $productArr['description'] . ')' }}
+								<a href="{{ url('product/view/' . $product_id) }}" class="" title="View Promotion {{ $productArr['code'] . ' (' . $productArr['description'] . ')' }}" >
+								{{ $productArr['code'] . ' (' . $productArr['description'] . ')' }}</a>
 								</div>
 							</div>
 							<div class="form-group">
@@ -164,6 +165,32 @@ if(isset($id) && $id > 0){
 									</table>
 								</div>
 							</div>	
+						</div>
+					</div>
+					<div class="row">
+						<br /> &nbsp;
+						<div class="col-md-12">
+							<hr />
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="col-md-4 control-label"> Created by: </label>
+								<div class="col-md-8 control-label text-left"> Administrator </div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-4 control-label"> Created at: </label>
+								<div class="col-md-8 control-label text-left">{{ isset($created_at) && !in_array($created_at, array('0000-00-00','')) ? date('d/m/Y, h:i A', strtotime($created_at)) : '' }}</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="col-md-4 control-label"> Updated by: </label>
+								<div class="col-md-8 control-label text-left"> Administrator </div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-4 control-label"> Updated at: </label>
+								<div class="col-md-8 control-label text-left">{{ isset($updated_at) && !in_array($updated_at, array('0000-00-00','')) ? date('d/m/Y, h:i A', strtotime($updated_at)) : '' }}</div>
+							</div>
 						</div>
 					</div>
 				</div>
