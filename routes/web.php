@@ -62,6 +62,7 @@ Route::post('product/package_insert', 'Inventory\Product@package_insert');
 Route::post('product/package_update/{x?}', 'Inventory\Product@package_update');
 Route::get('product/reload_image/{x?}', 'Inventory\Product@reload_image');
 Route::post('product/upload_image/{x?}', 'Inventory\Product@upload_image');
+Route::post('product/set_mainimage', 'Inventory\Product@set_mainimage');
 Route::post('product/check_existcode', 'Inventory\Product@check_existcode');
 Route::get('product/delete/{x?}', 'Inventory\Product@delete');
 Route::get('product/delete_image/{x?}', 'Inventory\Product@delete_image');

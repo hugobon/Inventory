@@ -259,7 +259,7 @@ if(isset($id) && $id > 0){
 											<td>
 												<a href="{{ url('product/promotion/view/' . $row->id) }}" 
 												title=" View {{ $row->code.' ('.$row->description.')' }}"
-												class="btn btn-info btn-rounded"><span class="fa fa-eye"></span></a>
+												class=""><span class="fa fa-eye"></span></a>
 											</td>
 										</tr>
 										@endforeach

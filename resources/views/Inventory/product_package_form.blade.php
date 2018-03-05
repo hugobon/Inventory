@@ -717,6 +717,25 @@ $(function() {
 		return false;
 	});
 	
+	$('body').on('click', '.set-mainimage', function(){
+		var imageid = $(this).data('imageid');
+		var product_id = $(this).data('product_id');
+		$.ajax({
+			url: baseurl + '/product/set_mainimage',
+			method: "POST",
+			data: {'imageid': imageid,'product_id': product_id, '_token': '{{ csrf_token() }}',} ,
+			async: false,
+			success: function(result){
+				reload_image(baseid);
+			}
+		});
+		return false;
+	});
+	
+	$('body').on('click', '.set-mainimage2', function(){
+		return false;
+	});
+	
 	$('body').on('click', '.add-product', function(){
 		var show = true;
 		for(i = 0; i < $('.row-productlist').length; i++){
