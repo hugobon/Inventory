@@ -41,7 +41,7 @@
 				<div class="panel-heading">
 					<h3 class="panel-title">Product Promotion Listing</h3>
 					<div class="actions pull-right">
-						<a href="javascript:;" class="btn btn-default  btn-sm btn-circle add-promotion" title="Add New Product Promotion" >
+						<a href="{{ url('product/promotion/form') }}" class="btn btn-default  btn-sm btn-circle add-promotion" title="Add New Product Promotion" >
 					<i class="fa fa-plus"></i> Product Promotion </a>
 					</div>
 				</div>
@@ -50,9 +50,9 @@
 						{{ csrf_field() }}
 						<div class="panel-body">
 							<div class="row">
-								<div class="col-md-6">
+								<div class="col-md-7">
 									<div class="form-group">
-										<label class="col-md-3 control-label"> Product </label>
+										<label class="col-md-3 control-label"> Product / Package </label>
 										<div class="col-md-9">        
 											<select class="form-control search-product" name="search_product" >
 												<option value=""> All </option>
@@ -66,14 +66,14 @@
 										</div>
 									</div>
 								</div>
-								<div class="col-md-4">
+								<div class="col-md-3">
 									<div class="form-group">
 										<label class="col-md-3 control-label"> Status </label>
 										<div class="col-md-9">        
 											<select class="form-control search-status" name="search_status" >
 												<option value=""> All </option>
-												<option value="1" {{ isset($search_status) && $search_status == 1 ? "selected" : "" }}> ON </option>
-												<option value="0" {{ isset($search_status) && $search_status == 0 ? "selected" : "" }}> OFF </option>
+												<option value="1" {{ isset($search_status) && $search_status == '1' ? "selected" : "" }}> ON </option>
+												<option value="0" {{ isset($search_status) && $search_status == '0' ? "selected" : "" }}> OFF </option>
 											</select>
 										</div>
 									</div>
@@ -95,9 +95,8 @@
 								<tr>
 									<th ></th>
 									<th >Id</th>
-									<th class="col-md-4">Product</th>
-									<th class="col-md-3">Date Range</th>
-									<th class="col-md-4">description</th>
+									<th class="col-md-4">Product / Package </th>
+									<th class="col-md-6">Date Range</th>
 									<th class="col-md-1">Status</th>
 									<th ></th>
 									<th ></th>
@@ -109,39 +108,38 @@
 								
 								@foreach($promotionArr->all() as $key => $row)
 									<?php
-										$fullrow = (isset($productArr[$row->product_id]) ? $productArr[$row->product_id] : '').', '.(isset($adjustmentArr[$row->adjustment_id]) ? $adjustmentArr[$row->adjustment_id] : '');
-										$rowarr = array('delete' => 'stockadjustment','deleteid' => $row->id,'fullrow'=>$fullrow,'search' => Request::segment(4));
+										$rowarr = array('delete' => 'promotion','deleteid' => $row->id,'search' => Request::segment(4));
 										$base64data = trim(base64_encode(serialize($rowarr)), "=.");
 									?>
 									<tr>
 										<td>{{ $key + $promotionArr->firstItem() }}</td>
 										<td>{{ $row->id }}</td>
 										<td>{{ isset($productArr[$row->product_id]) ? $productArr[$row->product_id] : $row->product_name }}</td>
-										<td>{{ isset($statusArr[$row->adjustment_id]) ? $statusArr[$row->adjustment_id] : '' }}</td>
-										<td>{{ $row->quantity }}</td>
-										<td>{{ !in_array($row->created_at, array('0000-00-00','','null')) ? date('d/m/Y, h:i A', strtotime($row->created_at)) : '' }}</td>
+										<td>{{ date('d/m/Y h:i A', strtotime($row->start)) . ' - '. date('d/m/Y h:i A', strtotime($row->end)) }}</td>
+										<td>{{ isset($statusArr[$row->status]) ? $statusArr[$row->status] : 'Unknown' }}</td>
 										<td>
-											<a href="javascript:;" 
-											data-product="{{ isset($productArr[$row->product_id]) ? $productArr[$row->product_id] : $row->product_name }}" 
-											data-adjustment=" {{ isset($adjustmentArr[$row->adjustment_id]) ? $adjustmentArr[$row->adjustment_id] : '' }}"
-											data-quantity="{{ $row->quantity }}" data-remarks=" {{ $row->remarks }}" 
-											data-create_at="{{ !in_array($row->created_at, array('0000-00-00','','null')) ? date('d/m/Y, h:i A', strtotime($row->created_at)) : '' }}"
-											title=" View {{ $fullrow }}"
-											class="btn btn-info btn-rounded viewstockadjustment"><span class="fa fa-eye"></span></a>
+											<a href="{{ url('product/promotion/view/' . $row->id) }}" 
+											title=" View {{ $row->code.' ('.$row->description.')' }}"
+											class="btn btn-info btn-rounded"><span class="fa fa-eye"></span></a>
+										</td>
+										<td>
+											<a href="{{ url('product/promotion/edit/' . $row->id) }}" 
+											title=" Edit {{ $row->code.' ('.$row->description.')' }}"
+											class="btn btn-primary btn-rounded" ><span class="fa fa-edit"></span></a>
 										</td>
 										<td>
 											<a href="javascript:;" data-base64="{{ $base64data }}" 
-											data-product="{{ isset($productArr[$row->product_id]) ? $productArr[$row->product_id] : $row->product_name }}" 
-											data-adjustment=" {{ isset($adjustmentArr[$row->adjustment_id]) ? $adjustmentArr[$row->adjustment_id] : '' }}"
-											title=" Remove {{ $fullrow }}"
+											data-product="{{ isset($productArr[$row->product_id]) ? $productArr[$row->product_id] : $row->product_name }}"
+											data-daterange="{{ date('d/m/Y h:i A', strtotime($row->start)) . ' - '. date('d/m/Y h:i A', strtotime($row->end)) }}"
+											title=" Remove {{ isset($productArr[$row->product_id]) ? $productArr[$row->product_id] : $row->product_name }}"
 											class="btn btn-danger btn-rounded confirm-delete" ><span class="glyphicon glyphicon-trash"></span></a>
 										</td>
 									</tr>
 								@endforeach
 							@else
 							<tr>
-								<td colspan="8" class="text-center"> No Data Found <br />
-								<a href="javascript:;" class="add-promotion" ><span class="fa fa-plus"></span> Add new Product Promotion</a></td>
+								<td colspan="9" class="text-center"> No Data Found <br />
+								<a href="{{ url('product/promotion/form') }}" class="add-promotion" ><span class="fa fa-plus"></span> Add new Product Promotion</a></td>
 							</tr>
 							@endif
 							</tbody>
@@ -168,9 +166,9 @@ $(function() {
 	$('.table').on('click', '.confirm-delete', function(){
 		var base64data = $(this).data('base64');
 		var product = $(this).data('product');
-		var adjustment = $(this).data('adjustment');
+		var daterange = $(this).data('daterange');
 		noty({
-			text: 'Are you sure to remove <br /> ' + product + ',<br /> ' + adjustment + ' ?',
+			text: 'Are you sure to remove <br /> ' + product + ',<br /> ' + daterange + ' ?',
 			layout: 'topRight',
 			buttons: [
 					{addClass: 'btn btn-success btn-clean', text: 'Ok', onClick: function($noty) {

@@ -49,33 +49,31 @@
 						{{ csrf_field() }}
 						<div class="panel-body">
 							<div class="row">
-								<div class="col-md-5">
+								<div class="col-md-6">
 									<div class="form-group">
-										<label class="col-md-4 control-label"> Search </label>
-										<div class="col-md-8">        
+										<label class="col-md-2 control-label"> Search </label>
+										<div class="col-md-10">        
 											<input type="text" class="form-control product-code" name="search" 
 											placeholder=" Code / Description " value="{{ isset($search) ? $search : '' }}" />									
 										</div>
 									</div>
 								</div>
-								<div class="col-md-5">
+								<div class="col-md-4">
 									<div class="form-group">
 										<label class="col-md-4 control-label"> Type </label>
 										<div class="col-md-8">        
 											<select class="form-control product-type" name="type" >
 												<option value=""> All </option>
-												<option value="1" {{ isset($type) && $type == 1 ? "selected" : "" }}> By Item </option>
-												<option value="2" {{ isset($type) && $type == 2 ? "selected" : "" }}> Package(Long Term)</option>
+												<option value="1" {{ isset($type) && $type == 1 ? "selected" : "" }}> Item </option>
+												<option value="2" {{ isset($type) && $type == 2 ? "selected" : "" }}> Package </option>
 												<option value="3" {{ isset($type) && $type == 3 ? "selected" : "" }}> Monthly Promotion </option>
 											</select>
 										</div>
 									</div>
 								</div>
-								<div class="col-md-1">
-									<button type="submit" class="btn btn-primary">Search</button>
-								</div>
-								<div class="col-md-1">
-									<a href="{{ url('product/listing') }}" class="btn btn-danger">Reset</a>
+								<div class="col-md-2">
+									<button type="submit" class="btn btn-primary" style="padding: 4px 8px;">Search</button>
+									<a href="{{ url('product/listing') }}" class="btn btn-danger" style="padding: 4px 8px;">Reset</a>
 								</div>
 							</div>
 						</div>
@@ -88,9 +86,10 @@
 								<tr>
 									<th ></th>
 									<th >Id</th>
-									<th class="col-md-3">Code</th>
-									<th class="col-md-4">Description</th>
-									<th class="col-md-3">Type</th>
+									<th class="col-md-2">Code</th>
+									<th class="col-md-5">Description</th>
+									<th class="col-md-2">Type</th>
+									<th class="col-md-2">Status</th>
 									<th ></th>
 									<th ></th>
 									<th ></th>
@@ -110,6 +109,7 @@
 										<td>{{ $row->code }}</td>
 										<td>{{ $row->description }}</td>
 										<td>{{ isset($typeArr[$row->type]) ? $typeArr[$row->type] : '' }}</td>
+										<td>{{ isset($statusArr[$row->status]) ? $statusArr[$row->status] : '' }}</td>
 										<td>
 											<a href="{{ url('product/view/' . $row->id) }}" 
 											title=" View {{ $row->code.' ('.$row->description.')' }}"

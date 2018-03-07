@@ -25,8 +25,11 @@ Route::get('/home', 'HomeController@index')->name('home');
 //=========================
 // Agent :: Amin
 //=========================
-Route::get('agent', 'Agent\AgentController@fn_get_view');
-Route::post('agent/save', 'Agent\AgentController@fn_save_agent_record')->name('agent_view');
+Route::get('agent/register', 'Agent\AgentController@fn_get_view');
+Route::post('agent/save', 'Agent\AgentController@fn_save_agent_record');
+Route::get('agent/view','Agent\AgentController@fn_view_agent_record');
+Route::get('agent/order_stock/{agent_id?}', 'Agent\AgentController@fn_get_agent_order_stock');
+Route::post('agent/save_agent_order_stock', 'Agent\AgentController@fn_save_agent_order_stock');
 
 //=========================
 // Supplier :: Zul
@@ -59,14 +62,22 @@ Route::post('product/package_insert', 'Inventory\Product@package_insert');
 Route::post('product/package_update/{x?}', 'Inventory\Product@package_update');
 Route::get('product/reload_image/{x?}', 'Inventory\Product@reload_image');
 Route::post('product/upload_image/{x?}', 'Inventory\Product@upload_image');
+Route::post('product/set_mainimage', 'Inventory\Product@set_mainimage');
 Route::post('product/check_existcode', 'Inventory\Product@check_existcode');
 Route::get('product/delete/{x?}', 'Inventory\Product@delete');
 Route::get('product/delete_image/{x?}', 'Inventory\Product@delete_image');
+
 // Product promotion
 Route::get('product/promotion', function () {  return redirect("promotion/listing"); });
 Route::get('product/promotion/listing', 'Inventory\Product_promotion@listing');
 Route::get('product/promotion/search/{x?}', 'Inventory\Product_promotion@search');
 Route::post('product/promotion/form_search', 'Inventory\Product_promotion@form_search');
+Route::get('product/promotion/form', 'Inventory\Product_promotion@form');
+Route::get('product/promotion/view/{x?}', 'Inventory\Product_promotion@view');
+Route::post('product/promotion/insert', 'Inventory\Product_promotion@insert');
+Route::get('product/promotion/edit/{x?}', 'Inventory\Product_promotion@edit');
+Route::post('product/promotion/update/{x?}', 'Inventory\Product_promotion@update');
+Route::get('product/promotion/delete/{x?}', 'Inventory\Product_promotion@delete');
 // Stock Adjustment
 Route::get('stock/adjustment', function () {  return redirect("stock/adjustment/listing"); });
 Route::get('stock/adjustment/listing', 'Inventory\Stockadjustment@listing');

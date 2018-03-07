@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\inventory\product_m;
 use App\inventory\product_promotion_m;
 use App\inventory\product_promotion_gift_m;
+use App\configuration\config_tax_m;
 
 class Product_promotion extends Controller
 {
@@ -93,48 +94,299 @@ class Product_promotion extends Controller
         return redirect('product/promotion/search/' . $base64data);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
+    public function form(){
+		# get Tax GST percentage
+		$taxgst = config_tax_m::where('code', 'gst')->first();
+		if($taxgst == false)
+			$gstpercentage = 6;
+		else
+			$gstpercentage = $taxgst['percent'];
+		
+		$productdata = New product_m;
+		$datap = $productdata->orderBy('code', 'asc')->get();
+		$productArr = array();
+		if(count($datap) > 0){
+			foreach($datap->all() as $key => $row){
+				$productArr[$row->id] = array(
+					'code' => $row->code . ' (' . $row->description . ')',
+					'desc' => $row->description,
+				);
+			}
+		}
+		$data = array();
+		$data['gstpercentage'] = $gstpercentage;
+		$data['productArr'] = $productArr;
+		
+		return view('Inventory/product_promotion_form',$data);
+    }
+	
+	public function edit($id = 0){
+		if($id > 0){
+			$promotiondata = New product_promotion_m;
+			$promotion = $promotiondata->where('id', $id)->first();
+			if($promotion == false)
+				return redirect("product/promotion/listing")->with("errorid"," Not Found ");
+				
+			# get Tax GST percentage
+			$taxgst = config_tax_m::where('code', 'gst')->first();
+			if($taxgst == false)
+				$gstpercentage = 6;
+			else
+				$gstpercentage = $taxgst['percent'];
+			
+			$product_id = $promotion['product_id'];
+			$productdata = New product_m;
+			$productArr = $productdata->where('id', $product_id)->first();
+			
+			$giftdata = New product_promotion_gift_m;
+			$data = array();
+			$data = $promotion;
+			$data['gstpercentage'] = $gstpercentage;
+			$data['productArr'] = $productArr;
+			$data['statusArr'] = array( '1' => 'On','0' => 'Off');
+			$data['gift_list'] = $giftdata->where('promotion_id', $id)->get();
+			return view('Inventory/product_promotion_form',$data);
+		}
+		return redirect("product/promotion/listing");
+    }
+	
+	public function view($id = 0){
+		if($id > 0){
+			$promotiondata = New product_promotion_m;
+			$promotion = $promotiondata->where('id', $id)->first();
+			if($promotion == false)
+				return redirect("product/promotion/listing")->with("errorid"," Not Found ");
+				
+			# get Tax GST percentage
+			$taxgst = config_tax_m::where('code', 'gst')->first();
+			if($taxgst == false)
+				$gstpercentage = 6;
+			else
+				$gstpercentage = $taxgst['percent'];
+			
+			$product_id = $promotion['product_id'];
+			$productdata = New product_m;
+			$productArr = $productdata->where('id', $product_id)->first();
+			
+			$giftdata = New product_promotion_gift_m;
+			$gift_list = $giftdata->where('promotion_id', $id)->get();
+
+			$data = array();
+			$data = $promotion;
+			$data['gstpercentage'] = $gstpercentage;
+			$data['productArr'] = $productArr;
+			$data['gift_list'] = $gift_list;
+			$data['statusArr'] = array( '1' => 'On','0' => 'Off');
+			return view('Inventory/product_promotion_view',$data);
+		}
+		return redirect("product/promotion/listing");
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+    public function insert(Request $postdata){
+		$this->validate($postdata,[
+			'product_id' => 'required',
+			'daterange' => 'required',
+			'price_wm' => 'required',
+			'price_em' => 'required',
+			'price_staff' => 'required',
+		]);
+		
+		$daterange = $postdata->input("daterange");
+		$dateArr = explode(" - ",$daterange);
+		$start = $end = '';
+		if(count($dateArr) > 1){
+			$startdate = trim($dateArr[0]);
+			$enddate = trim($dateArr[1]);
+			$start = $this->daterangepickermysql($startdate);
+			$end = $this->daterangepickermysql($enddate);
+		}
+		if($start == '' || $end == ''){
+			$messages = "Datetime Promotion Not Valid";
+			return redirect('product/promotion/form')->withErrors($messages);
+		}
+		
+		$data = array(
+			'product_id' => $postdata->input("product_id"),
+			'description' => $postdata->input("description") != null ? $postdata->input("description") : '',
+			'price_checked' => 1,
+			'gift_checked' => 1,
+			'start' => $start,
+			'end' => $end,
+			'price_wm' => $postdata->input("price_wm"),
+			'price_em' => $postdata->input("price_em"),
+			'price_staff' => $postdata->input("price_staff"),
+			'status' => $postdata->input("status") != null ? $postdata->input("status") : '1',
+			'created_by' => 1,
+			'created_at' => date('Y-m-d H:i:s'),
+			'updated_by' => 1,
+			'updated_at' => date('Y-m-d H:i:s'),
+		);
+		$promotiondata = New product_promotion_m;
+		$id = $promotiondata->insertGetId($data);
+		if($id > 0){
+			#product list insert 
+			$giftid = $postdata->input("giftid");
+			$promotiongift = $postdata->input("promotiongift");
+			$promotionquantity = $postdata->input("promotionquantity");
+			$promotiondescription = $postdata->input("promotiondescription");
+			$giftdata = New product_promotion_gift_m;
+			foreach($giftid as $k => $v){
+				if(trim($promotiongift[$k]) != ''){
+					$datagift = array(
+						'promotion_id' => $id,
+						'gift' => trim($promotiongift[$k]),
+						'quantity' => $promotionquantity[$k] > 0 ? $promotionquantity[$k] : 1,
+						'description' => $promotiondescription[$k] != null ? $promotiondescription[$k] : '',
+						'created_by' => 1,
+						'created_at' => date('Y-m-d H:i:s'),
+						'updated_by' => 1,
+						'updated_at' => date('Y-m-d H:i:s'),
+					);
+					$giftdata->insert($datagift);
+				}
+			}
+		}
+		
+		return redirect("product/promotion/view/" . $id)->with("info","Success Submit Product Promotion " . $data['description'] . " ");
     }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
+	
+	public function update(Request $postdata, $id = 0){
+		$promotiondata = New product_promotion_m;
+		$promotion = $promotiondata->where('id', $id)->first();
+		if($promotion == false)
+			return redirect("product/promotion/listing")->with("errorid"," Not Found ");
+			
+		$this->validate($postdata,[
+			'daterange' => 'required',
+			'price_wm' => 'required',
+			'price_em' => 'required',
+			'price_staff' => 'required',
+		]);
+		
+		$daterange = $postdata->input("daterange");
+		$dateArr = explode(" - ",$daterange);
+		$start = $end = '';
+		if(count($dateArr) > 1){
+			$startdate = trim($dateArr[0]);
+			$enddate = trim($dateArr[1]);
+			$start = $this->daterangepickermysql($startdate);
+			$end = $this->daterangepickermysql($enddate);
+		}
+		if($start == '' || $end == ''){
+			$messages = "Datetime Promotion Not Valid";
+			return redirect('product/promotion/form')->withErrors($messages);
+		}
+		
+		$data = array(
+			'description' => $postdata->input("description") != null ? $postdata->input("description") : '',
+			'start' => $start,
+			'end' => $end,
+			'price_wm' => $postdata->input("price_wm"),
+			'price_em' => $postdata->input("price_em"),
+			'price_staff' => $postdata->input("price_staff"),
+			'status' => $postdata->input("status") != null ? $postdata->input("status") : '1',
+			'updated_by' => 1,
+			'updated_at' => date('Y-m-d H:i:s'),
+		);
+		
+		$promotiondata->where('id',$id)->update($data);
+		
+		#product list insert  / update / delete
+		$giftid = $postdata->input("giftid");
+		$promotiongift = $postdata->input("promotiongift");
+		$promotionquantity = $postdata->input("promotionquantity");
+		$promotiondescription = $postdata->input("promotiondescription");
+			
+		$giftdata = New product_promotion_gift_m;
+		$valid_id = array();
+		foreach($giftid as $k => $v){
+			if($v > 0){
+				#update
+				if(trim($promotiongift[$k]) != ''){
+					$datagift = array(
+						'promotion_id' => $id,
+						'gift' => trim($promotiongift[$k]),
+						'quantity' => $promotionquantity[$k] > 0 ? $promotionquantity[$k] : 1,
+						'description' => $promotiondescription[$k] != null ? trim($promotiondescription[$k]) : '',
+						'updated_by' => 1,
+						'updated_at' => date('Y-m-d H:i:s'),
+					);
+					$giftdata->where('id',$v)->update($datagift);
+					$valid_id[] = $v;
+				}
+			}
+			else{
+				#insert
+				if(trim($promotiongift[$k]) != ''){
+					$datagift = array(
+						'promotion_id' => $id,
+						'gift' => trim($promotiongift[$k]),
+						'quantity' => $promotionquantity[$k] > 0 ? $promotionquantity[$k] : 1,
+						'description' => $promotiondescription[$k] != null ? trim($promotiondescription[$k]) : '',
+						'created_by' => 1,
+						'created_at' => date('Y-m-d H:i:s'),
+						'updated_by' => 1,
+						'updated_at' => date('Y-m-d H:i:s'),
+					);
+					$v = $giftdata->insertGetId($datagift);
+					$valid_id[] = $v;
+				}
+			}
+		}
+		#delete
+		if(count($valid_id) > 0){
+			#Delete WHERE NOT IN array
+			$giftdata->where('promotion_id', $id)->whereNotIn('id', $valid_id)->delete();
+		}
+		else{
+			#Delete All
+			$giftdata->where('promotion_id', $id)->delete();
+		}
+		
+		return redirect("product/promotion/view/" . $id)->with("info","Success Save Product Promotion " . $postdata->input("description") . "");
     }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+	
+    public function delete($data = ''){
+		if(@unserialize(base64_decode($data)) == true){
+			$datadecode = unserialize(base64_decode($data));
+			$delete = isset($datadecode['delete']) ? $datadecode['delete'] : 0;
+			$deleteid = isset($datadecode['deleteid']) ? $datadecode['deleteid'] : 0;
+			if($delete == 'promotion' && $deleteid > 0){
+				$checkpromotion = product_promotion_m::where('id', $deleteid)->first();
+				if($checkpromotion == false)
+					return redirect("product/promotion/listing")->with("errorid"," Data not found");
+				
+				$search = isset($datadecode['search']) ? $datadecode['search'] : '';
+				if(product_promotion_m::where('id', $deleteid)->delete()){
+					#delete all gift
+					$giftdata = New product_promotion_gift_m;
+					$giftdata->where('promotion_id', $deleteid)->delete();
+					
+					if($search != '')
+						return redirect("product/promotion/search/" . $search)->with("info","Product Promotion " . $checkpromotion['description'] . "  Deleted Successfully!!");
+					else
+						return redirect("product/promotion/listing")->with("info","Product Promotion " . $checkpromotion['description'] . " Deleted Successfully!!");
+					
+				}
+			}
+		}
+		return redirect("product/promotion/listing");
     }
+	
+	function daterangepickermysql($datetime){
+		# $datedatetime = d/m/Y h:mm A format
+		$dateArr = explode(" ",$datetime);
+		$sqldate = $sqltime = '';
+		if(count($dateArr) > 2){
+			$date = trim($dateArr[0]);
+			$sqltime = trim($dateArr[1]) . ' ' . trim($dateArr[2]);
+			$tmp_date = explode("/", $date);
+			if(sizeof($tmp_date) != 3)
+				return '';
+			
+			$sqldate = $tmp_date[2] . "-" . $tmp_date[1] . "-" . $tmp_date[0];
+		}
+		$datetime = $sqldate . ' ' . $sqltime;
+		return date('Y-m-d H:i:s',strtotime($datetime));
+	}
 }

@@ -19,8 +19,8 @@ class CreateProductPromotionTable extends Migration
             $table->string('description')->default('')->comment('remarks');
 			$table->integer('price_checked')->default('0')->comment('promotion price');
 			$table->integer('gift_checked')->default('0')->comment('promotion gift');
-			$table->date('start')->nullable();
-			$table->date('end')->nullable();
+			$table->dateTime('start')->nullable();
+			$table->dateTime('end')->nullable();
 			$table->double('price_wm', 12, 2)->default('0')->comment('promotion bfr gst');
 			$table->double('price_em', 12, 2)->default('0')->comment('promotion bfr gst');
 			$table->double('price_staff', 12, 2)->default('0')->comment('promotion bfr gst');
@@ -37,7 +37,7 @@ class CreateProductPromotionTable extends Migration
 			$table->integer('promotion_id')->default('0')->comment('promotion id');
             $table->string('product_id')->default('')->comment('select product');
 			$table->integer('quantity')->default('0')->comment('quantity');
-			$table->integer('description')->default('0')->comment('remarks');
+			$table->string('description')->default('')->comment('remarks');
 			$table->integer('created_by')->comment('User ID')->nullable();
 			$table->datetime('created_at');
 			$table->integer('updated_by')->comment('User ID')->nullable();
