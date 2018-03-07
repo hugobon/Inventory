@@ -86,9 +86,9 @@ if(isset($outputData)){
 									</div>
 								</div>
 								<div class="form-group">
-									<label class="col-md-3 control-label">Region</label>
+									<label class="col-md-3 control-label">State</label>
 									<div class="col-md-9">
-										<input name="region" type="text" class="form-control" value="{!! isset($outputData) ? $outputData->region : '' !!}">
+										<input name="state" type="text" class="form-control" value="{!! isset($outputData) ? $outputData->state : '' !!}">
 									</div>
 								</div>
 								<div class="form-group">
