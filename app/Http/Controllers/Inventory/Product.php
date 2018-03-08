@@ -10,6 +10,7 @@ use App\inventory\product_m;
 use App\inventory\product_image_m;
 use App\inventory\product_package_m;
 use App\configuration\config_tax_m;
+use App\inventory\product_promotion_m;
 
 class Product extends Controller{
 
@@ -22,7 +23,8 @@ class Product extends Controller{
 		$data = array(
 			'countproduct' => $productdata->count(),
 			'productArr' => $productdata->orderBy('id', 'desc')->paginate(10),
-			'typeArr' => array( '0' => '', '1' => 'By Item','2' => 'Package ','3' => 'Monthly Promotion' ),
+			'typeArr' => array( '0' => '', '1' => 'Item','2' => 'Package ','3' => 'Monthly Promotion' ),
+			'statusArr' => array( '0' => 'Inactive', '1' => 'Active'),
 		);
         return view('Inventory/product_listing',$data);
     }
@@ -67,7 +69,8 @@ class Product extends Controller{
 		$data = array(
 			'countproduct' => $countproduct,
 			'productArr' => $productArr,
-			'typeArr' => array( '0' => '', '1' => 'By Item','2' => 'Package','3' => 'Monthly Promotion' ),
+			'typeArr' => array( '0' => '', '1' => 'Item','2' => 'Package','3' => 'Monthly Promotion' ),
+			'statusArr' => array( '0' => 'Inactive', '1' => 'Active'),
 			'search' => $search,
 			'type' => $type,
 		);
@@ -106,56 +109,64 @@ class Product extends Controller{
     }
 	
 	public function edit($id = 0, $gallery = 0){
-		$data = product_m::where('id', $id)->first();
-		if($data == false)
-			return redirect("product/listing")->with("errorid"," Not Found ");
-		if($data['type'] == 2)
-			return redirect("product/package_edit/" . $id . ($gallery > 0 ? '/1' : ''));
-		
-		# get Tax GST percentage		
-		$taxgst = config_tax_m::where('code', 'gst')->first();
-		if($taxgst == false)
-			$gstpercentage = 6;
-		else
-			$gstpercentage = $taxgst['percent'];
-		
-		$tabform = 'active';
-		$tabgallery = '';
-		if($gallery == 1){
-			$tabform = '';
-			$tabgallery = 'active';
-		}
+		if($id > 0){
+			$data = product_m::where('id', $id)->first();
+			if($data == false)
+				return redirect("product/listing")->with("errorid"," Not Found ");
+			if($data['type'] == 2)
+				return redirect("product/package_edit/" . $id . ($gallery > 0 ? '/1' : ''));
 			
-		$data['gstpercentage'] = $gstpercentage;
-		$data['tabform'] = $tabform;
-		$data['tabgallery'] = $tabgallery;
-		
-		return view('Inventory/product_form',$data);
+			# get Tax GST percentage		
+			$taxgst = config_tax_m::where('code', 'gst')->first();
+			if($taxgst == false)
+				$gstpercentage = 6;
+			else
+				$gstpercentage = $taxgst['percent'];
+			
+			$tabform = 'active';
+			$tabgallery = '';
+			if($gallery == 1){
+				$tabform = '';
+				$tabgallery = 'active';
+			}
+				
+			$data['gstpercentage'] = $gstpercentage;
+			$data['tabform'] = $tabform;
+			$data['tabgallery'] = $tabgallery;
+			
+			return view('Inventory/product_form',$data);
+		}
+		return redirect("product/listing");
     }
 	
-	public function view($id){
-		$data = product_m::where('id', $id)->first();
-		if($data == false)
-			return redirect("product/listing")->with("errorid"," Not Found ");
+	public function view($id = 0){
+		if($id > 0){
+			$data = product_m::where('id', $id)->first();
+			if($data == false)
+				return redirect("product/listing")->with("errorid"," Not Found ");
+				
+			if($data['type'] == 2)
+				return redirect("product/package_view/" . $id);
+				
+			$data['typestr'] =  array( '0' => '', '1' => 'Item','2' => 'Package','3' => 'Monthly Promotion' );
 			
-		if($data['type'] == 2)
-			return redirect("product/package_view/" . $id);
+			# get Tax GST percentage		
+			$taxgst = config_tax_m::where('code', 'gst')->first();
+			if($taxgst == false)
+				$gstpercentage = 6;
+			else
+				$gstpercentage = $taxgst['percent'];
+				
+			$imagedata = New product_image_m;
+			$promotiondata = New product_promotion_m;
+			$data['imageArr'] = $imagedata->where('product_id',$id)->orderBy('status', 'desc')->orderBy('id', 'desc')->get();
+			$data['promotion_list'] = $promotiondata->where('product_id',$id)->orderBy('id', 'desc')->get();
+			$data['statusArr'] = array('1' => 'Active', '0' => 'Inactive');
+			$data['gstpercentage'] = $gstpercentage;
 			
-		$data['typestr'] =  array( '0' => '', '1' => 'By Item','2' => 'Package','3' => 'Monthly Promotion' );
-		
-		# get Tax GST percentage		
-		$taxgst = config_tax_m::where('code', 'gst')->first();
-		if($taxgst == false)
-			$gstpercentage = 6;
-		else
-			$gstpercentage = $taxgst['percent'];
-		
-		$imagedata = New product_image_m;
-		$data['imageArr'] = $imagedata->where('product_id',$id)->orderBy('id', 'desc')->get();
-		$data['statusArr'] = array('1' => 'Active', '0' => 'Inactive');
-		$data['gstpercentage'] = $gstpercentage;
-		
-		return view('Inventory/product_view',$data);
+			return view('Inventory/product_view',$data);
+		}
+		return redirect("product/listing");
     }
 	
 	public function insert(Request $postdata){
@@ -183,12 +194,14 @@ class Product extends Controller{
 			'code' => $code,
 			'type' => $postdata->input("type"),
 			'description' => $description,
+			'weight' => $postdata->input("weight") != null ? $postdata->input("weight") : '0',
+			'point' => $postdata->input("point") != null ? $postdata->input("point") : '0',
 			'price_wm' => $postdata->input("price_wm"),
 			'price_em' => $postdata->input("price_em"),
 			'price_staff' => $postdata->input("price_staff"),
 			'last_purchase' => $postdata->input("last_purchase") > 0 ? $postdata->input("last_purchase") : 0,
 			'quantity_min' => $postdata->input("quantity_min") > 0 ? $postdata->input("quantity_min") : 0,
-			'quantity' => $postdata->input("quantity") > 0 ? $postdata->input("quantity") : 0,
+			'quantity' => 0,
 			'status' => $postdata->input("status") != null ? $postdata->input("status") : '1',
 			'year' => $postdata->input("year") > 1900 ? $postdata->input("year") : 1900,
 			'category' => $postdata->input("category") != null ? $postdata->input("category") : '',
@@ -233,6 +246,8 @@ class Product extends Controller{
 			'code' => $code,
 			'type' => $postdata->input("type"),
 			'description' => $description,
+			'weight' => $postdata->input("weight") != null ? $postdata->input("weight") : '0',
+			'point' => $postdata->input("point") != null ? $postdata->input("point") : '0',
 			'price_wm' => $postdata->input("price_wm"),
 			'price_em' => $postdata->input("price_em"),
 			'price_staff' => $postdata->input("price_staff"),
@@ -247,7 +262,7 @@ class Product extends Controller{
 		
 		$productdata->where('id',$id)->update($data);
 		
-		return redirect("product/view/" . $id)->with("info","Success Save " . $postdata->input("description") . "");
+		return redirect("product/view/" . $id)->with("info","Success Save " . $data['code'] . " (" . $data['description'] . ")");
     }
 	
 	public function package_form(){
@@ -275,76 +290,87 @@ class Product extends Controller{
     }
 	
 	public function package_edit($id = 0, $gallery = 0){
-		$productdata = New product_m;
-		$data = $productdata->where('id', $id)->where('type', 2)->first();
-		if($data == false)
-			return redirect("product/listing")->with("errorid"," Not Found ");
-		
-		# get Tax GST percentage		
-		$taxgst = config_tax_m::where('code', 'gst')->first();
-		if($taxgst == false)
-			$gstpercentage = 6;
-		else
-			$gstpercentage = $taxgst['percent'];
-		
-		# get all product exclude package
-		$productdata = New product_m;
-		$data2 = $productdata->where('type','<>',2)->orderBy('code', 'asc')->get();
-		$productArr = array();
-		if(count($data2) > 0){
-			foreach($data2->all() as $key => $row)
-				$productArr[$row->id] = $row->code . ' (' . $row->description . ')';
+		if($id > 0){
+			$productdata = New product_m;
+			$data = $productdata->where('id', $id)->where('type', 2)->first();
+			if($data == false)
+				return redirect("product/listing")->with("errorid"," Not Found ");
+			
+			# get Tax GST percentage		
+			$taxgst = config_tax_m::where('code', 'gst')->first();
+			if($taxgst == false)
+				$gstpercentage = 6;
+			else
+				$gstpercentage = $taxgst['percent'];
+			
+			# get all product exclude package
+			$productdata = New product_m;
+			$data2 = $productdata->where('type','<>',2)->orderBy('code', 'asc')->get();
+			$productArr = array();
+			if(count($data2) > 0){
+				foreach($data2->all() as $key => $row)
+					$productArr[$row->id] = $row->code . ' (' . $row->description . ')';
+			}
+			
+			$tabform = 'active';
+			$tabgallery = '';
+			if($gallery == 1){
+				$tabform = '';
+				$tabgallery = 'active';
+			}
+			
+			$packagedata = New product_package_m;
+			$data['product_list'] = $packagedata->where('package_id', $id)->get();
+			$data['gstpercentage'] = $gstpercentage;
+			$data['tabform'] = $tabform;
+			$data['tabgallery'] = $tabgallery;
+			$data['productArr'] = $productArr; # not package product
+			return view('Inventory/product_package_form',$data);
 		}
-		
-		$tabform = 'active';
-		$tabgallery = '';
-		if($gallery == 1){
-			$tabform = '';
-			$tabgallery = 'active';
-		}
-		
-		$packagedata = New product_package_m;
-		$data['product_list'] = $packagedata->where('package_id', $id)->get();
-		$data['gstpercentage'] = $gstpercentage;
-		$data['tabform'] = $tabform;
-		$data['tabgallery'] = $tabgallery;
-		$data['productArr'] = $productArr; # not package product
-		return view('Inventory/product_package_form',$data);
+		return redirect("product/listing");
     }
 	
-	public function package_view($id){
-		$productdata = New product_m;
-		$data = $productdata->where('id', $id)->where('type', 2)->first();
-		if($data == false)
-			return redirect("product/listing")->with("errorid"," Not Found ");
+	public function package_view($id = 0){
+		if($id > 0){
+			$productdata = New product_m;
+			$data = $productdata->where('id', $id)->first();
+			if($data == false)
+				return redirect("product/listing")->with("errorid"," Not Found 1");
+				
+			if($data['type'] != 2)
+				return redirect("product/view/" . $id);
+				
+			$data['typestr'] =  array( '0' => '', '1' => 'Item','2' => 'Package','3' => 'Monthly Promotion' );
 			
-		$data['typestr'] =  array( '0' => '', '1' => 'By Item','2' => 'Package','3' => 'Monthly Promotion' );
-		
-		# get Tax GST percentage		
-		$taxgst = config_tax_m::where('code', 'gst')->first();
-		if($taxgst == false)
-			$gstpercentage = 6;
-		else
-			$gstpercentage = $taxgst['percent'];
-		
-		#get product name
-		$packagedata = New product_package_m;
-		$product_list = $packagedata->where('package_id', $id)->get();
-		$productArr = array();
-		if(count($product_list) > 0){
-			foreach($product_list->all() as $key => $row){
-				$datap = $productdata->where('id', $row->product_id)->where('type','<>', 2)->first();
-				$productArr[$datap['id']] = $datap['code'] . ' (' . $datap['description'] . ')';
+			# get Tax GST percentage		
+			$taxgst = config_tax_m::where('code', 'gst')->first();
+			if($taxgst == false)
+				$gstpercentage = 6;
+			else
+				$gstpercentage = $taxgst['percent'];
+			
+			#get product name
+			$packagedata = New product_package_m;
+			$product_list = $packagedata->where('package_id', $id)->get();
+			$productArr = array();
+			if(count($product_list) > 0){
+				foreach($product_list->all() as $key => $row){
+					$datap = $productdata->where('id', $row->product_id)->where('type','<>', 2)->first();
+					$productArr[$datap['id']] = $datap['code'] . ' (' . $datap['description'] . ')';
+				}
 			}
+			
+			$imagedata = New product_image_m;
+			$promotiondata = New product_promotion_m;
+			$data['imageArr'] = $imagedata->where('product_id',$id)->orderBy('id', 'desc')->get();
+			$data['promotion_list'] = $promotiondata->where('product_id',$id)->orderBy('id', 'desc')->get();
+			$data['statusArr'] = array('1' => 'Active', '0' => 'Inactive');
+			$data['gstpercentage'] = $gstpercentage;
+			$data['product_list'] = $product_list;
+			$data['productArr'] = $productArr; # not package product
+			return view('Inventory/product_package_view',$data);
 		}
-		
-		$imagedata = New product_image_m;
-		$data['imageArr'] = $imagedata->where('product_id',$id)->orderBy('id', 'desc')->get();
-		$data['statusArr'] = array('1' => 'Active', '0' => 'Inactive');
-		$data['gstpercentage'] = $gstpercentage;
-		$data['product_list'] = $product_list;
-		$data['productArr'] = $productArr; # not package product
-		return view('Inventory/product_package_view',$data);
+		return redirect("product/listing");
     }
 	
 	public function package_insert(Request $postdata){
@@ -371,12 +397,14 @@ class Product extends Controller{
 			'code' => $code,
 			'type' => 2,
 			'description' => $description,
+			'weight' => $postdata->input("weight") != null ? $postdata->input("weight") : '0',
+			'point' => $postdata->input("point") != null ? $postdata->input("point") : '0',
 			'price_wm' => $postdata->input("price_wm"),
 			'price_em' => $postdata->input("price_em"),
 			'price_staff' => $postdata->input("price_staff"),
 			'last_purchase' => $postdata->input("last_purchase") > 0 ? $postdata->input("last_purchase") : 0,
 			'quantity_min' => $postdata->input("quantity_min") > 0 ? $postdata->input("quantity_min") : 0,
-			'quantity' => $postdata->input("quantity") > 0 ? $postdata->input("quantity") : 0,
+			'quantity' => 0,
 			'status' => $postdata->input("status") != null ? $postdata->input("status") : '1',
 			'year' => $postdata->input("year") > 1900 ? $postdata->input("year") : 1900,
 			'category' => $postdata->input("category") != null ? $postdata->input("category") : '',
@@ -443,6 +471,8 @@ class Product extends Controller{
 		$data = array(
 			'code' => $code,
 			'description' => $description,
+			'weight' => $postdata->input("weight") != null ? $postdata->input("weight") : '0',
+			'point' => $postdata->input("point") != null ? $postdata->input("point") : '0',
 			'price_wm' => $postdata->input("price_wm"),
 			'price_em' => $postdata->input("price_em"),
 			'price_staff' => $postdata->input("price_staff"),
@@ -473,8 +503,6 @@ class Product extends Controller{
 						'product_id' => $productid[$k],
 						'quantity' => $productquantity[$k] > 0 ? $productquantity[$k] : 0,
 						'description' => $productdescription[$k] != null ? $productdescription[$k] : '',
-						'created_by' => 1,
-						'created_at' => date('Y-m-d H:i:s'),
 						'updated_by' => 1,
 						'updated_at' => date('Y-m-d H:i:s'),
 					);
@@ -502,7 +530,7 @@ class Product extends Controller{
 		}
 		#delete
 		if(count($valid_id) > 0){
-			#Delete All
+			#Delete WHERE NOT IN array
 			$packagedata->where('package_id', $id)->whereNotIn('id', $valid_id)->delete();
 		}
 		else{
@@ -514,15 +542,21 @@ class Product extends Controller{
     }
 	
 	public function upload_image(Request $postdata,$id = 0){
+		$imagedata = New product_image_m;
 		$datajson = array(
 			'status' => 'Fail',
 			'remarks' => 'Product not Founds',
 		);
 		$checkproduct = product_m::where('id', $id)->first();
 		if($checkproduct == true){
+			$statusimg = 1;
+			$mainimage = $imagedata->where('product_id', $id)->where('status', 1)->first();
+			if($mainimage == true)
+				$statusimg = 0;
 			$data = array(
 				'product_id' => $id,
 				'description' => $postdata->input("description") != null ? $postdata->input("description") : '',
+				'status' => $statusimg,
 				'created_by' => 1,
 				'created_at' => date('Y-m-d H:i:s'),
 				'updated_by' => 1,
@@ -543,7 +577,6 @@ class Product extends Controller{
 						$data['file_name'] = $picture_name;
 						$data['path'] = 'product_image/' . $id . '/' . $new_pname;
 						$data['type'] = $picture_type;
-						$imagedata = New product_image_m;
 						$id = $imagedata->insertGetId($data);
 						
 						$datajson = array(
@@ -579,7 +612,7 @@ class Product extends Controller{
 		$checkproduct = product_m::where('id', $id)->first();
 		if($checkproduct == true){
 			$imagedata = New product_image_m;
-			$data['imageArr'] = $imagedata->where('product_id',$id)->orderBy('id', 'desc')->get();
+			$data['imageArr'] = $imagedata->where('product_id',$id)->orderBy('status', 'desc')->orderBy('id', 'desc')->get();
 			$data['productId'] = $id; 
 			$data['productName'] = $checkproduct['code'] . ' (' . $checkproduct['description'] . ') '; 
 			return view('Inventory/product_reload_image',$data);
@@ -604,6 +637,7 @@ class Product extends Controller{
 			$datadecode = unserialize(base64_decode($data));
 			$delete = isset($datadecode['delete']) ? $datadecode['delete'] : 0;
 			$deleteid = isset($datadecode['deleteid']) ? $datadecode['deleteid'] : 0;
+			
 			if($delete == 'product' && $deleteid > 0){
 				$checkproduct = product_m::where('id', $deleteid)->first();
 				if($checkproduct == false)
@@ -611,11 +645,33 @@ class Product extends Controller{
 				
 				$search = isset($datadecode['search']) ? $datadecode['search'] : '';
 				
+				if($checkproduct['type'] == 2){
+					#delete all package product
+					$packagedata = New product_package_m;
+					$packagedata->where('package_id', $deleteid)->delete();
+				}
+				
 				if(product_m::where('id', $deleteid)->delete()){
-					if($checkproduct['picture_path'] != ''){
-						# remove image after delete
-						Storage::delete('public/' . $checkproduct['picture_path']);
+					if($checkproduct['type'] == 2){
+						#delete all package product
+						$packagedata = New product_package_m;
+						$packagedata->where('product_id', $deleteid)->delete();
 					}
+					
+					#delete all image
+					$imagedata = New product_image_m;
+					$checkimage = $imagedata->where('product_id', $deleteid)->get();
+					if(count($checkimage) > 0){
+						foreach($checkimage->all() as $key => $rowimage){
+							if($imagedata->where('id', $rowimage->id)->delete()){
+								if($rowimage->path != ''){
+									# remove image after delete
+									Storage::delete('public/' . $rowimage->path);
+								}
+							}
+						}
+					}
+					
 					if($search != '')
 						return redirect("product/search/" . $search)->with("info","Product " . $checkproduct['code'] . "  (" . $checkproduct['description'] . " ) Deleted Successfully!!");
 					else
@@ -626,6 +682,28 @@ class Product extends Controller{
 		}
 		return redirect("product/listing");
     }
+	
+	public function set_mainimage(Request $postdata){
+		$product_id = $postdata->input("product_id");
+		$imageid = $postdata->input("imageid");
+		if($product_id > 0 && $imageid > 0){
+			#set all 0
+			$data = array(
+				'status' => 0,
+			);
+			$imagedata = New product_image_m;
+			$imagedata->where('product_id',$product_id)->update($data);
+			# set 1
+			$data = array(
+				'status' => 1,
+				'updated_by' => 1,
+				'updated_at' => date('Y-m-d H:i:s'),
+			);
+			$imagedata->where('id',$imageid)->where('product_id',$product_id)->update($data);
+			return "success";
+		}
+		return "not found";
+	}
 	
 	public function delete_image($data = ''){
 		if(@unserialize(base64_decode($data)) == true){
