@@ -1,5 +1,5 @@
 @extends('header')
-@section('title','Stock In')
+@section('title','Stock Return')
 
 @section('content')
 
