@@ -8,6 +8,7 @@ use App\inventory\product_m;
 use App\inventory\product_promotion_m;
 use App\inventory\product_promotion_gift_m;
 use App\configuration\config_tax_m;
+use App\user_m;
 
 class Product_promotion extends Controller
 {
@@ -172,7 +173,19 @@ class Product_promotion extends Controller
 			$gift_list = $giftdata->where('promotion_id', $id)->get();
 
 			$data = array();
-			$data = $promotion;
+			$userdata = New user_m;
+			
+			$created_by_name = $updated_by_name = "";
+			$user = $userdata->where('id', $promotion['created_by'])->first();
+			if($user)
+				$created_by_name = $user['name'];
+			$user2 = $userdata->where('id', $promotion['updated_by'])->first();
+			if($user2)
+				$updated_by_name = $user2['name'];
+			
+			$data = $promotion;	
+			$data['created_by_name'] = $created_by_name;
+			$data['updated_by_name'] = $updated_by_name;
 			$data['gstpercentage'] = $gstpercentage;
 			$data['productArr'] = $productArr;
 			$data['gift_list'] = $gift_list;
