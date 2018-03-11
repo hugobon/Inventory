@@ -244,7 +244,7 @@ if(isset($id) && $id > 0){
 						<div class="col-md-6">
 							<div class="form-group">
 								<label class="col-md-3 control-label"> Created by: </label>
-								<div class="col-md-9 control-label text-left"> Administrator </div>
+								<div class="col-md-9 control-label text-left">{{ $created_by_name }}</div>
 							</div>
 							<div class="form-group">
 								<label class="col-md-3 control-label"> Created at: </label>
@@ -254,7 +254,7 @@ if(isset($id) && $id > 0){
 						<div class="col-md-6">
 							<div class="form-group">
 								<label class="col-md-3 control-label"> Updated by: </label>
-								<div class="col-md-9 control-label text-left"> Administrator </div>
+								<div class="col-md-9 control-label text-left">{{ $updated_by_name }}</div>
 							</div>
 							<div class="form-group">
 								<label class="col-md-3 control-label"> Updated at: </label>

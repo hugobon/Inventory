@@ -66,7 +66,7 @@ Route::post('product/set_mainimage', 'Inventory\Product@set_mainimage');
 Route::post('product/check_existcode', 'Inventory\Product@check_existcode');
 Route::get('product/delete/{x?}', 'Inventory\Product@delete');
 Route::get('product/delete_image/{x?}', 'Inventory\Product@delete_image');
-
+Route::get('product/all_data_product/{x?}', 'Inventory\Product@all_data_product');
 // Product promotion
 Route::get('product/promotion', function () {  return redirect("promotion/listing"); });
 Route::get('product/promotion/listing', 'Inventory\Product_promotion@listing');

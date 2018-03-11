@@ -11,9 +11,15 @@ use App\inventory\product_image_m;
 use App\inventory\product_package_m;
 use App\configuration\config_tax_m;
 use App\inventory\product_promotion_m;
+use App\user_m;
 
+use Auth;
 class Product extends Controller{
 
+	public function __construct(){
+        $this->middleware('auth');
+    }
+	
     public function index(){
         return redirect('product/listing');
     }
@@ -159,6 +165,18 @@ class Product extends Controller{
 				
 			$imagedata = New product_image_m;
 			$promotiondata = New product_promotion_m;
+			$userdata = New user_m;
+			
+			$created_by_name = $updated_by_name = "";
+			$user = $userdata->where('id', $data['created_by'])->first();
+			if($user)
+				$created_by_name = $user['name'];
+			$user2 = $userdata->where('id', $data['updated_by'])->first();
+			if($user2)
+				$updated_by_name = $user2['name'];
+				
+			$data['created_by_name'] = $created_by_name;
+			$data['updated_by_name'] = $updated_by_name;
 			$data['imageArr'] = $imagedata->where('product_id',$id)->orderBy('status', 'desc')->orderBy('id', 'desc')->get();
 			$data['promotion_list'] = $promotiondata->where('product_id',$id)->orderBy('id', 'desc')->get();
 			$data['statusArr'] = array('1' => 'Active', '0' => 'Inactive');
@@ -205,9 +223,9 @@ class Product extends Controller{
 			'status' => $postdata->input("status") != null ? $postdata->input("status") : '1',
 			'year' => $postdata->input("year") > 1900 ? $postdata->input("year") : 1900,
 			'category' => $postdata->input("category") != null ? $postdata->input("category") : '',
-			'created_by' => 1,
+			'created_by' => Auth::user()->id,
 			'created_at' => date('Y-m-d H:i:s'),
-			'updated_by' => 1,
+			'updated_by' => Auth::user()->id,
 			'updated_at' => date('Y-m-d H:i:s'),
 		);
 		$productdata = New product_m;
@@ -256,7 +274,7 @@ class Product extends Controller{
 			'status' => $postdata->input("status") != null ? $postdata->input("status") : '1',
 			'year' => $postdata->input("year") > 1900 ? $postdata->input("year") : 1900,
 			'category' => $postdata->input("category") != null ? $postdata->input("category") : '',
-			'updated_by' => 1,
+			'updated_by' => Auth::user()->id,
 			'updated_at' => date('Y-m-d H:i:s'),
 		);
 		
@@ -362,6 +380,18 @@ class Product extends Controller{
 			
 			$imagedata = New product_image_m;
 			$promotiondata = New product_promotion_m;
+			$userdata = New user_m;
+			
+			$created_by_name = $updated_by_name = "";
+			$user = $userdata->where('id', $data['created_by'])->first();
+			if($user)
+				$created_by_name = $user['name'];
+			$user2 = $userdata->where('id', $data['updated_by'])->first();
+			if($user2)
+				$updated_by_name = $user2['name'];
+				
+			$data['created_by_name'] = $created_by_name;
+			$data['updated_by_name'] = $updated_by_name;
 			$data['imageArr'] = $imagedata->where('product_id',$id)->orderBy('id', 'desc')->get();
 			$data['promotion_list'] = $promotiondata->where('product_id',$id)->orderBy('id', 'desc')->get();
 			$data['statusArr'] = array('1' => 'Active', '0' => 'Inactive');
@@ -408,9 +438,9 @@ class Product extends Controller{
 			'status' => $postdata->input("status") != null ? $postdata->input("status") : '1',
 			'year' => $postdata->input("year") > 1900 ? $postdata->input("year") : 1900,
 			'category' => $postdata->input("category") != null ? $postdata->input("category") : '',
-			'created_by' => 1,
+			'created_by' => Auth::user()->id,
 			'created_at' => date('Y-m-d H:i:s'),
-			'updated_by' => 1,
+			'updated_by' => Auth::user()->id,
 			'updated_at' => date('Y-m-d H:i:s'),
 		);
 		$productdata = New product_m;
@@ -429,9 +459,9 @@ class Product extends Controller{
 						'product_id' => $productid[$k],
 						'quantity' => $productquantity[$k] > 0 ? $productquantity[$k] : 0,
 						'description' => $productdescription[$k] != null ? $productdescription[$k] : '',
-						'created_by' => 1,
+						'created_by' => Auth::user()->id,
 						'created_at' => date('Y-m-d H:i:s'),
-						'updated_by' => 1,
+						'updated_by' => Auth::user()->id,
 						'updated_at' => date('Y-m-d H:i:s'),
 					);
 					$packagedata->insert($datapraduct);
@@ -481,7 +511,7 @@ class Product extends Controller{
 			'status' => $postdata->input("status") != null ? $postdata->input("status") : '1',
 			'year' => $postdata->input("year") > 1900 ? $postdata->input("year") : 1900,
 			'category' => $postdata->input("category") != null ? $postdata->input("category") : '',
-			'updated_by' => 1,
+			'updated_by' => Auth::user()->id,
 			'updated_at' => date('Y-m-d H:i:s'),
 		);
 		
@@ -503,7 +533,7 @@ class Product extends Controller{
 						'product_id' => $productid[$k],
 						'quantity' => $productquantity[$k] > 0 ? $productquantity[$k] : 0,
 						'description' => $productdescription[$k] != null ? $productdescription[$k] : '',
-						'updated_by' => 1,
+						'updated_by' => Auth::user()->id,
 						'updated_at' => date('Y-m-d H:i:s'),
 					);
 					$packagedata->where('id',$v)->update($datapraduct);
@@ -518,9 +548,9 @@ class Product extends Controller{
 						'product_id' => $productid[$k],
 						'quantity' => $productquantity[$k] > 0 ? $productquantity[$k] : 0,
 						'description' => $productdescription[$k] != null ? $productdescription[$k] : '',
-						'created_by' => 1,
+						'created_by' => Auth::user()->id,
 						'created_at' => date('Y-m-d H:i:s'),
-						'updated_by' => 1,
+						'updated_by' => Auth::user()->id,
 						'updated_at' => date('Y-m-d H:i:s'),
 					);
 					$v = $packagedata->insertGetId($datapraduct);
@@ -557,9 +587,9 @@ class Product extends Controller{
 				'product_id' => $id,
 				'description' => $postdata->input("description") != null ? $postdata->input("description") : '',
 				'status' => $statusimg,
-				'created_by' => 1,
+				'created_by' => Auth::user()->id,
 				'created_at' => date('Y-m-d H:i:s'),
-				'updated_by' => 1,
+				'updated_by' => Auth::user()->id,
 				'updated_at' => date('Y-m-d H:i:s'),
 			);
 			
@@ -613,7 +643,7 @@ class Product extends Controller{
 		if($checkproduct == true){
 			$imagedata = New product_image_m;
 			$data['imageArr'] = $imagedata->where('product_id',$id)->orderBy('status', 'desc')->orderBy('id', 'desc')->get();
-			$data['productId'] = $id; 
+			$data['productId'] = $id;
 			$data['productName'] = $checkproduct['code'] . ' (' . $checkproduct['description'] . ') '; 
 			return view('Inventory/product_reload_image',$data);
 		}
@@ -696,7 +726,7 @@ class Product extends Controller{
 			# set 1
 			$data = array(
 				'status' => 1,
-				'updated_by' => 1,
+				'updated_by' => Auth::user()->id,
 				'updated_at' => date('Y-m-d H:i:s'),
 			);
 			$imagedata->where('id',$imageid)->where('product_id',$product_id)->update($data);
@@ -727,6 +757,183 @@ class Product extends Controller{
 				}
 			}
 		}
+    }
+	
+	#pass to Amin
+	public function all_data_product(){
+		$nowdatetime =  date('Y-m-d H:i:s');
+		$productdata = New product_m;
+		$promotiondata = New product_promotion_m;
+		$imagedata = New product_image_m;
+		$productQuery = $productdata->orderBy('id', 'desc')->where('status',1)->get();
+		# get Tax GST percentage		
+		$taxgst = config_tax_m::where('code', 'gst')->first();
+		if($taxgst == false)
+			$gstpercentage = 6;
+		else
+			$gstpercentage = $taxgst['percent'];
+		$productArr = array(
+			'Product' => array(),
+			'Package' => array(),
+			'Promotion' => array(),
+		);
+		if(count($productQuery) > 0){
+			foreach($productQuery->all() as $key => $row){
+				$type = "Product";
+				if($row->type == 2)
+					$type = "Package";
+					
+				$productid = $row->id;
+				
+				#price after gst
+				$price_wm = $row->price_wm;
+				$price_em = $row->price_em;
+				$price_staff = $row->price_staff;
+				$wm_gst = $wm_aftergst = $em_gst = $em_aftergst = $staff_gst = $staff_aftergst = 0;
+				if($price_wm > 0){
+					$wm_gst = ($price_wm / 100) * $gstpercentage;
+					$wm_aftergst = $price_wm + $wm_gst;
+				}
+				if($price_em > 0){
+					$em_gst = ($price_em / 100) * $gstpercentage;
+					$em_aftergst = $price_em + $em_gst;
+				}
+				if($price_staff > 0){
+					$staff_gst = ($price_staff / 100) * $gstpercentage;
+					$staff_aftergst = $price_staff + $staff_gst;
+				}
+				
+				$data = array(
+					'id' => $productid,
+					'code' => $row->code,
+					'type' => $row->type,
+					'description' => $row->description,
+					'year' => $row->year,
+					'category' => $row->category,
+					'weight' => $row->weight,
+					'point' => $row->point,
+					'price_wm' => number_format($price_wm, 2, '.', ''),
+					'wm_gst' => number_format($wm_gst, 2, '.', ''),
+					'wm_aftergst' => number_format($wm_aftergst, 2, '.', ''),
+					'price_em' => number_format($price_em, 2, '.', ''),
+					'em_gst' => number_format($em_gst, 2, '.', ''),
+					'em_aftergst' => number_format($em_aftergst, 2, '.', ''),
+					'price_staff' => number_format($price_staff, 2, '.', ''),
+					'staff_gst' => number_format($staff_gst, 2, '.', ''),
+					'staff_aftergst' => number_format($staff_aftergst, 2, '.', ''),
+					
+				);
+				#image
+				$image = $imagedata->where('product_id',$productid)->orderBy('status', 'desc')->orderBy('id', 'desc')->first();
+				if($image){
+					$data['image_id'] = $image['id'];
+					$data['image_name'] = $image['file_name'];
+					$data['image_description'] = $image['description'];
+					$data['image_path'] = $image['path'];
+				}
+				
+				#in promotion range
+ 				$promotion = $promotiondata->where('product_id',$productid)
+											->where('start','<=',$nowdatetime)
+											->where('end','>=',$nowdatetime)
+											->where('status',1)
+											->orderBy('id', 'desc')->first();
+				if($promotion){
+					$type = "Promotion";
+					
+					#price after gst
+					$price_wm = $promotion['price_wm'];
+					$price_em = $promotion['price_em'];
+					$price_staff = $promotion['price_staff'];
+					$wm_gst = $wm_aftergst = $em_gst = $em_aftergst = $staff_gst = $staff_aftergst = 0;
+					if($price_wm > 0){
+						$wm_gst = ($price_wm / 100) * $gstpercentage;
+						$wm_aftergst = $price_wm + $wm_gst;
+					}
+					if($price_em > 0){
+						$em_gst = ($price_em / 100) * $gstpercentage;
+						$em_aftergst = $price_em + $em_gst;
+					}
+					if($price_staff > 0){
+						$staff_gst = ($price_staff / 100) * $gstpercentage;
+						$staff_aftergst = $price_staff + $staff_gst;
+					}
+					$data['price_wm'] = number_format($price_wm, 2, '.', '');
+					$data['wm_gst'] = number_format($wm_gst, 2, '.', '');
+					$data['wm_aftergst'] = number_format($wm_aftergst, 2, '.', '');
+					$data['price_em'] = number_format($price_em, 2, '.', '');
+					$data['em_gst'] = number_format($em_gst, 2, '.', '');
+					$data['em_aftergst'] = number_format($em_aftergst, 2, '.', '');
+					$data['price_staff'] = number_format($price_staff, 2, '.', '');
+					$data['staff_gst'] = number_format($staff_gst, 2, '.', '');
+					$data['staff_aftergst'] = number_format($staff_aftergst, 2, '.', '');
+					$data['promotion_id'] = $promotion['id'];
+					$data['promotion_description'] = $promotion['description'];
+					
+				}
+				
+				$productArr[$type][] = $data;
+			}
+		}
+		$datalisting = array(
+			'nowdatetime' => $nowdatetime,
+			'countproduct' => $productdata->count(),
+			'productArr' => $productArr,
+			'typeArr' => array( '0' => '', '1' => 'Product','2' => 'Package ','3' => 'Promotion' ),
+		);
+		
+		return $datalisting;
+    }
+	
+	public function single_data_product($id = 0){
+		$data = array();
+		if($id > 0){
+			$data = product_m::where('id', $id)->first();
+			if($data){
+				# get Tax GST percentage		
+				$taxgst = config_tax_m::where('code', 'gst')->first();
+				if($taxgst == false)
+					$gstpercentage = 6;
+				else
+					$gstpercentage = $taxgst['percent'];
+					
+				$price_wm = $data['price_wm'];
+				$price_em = $data['price_em'];
+				$price_staff = $data['price_staff'];
+				$wm_gst = $wm_aftergst = $em_gst = $em_aftergst = $staff_gst = $staff_aftergst = 0;
+				if($price_wm > 0){
+					$wm_gst = ($price_wm / 100) * $gstpercentage;
+					$wm_aftergst = $price_wm + $wm_gst;
+				}
+				if($price_em > 0){
+					$em_gst = ($price_em / 100) * $gstpercentage;
+					$em_aftergst = $price_em + $em_gst;
+				}
+				if($price_staff > 0){
+					$staff_gst = ($price_staff / 100) * $gstpercentage;
+					$staff_aftergst = $price_staff + $staff_gst;
+				}
+				
+				$data['price_wm'] = number_format($price_wm, 2, '.', '');
+				$data['wm_gst'] = number_format($wm_gst, 2, '.', '');
+				$data['wm_aftergst'] = number_format($wm_aftergst, 2, '.', '');
+				$data['price_em'] = number_format($price_em, 2, '.', '');
+				$data['em_gst'] = number_format($em_gst, 2, '.', '');
+				$data['em_aftergst'] = number_format($em_aftergst, 2, '.', '');
+				$data['price_staff'] = number_format($price_staff, 2, '.', '');
+				$data['staff_gst'] = number_format($staff_gst, 2, '.', '');
+				$data['staff_aftergst'] = number_format($staff_aftergst, 2, '.', '');
+					
+				$imagedata = New product_image_m;
+				$promotiondata = New product_promotion_m;
+				$data['imageArr'] = $imagedata->where('product_id',$id)->orderBy('status', 'desc')->orderBy('id', 'desc')->get();
+				$data['promotion_list'] = $promotiondata->where('product_id',$id)->orderBy('id', 'desc')->get();
+				$data['statusArr'] = array('1' => 'Active', '0' => 'Inactive');
+				$data['gstpercentage'] = $gstpercentage;
+			}
+		}
+		dd($data);
+		return $data;
     }
 	
 	function datepicker2mysql($date_dmY){
