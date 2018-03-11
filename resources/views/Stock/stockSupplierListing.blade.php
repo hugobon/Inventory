@@ -85,15 +85,15 @@
 							<thead>
 								<tr>
                                     <th></th>
-                                    <th>Supplier</th>
-                                    <th>Product</th>
-                                    <th>Barcode</th>
-                                    <th>In Stock Date</th>
+                                    <!-- <th>Supplier</th> -->
+                                    <th>Product Name</th>
+                                    <th>Stock left</th>
+                                    <!-- <th>In Stock Date</th>
                                     <th>Stock Received</th>
-                                    <th>Stock Description</th>
+                                    <th>Stock Description</th> -->
                                     <th></th>
-                                    <th></th>
-                                    <th></th>
+                                    <!-- <th></th>
+                                    <th></th> -->
 								</tr>
 							</thead>
 							<tbody>
@@ -104,24 +104,25 @@
                                
 									<tr>
 										<td><?php echo $i++; ?></td>
-										< <td>{{ $stock->stock_supplier }} </td>
-                                        <td>{{ $stock->product_description }} </td>
-                                        <td>{{ $stock->barcode }} </td>
+										<td>{{ $stock->product_description }} </td>
+										<td>{{ $stock->stocksCount }} </td>
+<!--                                        
+                                        <td><a href="#" class="btn">To Barcode list page{{ $stock->barcode }}</a> </td>
                                         <td>{{ $stock->in_stock_date }} </td>
                                         <td>{{ $stock->stock_received_number }}</td>
-                                        <td>{{ $stock->description }} </td>
+                                        <td>{{ $stock->description }} </td> -->
 										<td>
 											<a href="#" 
 											class="btn btn-info btn-rounded"><span class="fa fa-eye"></span></a>
 										</td>
-										<td>
+										<!-- <td>
 											<a href="#" 
 											class="btn btn-primary btn-rounded" ><span class="fa fa-edit"></span></a>
 										</td>
 										<td>
 											<a href="#" 									
 											class="btn btn-danger btn-rounded confirm-delete" ><span class="glyphicon glyphicon-trash"></span></a>
-										</td>
+										</td> -->
 									</tr>
 								@endforeach
 							@else
