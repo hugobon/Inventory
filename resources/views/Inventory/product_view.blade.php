@@ -23,11 +23,6 @@ if(isset($id) && $id > 0){
 }
 ?>
 @section('content')
-<style>
-.view-picture{ height: 250px; width: 100%; display: inline-block; position: relative; }
-.view-picture img { max-height: 98%; max-width: 98%; width: auto; height: auto; position: absolute;
-		top: 0; bottom: 0; left: 0; right: 0; margin: auto; }
-</style>
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
 	<li><a href="{{ url('home') }}">Home</a></li>                    
@@ -78,6 +73,10 @@ if(isset($id) && $id > 0){
 								<label class="col-md-3 control-label"> Description: </label>
 								<div class="col-md-9 control-label text-left">{{ isset($description) ? $description : '' }}</div>
 							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label"> Weight (Kg): </label>
+								<div class="col-md-9 control-label text-left">{{ isset($weight) ? number_format($weight, 2, '.', '') : '' }}</div>
+							</div>
 						</div>
 						<div class="col-md-6">
 							<div class="form-group">
@@ -91,6 +90,10 @@ if(isset($id) && $id > 0){
 							<div class="form-group">
 								<label class="col-md-3 control-label"> Category: </label>
 								<div class="col-md-9 control-label text-left">{{ isset($category) ? $category : '' }}</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label"> Point: </label>
+								<div class="col-md-9 control-label text-left">{{ isset($point) ? $point : '0' }}</div>
 							</div>
 						</div>
 					</div>
@@ -189,6 +192,50 @@ if(isset($id) && $id > 0){
 							</div>
 						</div>
 					</div>
+					<br /> &nbsp;
+					<div class="row">
+						<div class="col-md-12">
+							<h3> Product Promotion </h3>
+							<hr />
+						</div>
+						<div class="col-md-12">
+							<table class="table table-striped">
+								<thead>
+									<tr>
+										<th ></th>
+										<th >Id</th>
+										<th class="col-md-4"> Description </th>
+										<th class="col-md-6"> Date Range </th>
+										<th class="col-md-1"> Status </th>
+										<th ></th>
+									</tr>
+								</thead>
+								<tbody class="tbody-product">
+									@if(isset($promotion_list) && count($promotion_list) > 0)
+										
+										@foreach($promotion_list->all() as $key => $row)
+										<tr class="">
+											<td>{{ $key + 1 }}</td>
+											<td>{{ $row->id }}</td>
+											<td>{{ $row->description }}</td>
+											<td>{{ date('d/m/Y h:i A', strtotime($row->start)) . ' - '. date('d/m/Y h:i A', strtotime($row->end)) }}</td>
+											<td>{{ $row->status == 1 ? 'On' : ($row->status == 0 ? 'Off' : 'Unknown') }}</td>
+											<td>
+												<a href="{{ url('product/promotion/view/' . $row->id) }}" 
+												title=" View Promotion {{ $row->description }}"
+												class=""><span class="fa fa-eye"></span></a>
+											</td>
+										</tr>
+										@endforeach
+									@else
+									<tr class="">
+										<td class="text-center" colspan="6"> This product still has no promotion yet </td>
+									</tr>
+									@endif
+								</tbody>
+							</table>
+						</div>
+					</div>
 					<div class="row">
 						<br /> &nbsp;
 						<div class="col-md-12">
@@ -197,7 +244,7 @@ if(isset($id) && $id > 0){
 						<div class="col-md-6">
 							<div class="form-group">
 								<label class="col-md-3 control-label"> Created by: </label>
-								<div class="col-md-9 control-label text-left"> Administrator </div>
+								<div class="col-md-9 control-label text-left">{{ $created_by_name }}</div>
 							</div>
 							<div class="form-group">
 								<label class="col-md-3 control-label"> Created at: </label>
@@ -207,7 +254,7 @@ if(isset($id) && $id > 0){
 						<div class="col-md-6">
 							<div class="form-group">
 								<label class="col-md-3 control-label"> Updated by: </label>
-								<div class="col-md-9 control-label text-left"> Administrator </div>
+								<div class="col-md-9 control-label text-left">{{ $updated_by_name }}</div>
 							</div>
 							<div class="form-group">
 								<label class="col-md-3 control-label"> Updated at: </label>

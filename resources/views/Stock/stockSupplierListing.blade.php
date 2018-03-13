@@ -1,5 +1,5 @@
 @extends('header')
-@section('title','Product Listing')
+@section('title','Current Stock Listing')
 
 @section('content')
 <style>
@@ -8,7 +8,7 @@
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
 	<li><a href="{{ url('home') }}">Home</a></li>                    
-	<li><a href="{{ url('product/listing') }}">Product Listing</a></li>
+	<li><a href="{{ url('stock/current') }}">Current Stock Listing</a></li>
 </ul>
 <!-- END BREADCRUMB -->                       
 
@@ -36,107 +36,105 @@
 			<div class="panel panel-default">
 
 				<div class="panel-heading">
-					<h3 class="panel-title">Product Listing</h3>
+					<h3 class="panel-title">Current Stock Listing</h3>
 					<div class="actions pull-right">
-						<a href="{{ url('product/package_form') }}" class="btn btn-default  btn-sm btn-circle" title="Add New Product" >
-							<i class="fa fa-plus"></i> Product Package </a>
-						<a href="{{ url('product/form') }}" class="btn btn-default  btn-sm btn-circle" title="Add New Product" >
-							<i class="fa fa-plus"></i> Product </a>
+						<a href="{{ url('stock/in') }}" class="btn btn-default  btn-sm btn-circle" title="Add New Stock" >
+							<i class="fa fa-plus"></i> Stock In </a>
 					</div>
 				</div>
 				<div class="panel-body panel-body-table">
-					<form id="form_search" class="form-horizontal" method="POST" action="{{ url('product/form_search') }}" >
+					<form id="form_search" class="form-horizontal" method="POST" action="#" >
 						{{ csrf_field() }}
 						<div class="panel-body">
 							<div class="row">
-								<div class="col-md-6">
+								<div class="col-md-5">
 									<div class="form-group">
-										<label class="col-md-2 control-label"> Search </label>
-										<div class="col-md-10">        
+										<label class="col-md-4 control-label"> Search </label>
+										<div class="col-md-8">        
 											<input type="text" class="form-control product-code" name="search" 
 											placeholder=" Code / Description " value="{{ isset($search) ? $search : '' }}" />									
 										</div>
 									</div>
 								</div>
-								<div class="col-md-4">
+								<!-- <div class="col-md-5">
 									<div class="form-group">
 										<label class="col-md-4 control-label"> Type </label>
 										<div class="col-md-8">        
 											<select class="form-control product-type" name="type" >
 												<option value=""> All </option>
-												<option value="1" {{ isset($type) && $type == 1 ? "selected" : "" }}> Item </option>
+												<option value="1" {{ isset($type) && $type == 1 ? "selected" : "" }}> By Item </option>
 												<option value="2" {{ isset($type) && $type == 2 ? "selected" : "" }}> Package </option>
 												<option value="3" {{ isset($type) && $type == 3 ? "selected" : "" }}> Monthly Promotion </option>
 											</select>
 										</div>
 									</div>
+								</div> -->
+								<div class="col-md-1">
+									<button type="submit" class="btn btn-primary">Search</button>
 								</div>
-								<div class="col-md-2">
-									<button type="submit" class="btn btn-primary" style="padding: 4px 8px;">Search</button>
-									<a href="{{ url('product/listing') }}" class="btn btn-danger" style="padding: 4px 8px;">Reset</a>
+								<div class="col-md-1">
+									<a href="{{ url('stock/current') }}" class="btn btn-danger">Reset</a>
 								</div>
 							</div>
 						</div>
 					</form>
 					<div class="panel-body">
-					&nbsp; Total Product: <b>{{ $countproduct }}</b>
+					&nbsp; Total Stocks list: <b>{{ count($stocks) }}</b>
 					<div class="table-responsive">
 						<table class="table table-bordered table-striped table-actions">
 							<thead>
 								<tr>
-									<th ></th>
-									<th >Id</th>
-									<th class="col-md-2">Code</th>
-									<th class="col-md-5">Description</th>
-									<th class="col-md-2">Type</th>
-									<th class="col-md-2">Status</th>
-									<th ></th>
-									<th ></th>
-									<th ></th>
+                                    <th></th>
+                                    <!-- <th>Supplier</th> -->
+                                    <th>Product Name</th>
+                                    <th>Stock left</th>
+                                    <!-- <th>In Stock Date</th>
+                                    <th>Stock Received</th>
+                                    <th>Stock Description</th> -->
+                                    <th></th>
+                                    <!-- <th></th>
+                                    <th></th> -->
 								</tr>
 							</thead>
 							<tbody>
-							@if(count($productArr) > 0)
-								
-								@foreach($productArr->all() as $key => $row)
-									<?php
-										$rowarr = array('delete' => 'product','deleteid' => $row->id,'search' => Request::segment(3));
-										$base64data = trim(base64_encode(serialize($rowarr)), "=.");
-									?>
+							@if(count($stocks) > 0)
+                                <?php $i = 1;
+                                ?>
+								@foreach($stocks as $stock)
+                               
 									<tr>
-										<td>{{ $key + $productArr->firstItem() }}</td>
-										<td>{{ $row->id }}</td>
-										<td>{{ $row->code }}</td>
-										<td>{{ $row->description }}</td>
-										<td>{{ isset($typeArr[$row->type]) ? $typeArr[$row->type] : '' }}</td>
-										<td>{{ isset($statusArr[$row->status]) ? $statusArr[$row->status] : '' }}</td>
+										<td><?php echo $i++; ?></td>
+										<td>{{ $stock->product_description }} </td>
+										<td>{{ $stock->stocksCount }} </td>
+<!--                                        
+                                        <td><a href="#" class="btn">To Barcode list page{{ $stock->barcode }}</a> </td>
+                                        <td>{{ $stock->in_stock_date }} </td>
+                                        <td>{{ $stock->stock_received_number }}</td>
+                                        <td>{{ $stock->description }} </td> -->
 										<td>
-											<a href="{{ url('product/view/' . $row->id) }}" 
-											title=" View {{ $row->code.' ('.$row->description.')' }}"
+											<a href="#" 
 											class="btn btn-info btn-rounded"><span class="fa fa-eye"></span></a>
 										</td>
-										<td>
-											<a href="{{ url('product/edit/' . $row->id) }}" 
-											title=" Edit {{ $row->code.' ('.$row->description.')' }}"
+										<!-- <td>
+											<a href="#" 
 											class="btn btn-primary btn-rounded" ><span class="fa fa-edit"></span></a>
 										</td>
 										<td>
-											<a href="javascript:;" data-base64="{{ $base64data }}" data-code="{{ $row->code }}" data-description="{{ $row->description }}"
-											title=" Remove {{ $row->code.' ('.$row->description.')' }}"
+											<a href="#" 									
 											class="btn btn-danger btn-rounded confirm-delete" ><span class="glyphicon glyphicon-trash"></span></a>
-										</td>
+										</td> -->
 									</tr>
 								@endforeach
 							@else
 							<tr>
 								<td colspan="9" class="text-center"> No Data Found <br />
-								<a href="{{ url('product/form') }}"><span class="fa fa-plus"></span> Add new product</a></td>
+								<a href="{{ url('stock/in') }}"><span class="fa fa-plus"></span> Add new stock</a></td>
 							</tr>
 							@endif
 							</tbody>
 						</table>
 					</div>
-					{{ $productArr->links() }}
+					{{-- $productArr->links() --}}
 					</div>
 				</div>
 			</div>                                                
