@@ -28,13 +28,23 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::get('agent/register', 'Agent\AgentController@fn_get_view');
 Route::post('agent/save', 'Agent\AgentController@fn_save_agent_record');
 Route::get('agent/view','Agent\AgentController@fn_view_agent_record');
-Route::get('agent/order_stock/{agent_id?}', 'Agent\AgentController@fn_get_agent_order_stock');
+Route::get('agent/get_order_stock/{agent_id?}/{mode?}', 'Agent\AgentController@fn_get_agent_order_stock');
 Route::post('agent/save_agent_order_stock', 'Agent\AgentController@fn_save_agent_order_stock');
+Route::get('agent/get_product_list', 'Agent\AgentController@fn_get_product_list');
+Route::get('agent/get_checkout_items/{agent_id?}', 'Agent\AgentController@fn_get_checkout_items');
+Route::post('agent/save_selected_items', 'Agent\AgentController@fn_save_selected_items');
+Route::get('agent/get_cart_items', 'Agent\AgentController@fn_get_cart_items');
+Route::post('agent/delete_cart_item', 'Agent\AgentController@fn_delete_cart_item');
+Route::post('agent/update_quantity_item', 'Agent\AgentController@fn_quantity_item');
 
 //=========================
 // Supplier :: Zul
 //=========================
-Route::get('supplier/supplierDetail', 'Supplier\SupplierController@supplierDetail_page');
+Route::get('supplier/supplierDetail', 'Supplier\SupplierController@supplierDetail_show_page');
+Route::get('supplier/supplierDetail/form/{comp_code?}', 'Supplier\SupplierController@supplierDetail_form_page');
+Route::post('supplier/supplierDetail/create_comp', 'Supplier\SupplierController@fn_create_comp');
+Route::post('supplier/supplierDetail/update_comp', 'Supplier\SupplierController@fn_update_comp');
+Route::get('supplier/supplierDetail/view/{comp_code}', 'Supplier\SupplierController@fn_get_detail');
 Route::get('supplier/stockIn', 'Supplier\SupplierController@stockIn_page');
 Route::get('supplier/supplierDO', 'Supplier\SupplierController@supplierDO_page');
 

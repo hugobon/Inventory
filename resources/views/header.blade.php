@@ -14,7 +14,11 @@
         <link rel="stylesheet" type="text/css" id="theme" href="{!! asset('joli/css/theme-default.css') !!}"/>
 		<link rel="stylesheet" type="text/css" id="theme" href="{!! asset('joli/css/bootstrap/bootstrap-datepicker.css') !!}"/>
         <link rel="stylesheet" type="text/css" id="theme" href="{!! asset('joli/css/bootstrap/bootstrap-datepicker.css.map') !!}"/>
-		<!-- EOF CSS INCLUDE -->                                    
+		<!-- EOF CSS INCLUDE -->
+        <!-- SCRIPT INCLUDE -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <script src="Https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+        <!-- END SCRIPT -->                             
     </head>
     <body>
 		<div class="page-container">
@@ -74,8 +78,8 @@
                                 <a href="javascript:;"><span class="glyphicon glyphicon-shopping-cart"></span>Agent Option </a>
                                 <ul>
                                     <li>
-                                        <a href="{{ url('agent/order_stock/12221112') }}"><span class="glyphicon glyphicon-list-alt"></span> Configure </a>
-                                        <a href="javascript:;"><span class="glyphicon glyphicon-list-alt"></span> Select Product </a>
+                                        <a href="{{ url('agent/get_order_stock/12221112/display') }}"><span class="glyphicon glyphicon-list-alt"></span> Configure </a>
+                                        <a href="{{ url('agent/get_product_list') }}"><span class="glyphicon glyphicon-list-alt"></span> Select Product </a>
                                         <a href="javascript:;"><span class="glyphicon glyphicon-list-alt"></span> Purchase Report </a>
                                     </li>
                                     <li><a href="javascript:;"><span class="fa fa-search"></span> Stock Balance Report </a></li>
@@ -84,20 +88,20 @@
                             <li><a href="javascript:;"><span class="fa fa-book"></span> Audit Trail </a></li>
                         </ul>
                     </li>
-                    <li class="xn-openable <?php echo in_array(request()->path(), array("supplier/supplierDetail","supplier/stockIn","supplier/supplierDO")) ? "active" : "" ; ?>">
-                        <a href="javascript:;"><span class="fa fa-truck"></span> <span class="xn-text">Supplier</span></a>
+                    <li class="xn-openable <?php echo in_array(Request::segment(1), array("supplier")) ? "active" : "" ; ?>">
+                        <a href="{{ url('supplier/supplierDetail') }}"><span class="fa fa-truck"></span> <span class="xn-text">Supplier</span></a>
                         <ul>
-                            <li><a href="{{ url('supplier/supplierDetail') }}"><span class="fa fa-puzzle-piece"></span>Supplier Detail</a></li>
-                            <li><a href="{{ url('supplier/stockIn') }}"><span class="fa fa-puzzle-piece"></span>Stock In</a></li>
-                            <li><a href="{{ url('supplier/supplierDO') }}"><span class="fa fa-puzzle-piece"></span>Delivery Order</a></li>
-                            <!-- <li class="xn-openable">
-                                <a href="javascript:;"><span class="glyphicon glyphicon-shopping-cart"></span>Agent Order Stock </a>
-                                <ul>
-                                    <li><a href="javascript:;"><span class="glyphicon glyphicon-list-alt"></span> Current Stock </a></li>
-                                    <li><a href="javascript:;"><span class="fa fa-search"></span> Stock Balance Report </a></li>
-                                </ul>
-                            </li>
-                            <li><a href="javascript:;"><span class="fa fa-book"></span> Audit Trail </a></li> -->
+                            <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("supplier/supplierDetail")) ? "active" : "" ; ?>">
+								<a href="{{ url('supplier/supplierDetail') }}"><span class="fa fa-puzzle-piece"></span>Supplier Detail</a>
+							</li>
+                            <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("supplier/stockIn")) ? "active" : "" ; ?>">
+								<a href="{{ url('supplier/stockIn') }}"><span class="fa fa-puzzle-piece"></span>Stock In</a>
+							</li>
+                            <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("supplier/supplierDO")) ? "active" : "" ; ?>">
+								<a href="{{ url('supplier/supplierDO') }}"><span class="fa fa-puzzle-piece"></span>Delivery Order</a>
+							</li>
+						</ul>
+					</li>
 					<li class="xn-openable <?php echo in_array(Request::segment(1), array("configuration")) ? "active" : "" ; ?>">
                         <a href="javascript:;"><span class="fa fa-cogs"></span> <span class="xn-text"> configuration </span></a>
                         <ul>
