@@ -1,44 +1,56 @@
 <style type="text/css">
 	
-	#agent-photo{
-		padding-bottom: 80px;
-	}
-
-	.image-upload > input {
-	  visibility:hidden;
-	  width:0;
-	  height:0
-	}
-
-	#file-input{
-		visibility: hidden;
-	}
-
-	#form-title{
-
-		font-size: 15px;
-	}
-
-	#form-field{
-		padding-bottom: 20px;
-	}
-
-	#profile-photo{
-		border-radius: 50%;
-	}
-
-	[type="date"] {
-	  background:#fff url(https://cdn1.iconfinder.com/data/icons/cc_mono_icon_set/blacks/16x16/calendar_2.png)  97% 50% no-repeat ;
-	}
-	[type="date"]::-webkit-inner-spin-button {
+	#itemCount {
+	  position: absolute;
 	  display: none;
+	  top: -10px;
+	  left: -10px;
+	  width: 20px;
+	  height: 20px;
+	  border-radius: 50%;
+	  background: red;
+	  color: white;
+	  text-align: center;
 	}
-	[type="date"]::-webkit-calendar-picker-indicator {
-	  opacity: 0;
+	
+	.item-detail{
+
+	    padding: 10px;
 	}
 
-	#form-title{
-		font-size: 15px;
-		font-style: normal;
+	.item-detail:hover{
+
+		box-shadow: 0px 2px 3px -1px #000;
+		-moz-box-shadow: 0px 2px 3px -1px #000;
+		-webkit-box-shadow: 0px 2px 3px -1px #000;
+		/*-webkit-border-radius: 0px;*/
+		/*-moz-border-radius: 0px;*/
+		/*border-radius: 10px;   */
+		-webkit-transition: all 0.3s ease-in-out;
+		-moz-transition: all 0.3s ease-in-out;
+		-o-transition: all 0.3s ease-in-out;
+		-ms-transition: all 0.3s ease-in-out;
+		transition: all 0.3s ease-in-out;  
+
 	}
+
+	.price-text-color{
+
+	    color: #219FD1;
+	    font-size: 14px;
+	    font-style: normal;
+	}
+
+	.cart-list{
+		/*border: 1px solid black;*/
+	}
+
+	.cart-row{
+		/*border: 1px solid green;*/
+	}
+
+	.img-content{
+		margin-right: 10px;
+	}
+
 </style>
