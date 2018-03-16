@@ -63,6 +63,7 @@
 	function fn_change_field(){
 
 		var item = $("#delivery_type").val();
+		
 		if(item == "01" || item == "02"){
 			$("#address").show();
 			$("#poscode").show();
