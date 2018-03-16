@@ -46,7 +46,7 @@ Route::get('supplier/supplierDetail/form/{comp_code?}', 'Supplier\SupplierContro
 Route::post('supplier/supplierDetail/create_comp', 'Supplier\SupplierController@fn_create_comp');
 Route::post('supplier/supplierDetail/update_comp', 'Supplier\SupplierController@fn_update_comp');
 Route::get('supplier/supplierDetail/view/{comp_code}', 'Supplier\SupplierController@fn_get_detail');
-Route::get('supplier/stockIn', 'Supplier\SupplierController@stockIn_page');
+// Route::get('supplier/stockIn', 'Supplier\SupplierController@stockIn_page');
 Route::get('supplier/supplierDO', 'Supplier\SupplierController@supplierDO_page');
 
 //=========================
@@ -69,15 +69,22 @@ Route::post('product/package_insert', 'Inventory\Product@package_insert');
 Route::post('product/package_update/{x?}', 'Inventory\Product@package_update');
 Route::get('product/reload_image/{x?}', 'Inventory\Product@reload_image');
 Route::post('product/upload_image/{x?}', 'Inventory\Product@upload_image');
+Route::post('product/set_mainimage', 'Inventory\Product@set_mainimage');
 Route::post('product/check_existcode', 'Inventory\Product@check_existcode');
 Route::get('product/delete/{x?}', 'Inventory\Product@delete');
 Route::get('product/delete_image/{x?}', 'Inventory\Product@delete_image');
+Route::get('product/all_data_product/{x?}', 'Inventory\Product@all_data_product');
 // Product promotion
 Route::get('product/promotion', function () {  return redirect("promotion/listing"); });
 Route::get('product/promotion/listing', 'Inventory\Product_promotion@listing');
 Route::get('product/promotion/search/{x?}', 'Inventory\Product_promotion@search');
 Route::post('product/promotion/form_search', 'Inventory\Product_promotion@form_search');
 Route::get('product/promotion/form', 'Inventory\Product_promotion@form');
+Route::get('product/promotion/view/{x?}', 'Inventory\Product_promotion@view');
+Route::post('product/promotion/insert', 'Inventory\Product_promotion@insert');
+Route::get('product/promotion/edit/{x?}', 'Inventory\Product_promotion@edit');
+Route::post('product/promotion/update/{x?}', 'Inventory\Product_promotion@update');
+Route::get('product/promotion/delete/{x?}', 'Inventory\Product_promotion@delete');
 // Stock Adjustment
 Route::get('stock/adjustment', function () {  return redirect("stock/adjustment/listing"); });
 Route::get('stock/adjustment/listing', 'Inventory\Stockadjustment@listing');
@@ -101,3 +108,11 @@ Route::post('configuration/stockadjustment/form_search', 'Configuration\Stockadj
 Route::get('configuration/stockadjustment/delete/{x?}', 'Configuration\Stockadjustment@delete');
 Route::post('configuration/stockadjustment/save', 'Configuration\Stockadjustment@save');
 
+//=========================
+// Stock
+//=========================
+ Route::get('stock', 'Stock\StockController@showPage');
+ Route::post('stock/stockin_insert','Stock\StockController@insertStockIn');
+ Route::get('stock/current', 'Stock\StockController@stockSupplierListing');
+ Route::get('stock/in', 'Stock\StockController@stockIn_page');
+ 

@@ -106,7 +106,7 @@ select{cursor:pointer;}
 										<div class="col-md-9">        
 											<select class="form-control product-type" name="type" >
 												<option value=""></option>
-												<option value="1" {{ isset($type) && $type == 1 ? "selected" : "" }}> By Item </option>
+												<option value="1" {{ isset($type) && $type == 1 ? "selected" : "" }}> Item </option>
 												<option value="3" {{ isset($type) && $type == 3 ? "selected" : "" }}> Monthly Promotion </option>
 											</select>
 										</div>
@@ -115,6 +115,12 @@ select{cursor:pointer;}
 										<label class="col-md-3 control-label"> Description <span class="required">*</span></label>
 										<div class="col-md-9">
 											<input type="text" class="form-control product-description" name="description" value="{{ isset($description) ? $description : '' }}" />   
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-md-3 control-label"> Weight (Kg) </label>
+										<div class="col-md-9">
+											<input type="text" class="form-control mask_decimal product-weight" name="weight" value="{{ isset($weight) ? number_format($weight, 2, '.', '') : '' }}" />   
 										</div>
 									</div>
 								</div>
@@ -138,6 +144,12 @@ select{cursor:pointer;}
 										<label class="col-md-3 control-label"> Category </label>
 										<div class="col-md-9">
 											<input type="text" class="form-control product-category" name="category" value="{{ isset($category) ? $category : '' }}" />   
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-md-3 control-label"> Point </label>
+										<div class="col-md-9">
+											<input type="text" class="form-control mask_number product-point" name="point" value="{{ isset($point) ? $point : '' }}" />   
 										</div>
 									</div>
 								</div>
@@ -266,12 +278,7 @@ select{cursor:pointer;}
 										<div class="col-md-6">
 											<div class="input-group ">
 												<span class="input-group-addon"><i class="glyphicon glyphicon-bookmark"></i></span>
-												<?php if(isset($id) && $id > 0){ ?>
-												<div class="form-control text-right" >{{ isset($quantity) ? $quantity : '' }}</div>
-												<?php }else{ ?>
-												<input type="text" class="form-control product-quantity mask_number" placeholder="0" 
-												name="quantity" value="{{ isset($quantity) ? $quantity : '' }}"  />
-												<?php }?>		
+												<div class="form-control mask_number text-right" >{{ isset($quantity) ? $quantity : '0' }}</div>		
 											</div>
 										</div>
 									</div>
@@ -280,7 +287,7 @@ select{cursor:pointer;}
 						</div>
 						<div class="panel-footer">
 							<a class="btn btn-default" href="{{ url('product/' . $clearurl ) }}">{{ isset($id) && $id > 0 ? 'Reset' : 'Clear Form' }}</a>                                    
-							<button type="submit" class="btn btn-primary pull-right">Submit</button>
+							<button type="submit" class="btn btn-primary pull-right">{{ isset($id) && $id > 0 ? 'Save' : 'Submit' }}</button>
 						</div>
 						</form>
 				</div>
@@ -406,6 +413,13 @@ function reload_image(baseid){
 	});
 }
 $(function() {
+	$('.product-code').inputmask({
+		"mask": "*",
+		"repeat": 30,
+		"greedy": false
+	});
+	
+	
 	$(".mask_year").inputmask({
 		"mask": "9",
 		"repeat": 4,
@@ -611,6 +625,25 @@ $(function() {
 					}
 				]
 		})
+		return false;
+	});
+	
+	$('body').on('click', '.set-mainimage', function(){
+		var imageid = $(this).data('imageid');
+		var product_id = $(this).data('product_id');
+		$.ajax({
+			url: baseurl + '/product/set_mainimage',
+			method: "POST",
+			data: {'imageid': imageid,'product_id': product_id, '_token': '{{ csrf_token() }}',} ,
+			async: false,
+			success: function(result){
+				reload_image(baseid);
+			}
+		});
+		return false;
+	});
+	
+	$('body').on('click', '.set-mainimage2', function(){
 		return false;
 	});
 });
