@@ -20,7 +20,7 @@
 					<div class="panel-heading">
 						<h3 class="panel-title"><strong>Register</strong> Form </h3>
 						<ul class="panel-controls">
-							<a href="{{ url('agent/get_order_stock/12221112/display') }}" id="display_button"><span class="fa fa-eye" style="font-size:20px"></span></a>
+							<a href="{{ url('agent/get_order_stock/display') }}/{{ Auth::user()->id }}" id="display_button"><span class="fa fa-eye" style="font-size:20px"></span></a>
 						</ul>
 					</div>
 					<div class="panel-body"> 
@@ -29,7 +29,7 @@
 								<div class="col-md-12">
 									<p><span id="form-title"> Agent Configure </span> </p>
 								</div>
-								<div class="form-group">
+								<div class="form-group" hidden="">
 									<label class="col-md-3 control-label"> Agent ID </label>
 									<div class="col-md-9" id="" hidden>        
 										<input type="text" class="form-control agent-id" name="agent_id" id="agent_id" value="{{ isset($data['agent_id']) ? $data['agent_id'] : '' }}"/>
@@ -95,5 +95,13 @@
 		</div>
 	</div>
 </div>
+
+<script type="text/javascript">
+	
+	$(document).ready(function(){
+
+		fn_change_field();
+	});
+</script>
 
 @endsection

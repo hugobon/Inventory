@@ -100,7 +100,7 @@ class AgentController extends Controller
     	return view('Agent.agent_view')->with($data);
     }
 
-    public function fn_get_agent_order_stock($agent_id = null,$mode = null){
+    public function fn_get_agent_order_stock($mode = null,$agent_id = null){
 
         try{
 
@@ -119,6 +119,16 @@ class AgentController extends Controller
 
         
         if(isset($data)){
+
+            if($data['delivery_type'] == "01"){
+                $data['delivery_type_desc'] = "Same Address";
+            }
+            else if($data['delivery_type'] == "02"){
+                $data['delivery_type_desc'] = "Different Address";
+            }
+            else if($data['delivery_type'] == "03"){
+                $data['delivery_type_desc'] = "Self Collect";
+            }
 
             if($mode == "display"){
                 return view('Agent.agent_order_stock_view',['return' => $return,'data' => $data]);
@@ -208,7 +218,7 @@ class AgentController extends Controller
 
         // return $return;
 
-        return redirect('agent/get_order_stock/'.$request->get('agent_id')."/"."display")->with($return);
+        return redirect('agent/get_order_stock/'.'display'.'/'.$request->get('agent_id'))->with($return);
     }
 
     public function fn_get_product_list(){
@@ -297,6 +307,7 @@ class AgentController extends Controller
                     $total_price = number_format(floatval($product->price_wm * (int)$data['quantity']),2);
                 }
 
+                $total_price = str_replace(",", "", $total_price);
                 $addToCart = Array(
 
                     'agent_id' => $data['agent_id'],
@@ -313,16 +324,18 @@ class AgentController extends Controller
 
                 if($agent->state == "Sabah" || $agent->state == "Sarawak"){
 
-                    $total_price = $product->price_em * (int)$data['quantity'];
+                    $total_price = number_format(floatval($product->price_em),2) * (int)$data['quantity'];
                 }
                 else{
 
-                    $total_price = $product->price_wm * (int)$data['quantity'];
+                    $total_price = number_format(floatval($product->price_wm),2) * (int)$data['quantity'];
                 }
+
+                // dd(str_replace(",","",$total_price));
 
                 $updateQuantity = $data['quantity'] + $cartItem->quantity;
                 $updateTotalPrice = number_format(floatval($total_price + $cartItem->total_price),2);
-
+                $updateTotalPrice = str_replace(",","",$updateTotalPrice);
                 agent_select_product::where('product_id',$data['product_id'])
                                         ->where('agent_id',$data['agent_id'])
                                         ->update([
@@ -454,5 +467,17 @@ class AgentController extends Controller
         }
 
         return compact('return');
+    }
+
+    public function fn_get_product_details($product_id = null){
+
+        try {
+            
+        }
+        catch(\Exception $e){
+            
+        }
+
+        return view('Agent.agent_product_detail');
     }
 }

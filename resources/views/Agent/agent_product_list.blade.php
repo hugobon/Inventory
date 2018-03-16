@@ -44,7 +44,7 @@
 							<div class='row'>
 								@foreach($data as $key => $value)
 								<div class="col-md-3 item-detail">
-									<div class="panel panel-default">
+									<div class="panel panel-default item-content">
 								        <div class="panel-heading">
 								            <div class="media clearfix">
 								                <h3 class="font-bold" style="font-size: 15px;">{{$value->description}}</h3>
@@ -111,8 +111,6 @@
 	</div>
 </div>
 
-
-
 <script type="text/javascript">
 
 
@@ -122,15 +120,17 @@
 		$('#itemCount').html(count).css('display', 'block'); 
 	});
 
-	$('div.item-detail').click(function(){
+	// $('div.item-detail').click(function(){
 
-		window.location.href = "#";
-	});
+	// 	var product_id = $(this).find('input#id').val();
+	// 	// console.log(product_id)
+	// 	window.location.href = "agent/get_product_details/"+product_id;
+	// });
 	
-	var itemCount = 0;
+	// var itemCount = 0;
 
-	$('.add-to-cart').on('click', function () {
-
+	$('button.add-to-cart').on('click', function () {
+		console.log("masuk sini")
 		var imgtodrag = $(this).closest(".panel").children(".panel-image").find("img").eq(0);
 		var cart = $('.cart');
 		// console.log($(this).closest('form.save-item').children('.info').children('.info-detail').find('select#quantity').val())

@@ -82,7 +82,7 @@
                                 <a href="javascript:;"><span class="glyphicon glyphicon-shopping-cart"></span>Agent Option </a>
                                 <ul>
                                     <li>
-                                        <a href="{{ url('agent/get_order_stock/12221112/display') }}"><span class="glyphicon glyphicon-list-alt"></span> Configure </a>
+                                        <a href="{{ url('agent/get_order_stock/display') }}/{{ Auth::user()->id }}"><span class="glyphicon glyphicon-list-alt"></span> Configure </a>
                                         <a href="{{ url('agent/get_product_list') }}"><span class="glyphicon glyphicon-list-alt"></span> Select Product </a>
                                         <a href="javascript:;"><span class="glyphicon glyphicon-list-alt"></span> Purchase Report </a>
                                     </li>
