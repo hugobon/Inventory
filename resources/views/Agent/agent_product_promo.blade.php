@@ -42,7 +42,7 @@
 						</div> -->
 						<div class="container" style="margin-top:50px; width: 100%;">
 							<div class='row'>
-								@foreach($data['productArr']['Product'] as $key => $value)
+								@foreach($data['productArr']['Promotion'] as $key => $value)
 								<div class="col-md-3 item-detail">
 									<div class="panel panel-default item-content">
 								        <div class="panel-heading">
