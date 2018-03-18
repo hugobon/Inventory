@@ -12,6 +12,9 @@ use App\user_m;
 
 class Product_promotion extends Controller
 {
+	public function __construct(){
+        $this->middleware('auth');
+    }
     public function index(){
         return redirect('product/promotion/listing');
     }
@@ -22,7 +25,7 @@ class Product_promotion extends Controller
 		$productArr = array();
 		if(count($datap) > 0){
 			foreach($datap->all() as $key => $row)
-				$productArr[$row->id] = $row->code . ' (' . $row->description . ')';
+				$productArr[$row->id] = $row->code . ' (' . $row->name . ')';
 		}
 		$promotiondata = New product_promotion_m;
 		$data = array(
@@ -64,7 +67,7 @@ class Product_promotion extends Controller
 		$productArr = array();
 		if(count($data) > 0){
 			foreach($data->all() as $key => $row)
-				$productArr[$row->id] = $row->code . ' (' . $row->description . ')';
+				$productArr[$row->id] = $row->code . ' (' . $row->name . ')';
 		}
 		$data = array(
 			'countpromotion' => $countpromotion,
@@ -109,8 +112,8 @@ class Product_promotion extends Controller
 		if(count($datap) > 0){
 			foreach($datap->all() as $key => $row){
 				$productArr[$row->id] = array(
-					'code' => $row->code . ' (' . $row->description . ')',
-					'desc' => $row->description,
+					'code' => $row->code . ' (' . $row->name . ')',
+					'desc' => $row->name,
 				);
 			}
 		}
