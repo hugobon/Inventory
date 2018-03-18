@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\Inventory;
+namespace App\Http\Controllers\Stock;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\inventory\product_m;
 use App\inventory\stockadjustment_m;
 use App\configuration\config_stockadjustment_m;
+use App\supplier_stock_assign;
 
-class Stockadjustment extends Controller
+class StockAdjustmentController extends Controller
 {
     public function index(){
         return redirect('stock/adjustment/listing');
@@ -117,11 +118,11 @@ class Stockadjustment extends Controller
 		
 		$checkproduct = product_m::where('id', $postdata->input("product_id"))->first();
 		if($checkproduct == false)
-			return redirect('stock/adjustment/listing')->with("errorid"," Product Not Found ");
+			return redirect('stock/adjustment')->with("errorid"," Product Not Found ");
 			
 		$checkadjustment = config_stockadjustment_m::where('id', $postdata->input("adjustment_id"))->first();
 		if($checkadjustment == false)
-			return redirect('stock/adjustment/listing')->with("errorid"," Configuration Stock Adjustment Not Found ");
+			return redirect('stock/adjustment')->with("errorid"," Configuration Stock Adjustment Not Found ");
 			
 		$data = array(
 			'product_id' => $postdata->input("product_id"),
@@ -137,8 +138,8 @@ class Stockadjustment extends Controller
 		$stockadjustmentdata = New stockadjustment_m;
 		$stockadjustmentdata->insert($data);
 		
-		return redirect('stock/adjustment/listing')
-		->with("info","Success Submit Product ".$checkproduct["code"]." (".$checkproduct["description"]."),
+		return redirect('stock/adjustment')
+		->with("message","Success Submit Product ".$checkproduct["code"]." (".$checkproduct["description"]."),
 			 Adjustment ".$checkadjustment['adjustment'].", Quantity ".$postdata->input("quantity")."");
     }
 	
@@ -164,5 +165,31 @@ class Stockadjustment extends Controller
 			}
 		}
 		return redirect('stock/adjustment/listing');
-    }
+	}
+	
+
+	public function loadStockAdjust(Request $request){
+		$adjustment = $request->get('adjustment');
+		$product = $request->get('product');
+		$quantity = $request->get('quantity');
+		$remarks = $request->get('remarks');
+
+		$adjustmentConfig = config_stockadjustment_m::select('adjustment','remarks','operation')->where('id',$adjustment)->where('status','1')->first();
+
+		$stocks = supplier_stock_assign::leftjoin('product','supplier_stock_assign.stock_product','=','product.id')
+				->leftjoin('supdetail','supplier_stock_assign.stock_supplier','=','supdetail.id')
+				->leftjoin('barcode','supplier_stock_assign.id','=','barcode.supplier_stock_assign')
+				->selectRaw('product.description as product_description,product.code as product_code, count(product.id) as stocksCount')
+				->groupBy('product_description','product_code')
+				->where('product.id',$product)
+				->first();
+
+		$data = array(
+			'adjustmentConfig' => $adjustmentConfig,
+			'stocks' => $stocks
+			
+		);
+
+		return $data;
+	}
 }

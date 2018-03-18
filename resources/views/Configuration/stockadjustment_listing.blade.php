@@ -89,6 +89,7 @@ select{cursor:pointer;}
 									<th class="col-md-3">Adjustment</th>
 									<th class="col-md-4">Remarks</th>
 									<th class="col-md-2">Status</th>
+									<th class="col-md-2">Operator</th>
 									<th class="col-md-2">Create at</th>
 									<th ></th>
 									<th ></th>
@@ -106,8 +107,9 @@ select{cursor:pointer;}
 										<td>{{ $key + $adjustmentArr->firstItem() }}</td>
 										<td>{{ $row->id }}</td>
 										<td>{{ $row->adjustment }}</td>
-										<td>{{ $row->remarks }}</td>
+										<td>{{ $row->remarks }}</td>										
 										<td>{{ isset($status[$row->status]) ? $status[$row->status] : 'Active' }}</td>
+										<td>@if($row->operation == "-")Minus @elseif($row->operation == "+")Add  @endif</td>
 										<td>{{ !in_array($row->created_at, array('0000-00-00','','null')) ? date('d/m/Y, h:i A', strtotime($row->created_at)) : '' }}</td>
 										<td>
 											<a href="javascript:;" data-base64="{{ $base64data }}" data-adjustment="{{ $row->adjustment }}"
@@ -173,6 +175,18 @@ select{cursor:pointer;}
 									</div>
 								</div>
 								<br /> &nbsp;
+								<div class="col-md-12">
+										<div class="form-group">
+											<label class="col-md-3 control-label"> Operator </label>
+											<div class="col-md-9">        
+												<select class="form-control operator" name="operator" >
+													<option value="-" > Minus </option>
+													<option value="+" > Add </option>
+												</select>
+											</div>
+										</div>
+									</div>
+									<br /> &nbsp;
 								<div class="col-md-12">
 									<div class="form-group">
 										<label class="col-md-3 control-label"> Status </label>
@@ -244,6 +258,7 @@ $(function() {
 		$('#adjusmentModal').find('.base64').val('');
 		$('#adjusmentModal').find('.adjustment').val('');
 		$('#adjusmentModal').find('.remarks').val('');
+		$('#adjusmentModal').find('.operator').val('');
 		$('#adjusmentModal').find('.status').val('1');
 		$('#adjusmentModal').find('.submit-button').html('Submit');
 		
@@ -253,6 +268,7 @@ $(function() {
 	$('body').on('click', '.editadjustment', function(){
 		$('#adjusmentModal').find('.base64').val($(this).data('base64'));
 		$('#adjusmentModal').find('.adjustment').val($(this).data('adjustment'));
+		$('#adjusmentModal').find('.operator').val($(this).data('operator'));
 		$('#adjusmentModal').find('.remarks').val($(this).data('remarks'));
 		$('#adjusmentModal').find('.status').val($(this).data('status'));
 		$('#adjusmentModal').find('.submit-button').html('Save');

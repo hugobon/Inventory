@@ -101,7 +101,7 @@ textarea {
 								<div class="form-group">
                         			<label class="col-md-3 control-label">Quantity</label>
                         			<div class="col-md-9">
-                        				<input required type="text" id="quantity" name="quantity" class="form-control">
+                        				<input required type="text" id="quantity" name="quantity" class="form-control" value="0">
                         			</div>
                         		</div>
                         		<div class="form-group">

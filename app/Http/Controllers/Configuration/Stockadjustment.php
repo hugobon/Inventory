@@ -93,6 +93,7 @@ class Stockadjustment extends Controller
 		$data = array(
 			'adjustment' => $postdata->input("adjustment"),
 			'remarks' => $postdata->input("remarks"),
+			'operation' => $postdata->input("operator"),
 			'status' => $postdata->input("status"),
 			'updated_by' => 1,
 			'updated_at' => date('Y-m-d H:i:s'),

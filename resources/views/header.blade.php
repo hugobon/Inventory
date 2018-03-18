@@ -55,13 +55,13 @@
                                 <a href="javascript:;"><span class="glyphicon glyphicon-shopping-cart"></span> Stock </a>
                                 <ul>
                                 <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("stock/in")) ? "active" : "" ; ?>">
-								    <a href="{{ url('stock/in') }}"><span class="fa fa-puzzle-piece"></span>Stock In</a>
+								    <a href="{{ url('stock/in') }}"><span class="fa fa-plus"></span>Stock In</a>
 							    </li>
 								<li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("stock/adjustment")) ? "active" : "" ; ?>">
-										<a href="{{ url('stock/adjustment/listing') }}"><span class="glyphicon glyphicon-list-alt"></span> Stock Adjustment </a>
+										<a href="{{ url('stock/adjustment/') }}"><span class="glyphicon glyphicon-list-alt"></span> Stock Adjustment </a>
 								</li>
-                                <li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("stock/current")) ? "active" : "" ; ?>">
-                                    <a href="{{ url('stock/current') }}"><span class="glyphicon glyphicon-list-alt"></span> Current Stock </a></li>
+                                <li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("stock/listing")) ? "active" : "" ; ?>">
+                                    <a href="{{ url('stock/listing') }}"><span class="glyphicon glyphicon-list-alt"></span> Current Stock </a></li>
                                  <li><a href="javascript:;"><span class="fa fa-search"></span> Stock Balance Report </a></li>
                                 </ul>
                             </li>
@@ -177,6 +177,7 @@
         <script type='text/javascript' src="{!! asset('joli/js/plugins/icheck/icheck.min.js') !!}"></script>        
         <script type="text/javascript" src="{!! asset('joli/js/plugins/mcustomscrollbar/jquery.mCustomScrollbar.min.js') !!}"></script>
         <script type="text/javascript" src="{!! asset('joli/js/plugins/scrolltotop/scrolltopcontrol.js') !!}"></script>
+        <script type="text/javascript" src="{!! asset('joli/js/plugins/datatables/jquery.dataTables.min.js') !!}"></script>    
         
         <script type="text/javascript" src="{!! asset('joli/js/plugins/morris/raphael-min.js') !!}"></script>
         <script type="text/javascript" src="{!! asset('joli/js/plugins/morris/morris.min.js') !!}"></script>       
