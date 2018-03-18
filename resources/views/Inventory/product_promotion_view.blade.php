@@ -65,7 +65,7 @@ if(isset($id) && $id > 0){
 								<label class="col-md-3 control-label"> Product / Package </label>
 								<div class="col-md-7 control-label text-left">
 								<a href="{{ url('product/view/' . $product_id) }}" class="" title="View Promotion {{ $productArr['code'] . ' (' . $productArr['description'] . ')' }}" >
-								{{ $productArr['code'] . ' (' . $productArr['description'] . ')' }}</a>
+								{{ $productArr['code'] . ' (' . $productArr['name'] . ')' }}</a>
 								</div>
 							</div>
 							<div class="form-group">

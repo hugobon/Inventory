@@ -96,35 +96,35 @@ select{cursor:pointer;}
 								</div>
 								<div class="col-md-6">
 									<div class="form-group">
-										<label class="col-md-3 control-label"> Code <span class="required">*</span></label>
-										<div class="col-md-9">        
+										<label class="col-md-4 control-label"> Code <span class="required">*</span></label>
+										<div class="col-md-8">        
 											<input type="text" class="form-control product-code uppercase" name="code" value="{{ isset($code) ? $code : '' }}" />  
 											<span class="help-block">Minimum 3 characters.</span>									
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-md-3 control-label"> Type <span class="required">*</span></label>
-										<div class="col-md-9">
+										<label class="col-md-4 control-label"> Name <span class="required">*</span></label>
+										<div class="col-md-8">
+											<input type="text" class="form-control product-name" name="name" value="{{ isset($name) ? $name : '' }}" />   
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-md-4 control-label"> Type <span class="required">*</span></label>
+										<div class="col-md-8">
 											<div class="form-control">Package</div>
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-md-3 control-label"> Description <span class="required">*</span></label>
-										<div class="col-md-9">
-											<input type="text" class="form-control product-description" name="description" value="{{ isset($description) ? $description : '' }}" />   
-										</div>
-									</div>
-									<div class="form-group">
-										<label class="col-md-3 control-label"> Weight (Kg) </label>
-										<div class="col-md-9">
+										<label class="col-md-4 control-label"> Weight (g) </label>
+										<div class="col-md-8">
 											<input type="text" class="form-control mask_decimal product-weight" name="weight" value="{{ isset($weight) ? number_format($weight, 2, '.', '') : '' }}" />   
 										</div>
 									</div>
 								</div>
 								<div class="col-md-6">
 									<div class="form-group">
-										<label class="col-md-3 control-label"> Status <span class="required">*</span></label>
-										<div class="col-md-9">        
+										<label class="col-md-4 control-label"> Status <span class="required">*</span></label>
+										<div class="col-md-8">        
 											<select class="form-control product-status" name="status" >
 												<option value="1" {{ isset($status) && $status == 1 ? "selected" : "" }}> Active </option>
 												<option value="0" {{ isset($status) && $status == 0 ? "selected" : "" }}> Inactive </option>
@@ -132,21 +132,32 @@ select{cursor:pointer;}
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-md-3 control-label"> Year </label>
-										<div class="col-md-9">        
+										<label class="col-md-4 control-label"> Year </label>
+										<div class="col-md-8">        
 											<input type="text" class="form-control product-year mask_year" name="year" placeholder="2000" value="{{ isset($year) && $year > 1900 ? $year : '' }}" />								
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-md-3 control-label"> Category </label>
-										<div class="col-md-9">
+										<label class="col-md-4 control-label"> Category </label>
+										<div class="col-md-8">
 											<input type="text" class="form-control product-category" name="category" value="{{ isset($category) ? $category : '' }}" />   
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-md-3 control-label"> Point </label>
-										<div class="col-md-9">
+										<label class="col-md-4 control-label"> Point </label>
+										<div class="col-md-8">
 											<input type="text" class="form-control mask_number product-point" name="point" value="{{ isset($point) ? $point : '' }}" />   
+										</div>
+									</div>
+								</div>
+							</div>
+							<br /> &nbsp;
+							<div class="row">
+								<div class="col-md-12">
+									<div class="form-group">
+										<label class="col-md-2 control-label"> Description </label>
+										<div class="col-md-10">        
+											<textarea name="description" class="form-control product-description" rows="8" style="resize: none;" >{{ isset($description) ? $description : '' }}</textarea>							
 										</div>
 									</div>
 								</div>
@@ -459,7 +470,7 @@ errorPlacement: function(error,element) { return true;},
 ignore: [],
 rules: {                                            
 		code: { required: true, minlength: 3,},
-		description: { required: true,},
+		name: { required: true,},
 		price_wm: { required: true,},
 		price_em: { required: true,},
 		price_staff: { required: true,},

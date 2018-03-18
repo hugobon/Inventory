@@ -29,7 +29,7 @@ class Product extends Controller{
 		$data = array(
 			'countproduct' => $productdata->count(),
 			'productArr' => $productdata->orderBy('id', 'desc')->paginate(10),
-			'typeArr' => array( '0' => '', '1' => 'Item','2' => 'Package ','3' => 'Monthly Promotion' ),
+			'typeArr' => array( '0' => '', '1' => 'Item','2' => 'Package ','3' => 'Leaflet' ),
 			'statusArr' => array( '0' => 'Inactive', '1' => 'Active'),
 		);
         return view('Inventory/product_listing',$data);
@@ -49,22 +49,22 @@ class Product extends Controller{
 		if($search != '' && $type != ''){
 			$countproduct = $productdata->where(function ($q) use($search){
 											$q->where('code','LIKE','%'. $search .'%')
-												->orWhere('description','LIKE','%'. $search .'%');
+												->orWhere('name','LIKE','%'. $search .'%');
 										})
 										->where('type',$type)
 										->count();
 			$productArr = $productdata->where(function ($q) use($search){
 											$q->where('code','LIKE','%'. $search .'%')
-												->orWhere('description','LIKE','%'. $search .'%');
+												->orWhere('name','LIKE','%'. $search .'%');
 										})
 										->where('type',$type)->orderBy('id', 'desc')->paginate(10);
 		}
 		else if($search != ''){
 			$countproduct = $productdata->where('code','LIKE','%'. $search .'%')
-										->orWhere('description','LIKE','%'. $search .'%')
+										->orWhere('name','LIKE','%'. $search .'%')
 										->count();
 			$productArr = $productdata->where('code','LIKE','%'. $search .'%')
-										->orWhere('description','LIKE','%'. $search .'%')->orderBy('id', 'desc')->paginate(10);
+										->orWhere('name','LIKE','%'. $search .'%')->orderBy('id', 'desc')->paginate(10);
 		}
 		else{
 			$countproduct = $productdata->where('type',$type)
@@ -75,7 +75,7 @@ class Product extends Controller{
 		$data = array(
 			'countproduct' => $countproduct,
 			'productArr' => $productArr,
-			'typeArr' => array( '0' => '', '1' => 'Item','2' => 'Package','3' => 'Monthly Promotion' ),
+			'typeArr' => array( '0' => '', '1' => 'Item','2' => 'Package','3' => 'Leaflet' ),
 			'statusArr' => array( '0' => 'Inactive', '1' => 'Active'),
 			'search' => $search,
 			'type' => $type,
@@ -154,7 +154,7 @@ class Product extends Controller{
 			if($data['type'] == 2)
 				return redirect("product/package_view/" . $id);
 				
-			$data['typestr'] =  array( '0' => '', '1' => 'Item','2' => 'Package','3' => 'Monthly Promotion' );
+			$data['typestr'] =  array( '0' => '', '1' => 'Item','2' => 'Package','3' => 'Leaflet' );
 			
 			# get Tax GST percentage		
 			$taxgst = config_tax_m::where('code', 'gst')->first();
@@ -191,7 +191,7 @@ class Product extends Controller{
 		$this->validate($postdata,[
 			'code' => 'required',
 			'type' => 'required',
-			'description' => 'required',
+			'name' => 'required',
 			'price_wm' => 'required',
 			'price_em' => 'required',
 			'price_staff' => 'required',
@@ -199,7 +199,7 @@ class Product extends Controller{
 		
 		#uppercase & Replacing multiple spaces with a single space
 		$code = trim(preg_replace('!\s+!', ' ', strtoupper($postdata->input("code"))));
-		$description = trim(preg_replace('!\s+!', ' ', $postdata->input("description")));
+		$name = trim(preg_replace('!\s+!', ' ', $postdata->input("name")));
 		
 		#check exist code
 		$countcode = product_m::where('code', $code)->count();
@@ -211,7 +211,8 @@ class Product extends Controller{
 		$data = array(
 			'code' => $code,
 			'type' => $postdata->input("type"),
-			'description' => $description,
+			'name' => $name, 
+			'description' => $postdata->input("description") != null ? $postdata->input("description") : '',
 			'weight' => $postdata->input("weight") != null ? $postdata->input("weight") : '0',
 			'point' => $postdata->input("point") != null ? $postdata->input("point") : '0',
 			'price_wm' => $postdata->input("price_wm"),
@@ -231,7 +232,7 @@ class Product extends Controller{
 		$productdata = New product_m;
 		$id = $productdata->insertGetId($data);
 		
-		return redirect("product/edit/" . $id . "/1" )->with("info","Success Submit " . $data['code'] . " (" . $data['description'] . ")");
+		return redirect("product/edit/" . $id . "/1" )->with("info","Success Submit " . $data['code'] . " (" . $data['name'] . ")");
     }
 	
     public function update(Request $postdata, $id = 0){
@@ -242,7 +243,7 @@ class Product extends Controller{
 		$this->validate($postdata,[
 			'code' => 'required',
 			'type' => 'required',
-			'description' => 'required',
+			'name' => 'required',
 			'price_wm' => 'required',
 			'price_em' => 'required',
 			'price_staff' => 'required',
@@ -250,7 +251,7 @@ class Product extends Controller{
 		
 		#uppercase & Replacing multiple spaces with a single space
 		$code = trim(preg_replace('!\s+!', ' ', strtoupper($postdata->input("code"))));
-		$description = trim(preg_replace('!\s+!', ' ', $postdata->input("description")));
+		$name = trim(preg_replace('!\s+!', ' ', $postdata->input("name")));
 		
 		#check exist code
 		$productdata = New product_m;
@@ -263,7 +264,8 @@ class Product extends Controller{
 		$data = array(
 			'code' => $code,
 			'type' => $postdata->input("type"),
-			'description' => $description,
+			'name' => $name,
+			'description' => $postdata->input("description") != null ? $postdata->input("description") : '',
 			'weight' => $postdata->input("weight") != null ? $postdata->input("weight") : '0',
 			'point' => $postdata->input("point") != null ? $postdata->input("point") : '0',
 			'price_wm' => $postdata->input("price_wm"),
@@ -280,7 +282,7 @@ class Product extends Controller{
 		
 		$productdata->where('id',$id)->update($data);
 		
-		return redirect("product/view/" . $id)->with("info","Success Save " . $data['code'] . " (" . $data['description'] . ")");
+		return redirect("product/view/" . $id)->with("info","Success Save " . $data['code'] . " (" . $data['name'] . ")");
     }
 	
 	public function package_form(){
@@ -297,7 +299,7 @@ class Product extends Controller{
 		$productArr = array();
 		if(count($data2) > 0){
 			foreach($data2->all() as $key => $row)
-				$productArr[$row->id] = $row->code . ' (' . $row->description . ')';
+				$productArr[$row->id] = $row->code . ' (' . $row->name . ')';
 		}
 		$data['gstpercentage'] = $gstpercentage;
 		$data['tabform'] = 'active';
@@ -327,7 +329,7 @@ class Product extends Controller{
 			$productArr = array();
 			if(count($data2) > 0){
 				foreach($data2->all() as $key => $row)
-					$productArr[$row->id] = $row->code . ' (' . $row->description . ')';
+					$productArr[$row->id] = $row->code . ' (' . $row->name . ')';
 			}
 			
 			$tabform = 'active';
@@ -358,7 +360,7 @@ class Product extends Controller{
 			if($data['type'] != 2)
 				return redirect("product/view/" . $id);
 				
-			$data['typestr'] =  array( '0' => '', '1' => 'Item','2' => 'Package','3' => 'Monthly Promotion' );
+			$data['typestr'] =  array( '0' => '', '1' => 'Item','2' => 'Package','3' => 'Leaflet' );
 			
 			# get Tax GST percentage		
 			$taxgst = config_tax_m::where('code', 'gst')->first();
@@ -374,7 +376,7 @@ class Product extends Controller{
 			if(count($product_list) > 0){
 				foreach($product_list->all() as $key => $row){
 					$datap = $productdata->where('id', $row->product_id)->where('type','<>', 2)->first();
-					$productArr[$datap['id']] = $datap['code'] . ' (' . $datap['description'] . ')';
+					$productArr[$datap['id']] = $datap['code'] . ' (' . $datap['name'] . ')';
 				}
 			}
 			
@@ -406,7 +408,7 @@ class Product extends Controller{
 	public function package_insert(Request $postdata){
 		$this->validate($postdata,[
 			'code' => 'required',
-			'description' => 'required',
+			'name' => 'required',
 			'price_wm' => 'required',
 			'price_em' => 'required',
 			'price_staff' => 'required',
@@ -414,7 +416,7 @@ class Product extends Controller{
 		
 		#uppercase & Replacing multiple spaces with a single space
 		$code = trim(preg_replace('!\s+!', ' ', strtoupper($postdata->input("code"))));
-		$description = trim(preg_replace('!\s+!', ' ', $postdata->input("description")));
+		$name = trim(preg_replace('!\s+!', ' ', $postdata->input("name")));
 		
 		#check exist code
 		$countcode = product_m::where('code', $code)->count();
@@ -426,7 +428,8 @@ class Product extends Controller{
 		$data = array(
 			'code' => $code,
 			'type' => 2,
-			'description' => $description,
+			'name' => $name,
+			'description' => $postdata->input("description") != null ? $postdata->input("description") : '',
 			'weight' => $postdata->input("weight") != null ? $postdata->input("weight") : '0',
 			'point' => $postdata->input("point") != null ? $postdata->input("point") : '0',
 			'price_wm' => $postdata->input("price_wm"),
@@ -469,7 +472,7 @@ class Product extends Controller{
 			}
 		}
 		
-		return redirect("product/package_edit/" . $id . "/1" )->with("info","Success Submit " . $data['code'] . " (" . $data['description'] . ")");
+		return redirect("product/package_edit/" . $id . "/1" )->with("info","Success Submit " . $data['code'] . " (" . $data['name'] . ")");
     }
 	
     public function package_update(Request $postdata, $id = 0){
@@ -480,7 +483,7 @@ class Product extends Controller{
 			
 		$this->validate($postdata,[
 			'code' => 'required',
-			'description' => 'required',
+			'name' => 'required',
 			'price_wm' => 'required',
 			'price_em' => 'required',
 			'price_staff' => 'required',
@@ -488,7 +491,7 @@ class Product extends Controller{
 		
 		#uppercase & Replacing multiple spaces with a single space
 		$code = trim(preg_replace('!\s+!', ' ', strtoupper($postdata->input("code"))));
-		$description = trim(preg_replace('!\s+!', ' ', $postdata->input("description")));
+		$name = trim(preg_replace('!\s+!', ' ', $postdata->input("name")));
 		
 		#check exist code
 		$productdata = New product_m;
@@ -500,7 +503,8 @@ class Product extends Controller{
 		
 		$data = array(
 			'code' => $code,
-			'description' => $description,
+			'name' => $name,
+			'description' => $postdata->input("description") != null ? $postdata->input("description") : '',
 			'weight' => $postdata->input("weight") != null ? $postdata->input("weight") : '0',
 			'point' => $postdata->input("point") != null ? $postdata->input("point") : '0',
 			'price_wm' => $postdata->input("price_wm"),
@@ -568,7 +572,7 @@ class Product extends Controller{
 			$packagedata->where('package_id', $id)->delete();
 		}
 		
-		return redirect("product/view/" . $id)->with("info","Success Save " . $postdata->input("description") . "");
+		return redirect("product/package_view/" . $id)->with("info","Success Save " . $postdata->input("name") . "");
     }
 	
 	public function upload_image(Request $postdata,$id = 0){
@@ -703,9 +707,9 @@ class Product extends Controller{
 					}
 					
 					if($search != '')
-						return redirect("product/search/" . $search)->with("info","Product " . $checkproduct['code'] . "  (" . $checkproduct['description'] . " ) Deleted Successfully!!");
+						return redirect("product/search/" . $search)->with("info","Product " . $checkproduct['code'] . "  (" . $checkproduct['name'] . " ) Deleted Successfully!!");
 					else
-						return redirect("product/listing")->with("info","Product " . $checkproduct['code'] . "  (" . $checkproduct['description'] . " ) Deleted Successfully!!");
+						return redirect("product/listing")->with("info","Product " . $checkproduct['code'] . "  (" . $checkproduct['name'] . " ) Deleted Successfully!!");
 					
 				}
 			}
@@ -807,7 +811,7 @@ class Product extends Controller{
 					'id' => $productid,
 					'code' => $row->code,
 					'type' => $row->type,
-					'description' => $row->description,
+					'name' => $row->name,
 					'year' => $row->year,
 					'category' => $row->category,
 					'weight' => $row->weight,
