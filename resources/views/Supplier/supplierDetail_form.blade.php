@@ -37,7 +37,7 @@ if(isset($outputData)){
                         <h3 class="panel-title">{!! $title !!}</h3>
 						<?php if(isset($outputData)){ ?>
 							<div class="actions pull-right">
-								<a href="{{ url('supplier/supplierDetail/view/' . $outputData->comp_code) }}" class="btn btn-default  btn-sm btn-circle">
+								<a href="{{ url('supplier/supplierDetail/view/' . $outputData->id) }}" class="btn btn-default  btn-sm btn-circle">
 								<i class="fa fa-eye"></i> View </a>
 							</div>
 						<?php } ?>
@@ -49,34 +49,34 @@ if(isset($outputData)){
 									<label class="col-md-3 control-label">Supplier Code</label>
 									<div class="col-md-9">
 										<?php if(isset($outputData)){ ?>
-											<input name="comp_code" type="text" class="form-control" value="{!! $outputData->comp_code !!}" readonly>
+											<input name="supplier_code" type="text" class="form-control" value="{!! $outputData->supplier_code !!}" readonly>
 										<?php }else{ ?>
-											<input name="comp_code" type="text" class="form-control" value="">
+											<input name="supplier_code" type="text" class="form-control" value="">
 										<?php } ?>
 									</div>
 								</div>
 								<div class="form-group">
 									<label class="col-md-3 control-label">Company Name</label>
 									<div class="col-md-9">
-										<input name="comp_name" type="text" class="form-control" value="{!! isset($outputData) ? $outputData->comp_name : '' !!}">
+										<input name="company_name" type="text" class="form-control" value="{!! isset($outputData) ? $outputData->company_name : '' !!}">
 									</div>
 								</div>
 								<div class="form-group">
 									<label class="col-md-3 control-label">Address 1</label>
 									<div class="col-md-9">
-										<input name="add1" type="text" class="form-control" value="{!! isset($outputData) ? $outputData->add1 : '' !!}">
+										<input name="street1" type="text" class="form-control" value="{!! isset($outputData) ? $outputData->street1 : '' !!}">
 									</div>
 								</div>
 								<div class="form-group">
 									<label class="col-md-3 control-label">Address 2</label>
 									<div class="col-md-9">
-										<input name="add2" type="text" class="form-control" value="{!! isset($outputData) ? $outputData->add2 : '' !!}">
+										<input name="street2" type="text" class="form-control" value="{!! isset($outputData) ? $outputData->street2 : '' !!}">
 									</div>
 								</div>
 								<div class="form-group">
 									<label class="col-md-3 control-label">Postal Code</label>
 									<div class="col-md-9">
-										<input name="poscode" type="text" class="form-control" value="{!! isset($outputData) ? $outputData->postal_code : '' !!}">
+										<input name="poscode" type="text" class="form-control" value="{!! isset($outputData) ? $outputData->poscode : '' !!}">
 									</div>
 								</div>
 								<div class="form-group">
@@ -114,7 +114,7 @@ if(isset($outputData)){
 								<div class="form-group">
 									<label class="col-md-3 control-label">Attn no</label>
 									<div class="col-md-9">
-										<input name="attnNo" type="text" class="form-control" value="{!! isset($outputData) ? $outputData->attn_no : '' !!}">
+										<input name="attn_no" type="text" class="form-control" value="{!! isset($outputData) ? $outputData->attn_no : '' !!}">
 									</div>
 								</div>
 								<div class="form-group">

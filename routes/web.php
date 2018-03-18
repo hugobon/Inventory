@@ -39,8 +39,12 @@ Route::get('supplier/supplierDetail/form/{comp_code?}', 'Supplier\SupplierContro
 Route::post('supplier/supplierDetail/create_comp', 'Supplier\SupplierController@fn_create_comp');
 Route::post('supplier/supplierDetail/update_comp', 'Supplier\SupplierController@fn_update_comp');
 Route::get('supplier/supplierDetail/view/{comp_code}', 'Supplier\SupplierController@fn_get_detail');
-Route::get('supplier/stockIn', 'Supplier\SupplierController@stockIn_page');
-Route::get('supplier/supplierDO', 'Supplier\SupplierController@supplierDO_page');
+
+//=========================
+// Delivery Order :: Zul
+//=========================
+Route::get('delivery_order/listing', 'Supplier\SupplierController@supplierDO_page');
+Route::post('delivery_order/form', 'Supplier\SupplierController@do_show_page');
 
 //=========================
 // Inventory :: Aqi

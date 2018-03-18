@@ -3,6 +3,17 @@
 
 @section('content')
 
+<script type="text/javascript">
+$(function() {
+    $('input[name="purchase_date"]').daterangepicker();
+    
+});
+
+function fn_clear(){
+    console.log("clear!");
+}
+</script>
+
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
     <li><a href="{{ url('home') }}">Home</a></li>
@@ -22,16 +33,11 @@
                     </div>
                     <div class="panel-body">
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="col-md-3 control-label">Purchase Date</label>
                                     <div class="col-md-9">
-                                        <div class="input-group">
-                                            <span class="input-group-addon"><span class="fa fa-calendar"></span></span>
-                                            <input type="text" class="form-control datepicker">
-                                            <span class="input-group-addon">To</span>
-                                            <input type="text" class="form-control datepicker">
-                                        </div>
+                                        <input type="text" class="form-control" name="purchase_date">
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -47,27 +53,48 @@
                                 <div class="form-group">
                                     <label class="col-md-3 control-label">Invoice No.</label>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control">
+                                        <input type="text" class="form-control" name="inv_no">
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="col-md-3 control-label">Agent Code</label>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control">
+                                        <input type="text" class="form-control" name="agent_code">
                                     </div>
                                 </div>
+                            </div>
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="col-md-3 control-label">Delivery Address</label>
                                     <div class="col-md-9">
-                                        <div class="col-md-12 btn-group btn-group-lg" style="padding-left: 0px; padding-bottom: 5px;">
-                                            <button type="button" class="btn btn-default">Address no 1</button>
-                                        </div>
-                                        <div class="col-md-12 btn-group btn-group-lg" style="padding-left: 0px; padding-bottom: 5px;">
-                                            <button type="button" class="btn btn-default">Address no 1</button>
-                                        </div>
+                                        <input type="text" name="street1" class="form-control" placeholder="Street 1">
                                     </div>
                                 </div>
                                 <div class="form-group">
+                                    <label class="col-md-3 control-label"></label>
+                                    <div class="col-md-9">
+                                        <input type="text" name="street2" class="form-control" placeholder="Street 2">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label"></label>
+                                    <div class="col-md-4">
+                                        <input type="text" name="poscode" class="form-control" placeholder="Postal Code">
+                                    </div>
+                                    <div class="col-md-5">
+                                        <input type="text" name="city" class="form-control" placeholder="City">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label"></label>
+                                    <div class="col-md-4">
+                                        <input type="text" name="state" class="form-control" placeholder="State">
+                                    </div>
+                                    <div class="col-md-5">
+                                        <input type="text" name="country" class="form-control" placeholder="Country">
+                                    </div>
+                                </div>
+                               <!--  <div class="form-group">
                                     <label class="col-md-3 control-label">Courier Service</label>
                                     <div class="col-md-9">
                                         <input type="text" class="form-control">
@@ -78,12 +105,28 @@
                                     <div class="col-md-9">
                                         <input type="text" class="form-control">
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>
+                    <div class="panel-body">
+                        DO List: 
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>DO No</th>
+                                        <th>Delivery Type</th>
+                                        <th>Invoice No</th>
+                                        <th>Agent Code</th>
+                                        <th></th>
+                                    <tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
                     <div class="panel-footer">
-                        <button class="btn btn-default">Clear Form</button>
+                        <button type="button" class="btn btn-default" onclick="fn_clear()">Clear Form</button>
                         <button class="btn btn-primary pull-right">Save</button>
                     </div>
                 </div>

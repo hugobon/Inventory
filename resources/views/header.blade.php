@@ -12,8 +12,9 @@
         
         <!-- CSS INCLUDE -->        
         <link rel="stylesheet" type="text/css" id="theme" href="{!! asset('joli/css/theme-default.css') !!}"/>
-		<link rel="stylesheet" type="text/css" id="theme" href="{!! asset('joli/css/bootstrap/bootstrap-datepicker.css') !!}"/>
-        <link rel="stylesheet" type="text/css" id="theme" href="{!! asset('joli/css/bootstrap/bootstrap-datepicker.css.map') !!}"/>
+		<!-- <link rel="stylesheet" type="text/css" id="theme" href="{!! asset('joli/css/bootstrap/bootstrap-datepicker.css') !!}"/>
+        <link rel="stylesheet" type="text/css" id="theme" href="{!! asset('joli/css/bootstrap/bootstrap-datepicker.css.map') !!}"/> -->
+        <link rel="stylesheet" type="text/css" id="theme" href="{!! asset('joli/js/daterangepicker/daterangepicker.css') !!}"/>
 		<!-- EOF CSS INCLUDE -->                                    
     </head>
     <body>
@@ -93,11 +94,24 @@
                             <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("supplier/stockIn")) ? "active" : "" ; ?>">
 								<a href="{{ url('supplier/stockIn') }}"><span class="fa fa-puzzle-piece"></span>Stock In</a>
 							</li>
-                            <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("supplier/supplierDO")) ? "active" : "" ; ?>">
+                            <!-- <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("supplier/supplierDO")) ? "active" : "" ; ?>">
 								<a href="{{ url('supplier/supplierDO') }}"><span class="fa fa-puzzle-piece"></span>Delivery Order</a>
-							</li>
+							</li> -->
 						</ul>
 					</li>
+                    <li class="xn-openable <?php echo in_array(Request::segment(1), array("delivery_order")) ? "active" : "" ; ?>">
+                        <a href="{{ url('delivery_order/listing') }}"><span class="fa fa-truck"></span> <span class="xn-text">Delivery Order</span></a>
+                        <ul>
+                            <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("delivery_order/listing")) ? "active" : "" ; ?>">
+                                <a href="{{ url('delivery_order/listing') }}"><span class="fa fa-puzzle-piece"></span>Delivery Order Listing</a>
+                            </li>
+                            <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("delivery_order/form")) ? "active" : "" ; ?>">
+                                <!-- <a href="{{ url('delivery_order/form') }}"><span class="fa fa-puzzle-piece"></span>Create Delivery Order</a> -->
+                                <a href="#" onclick="$('#cdo').click();"><span class="fa fa-puzzle-piece"></span>Create Delivery Order</a>
+                                <button id="cdo" type="button" class="btn btn-default mb-control" data-box="#create_delivery_order" style="display: none;">Create Delivery Order</button>
+                            </li>
+                        </ul>
+                    </li>
 					<li class="xn-openable <?php echo in_array(Request::segment(1), array("configuration")) ? "active" : "" ; ?>">
                         <a href="javascript:;"><span class="fa fa-cogs"></span> <span class="xn-text"> configuration </span></a>
                         <ul>
@@ -164,6 +178,39 @@
                 </div>
             </div>
         </div>
+
+        <div class="message-box animated fadeIn" id="create_delivery_order">
+            <div class="mb-container">
+                <div class="mb-middle">
+                    <div class="mb-content">
+                        <form class="form-horizontal" action="{{ url('delivery_order/form') }}" method="POST">
+                            {{ csrf_field() }}
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">New Delivery Order</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="col-md-3 control-label" style="color: black;">Sales Order</label>
+                                                <div class="col-md-9">
+                                                    <input type="text" class="form-control" name="sales_order">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer">
+                                    <button class="btn btn-default mb-control-close">Cancel</button>
+                                    <button class="btn btn-primary pull-right">Create</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- END MESSAGE BOX-->
 
         <!-- START PRELOADS -->
@@ -183,10 +230,13 @@
         <script type='text/javascript' src="{!! asset('joli/js/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js') !!}"></script>
         <script type='text/javascript' src="{!! asset('joli/js/plugins/jvectormap/jquery-jvectormap-world-mill-en.js') !!}"></script>                
    
-		<script type='text/javascript' src="{!! asset('joli/js/plugins/datepicker/bootstrap-datepicker.min.js') !!}"></script>		
+		<!-- <script type='text/javascript' src="{!! asset('joli/js/plugins/datepicker/bootstrap-datepicker.min.js') !!}"></script> -->
         <script type="text/javascript" src="{!! asset('joli/js/plugins/owl/owl.carousel.min.js') !!}"></script>                 
         
         <script type="text/javascript" src="{!! asset('joli/js/plugins/moment.min.js') !!}"></script>
+
+        <script type="text/javascript" src="{!! asset('joli/js/daterangepicker/moment.min.js') !!}" ></script> 
+        <script type="text/javascript" src="{!! asset('joli/js/daterangepicker/daterangepicker.js') !!}" ></script>
         <!-- END THIS PAGE PLUGINS-->
 
         <!-- START TEMPLATE -->
