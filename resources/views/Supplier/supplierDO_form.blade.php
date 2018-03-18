@@ -40,35 +40,70 @@
                     </div>
                     <div class="panel-body">
                         <div class="row">
-                            
-                                <div class="panel-body tab-content">
-                                    <div class="tab-pane active" id="tab-order">
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label class="col-md-3 control-label">Purchase Date</label>
-                                                <div class="col-md-9">
-                                                    <input type="text" class="form-control" name="purchase_date">
-                                                </div>
+                            <div class="panel-body tab-content">
+                                <div class="tab-pane active" id="tab-order">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">Purchase Date</label>
+                                            <div class="col-md-9">
+                                                <input type="text" class="form-control" name="purchase_date">
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label class="col-md-3 control-label">Purchase Date</label>
-                                                <div class="col-md-9">
-                                                    <input type="text" class="form-control" name="purchase_date">
-                                                </div>
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">Delivery Type</label>
+                                            <div class="col-md-9">
+                                                <input type="text" class="form-control" name="delivery_ty">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">Shipping Address</label>
+                                            <div class="col-md-9">
+                                                <!-- <input type="text" class="form-control" name="delivery_ty"> -->
+                                                <textarea class="form-control"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">Billing Address</label>
+                                            <div class="col-md-9">
+                                                <!-- <input type="text" class="form-control" name="delivery_ty"> -->
+                                                <textarea class="form-control"></textarea>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="tab-pane" id="tab-item">
+                                    <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="col-md-3 control-label">Purchase Item</label>
+                                            <label class="col-md-3 control-label">Purchase Order No</label>
+                                            <div class="col-md-9">
+                                                <input type="text" class="form-control" name="purchase_date">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">Invoice No</label>
                                             <div class="col-md-9">
                                                 <input type="text" class="form-control" name="purchase_date">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                <div class="tab-pane" id="tab-item">
+                                    Item List:
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th width="20">No</th>
+                                                    <th width="200">Item Code</th>
+                                                    <th>Description</th>
+                                                    <th>Qty</th>
+                                                    <th></th>
+                                                <tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="panel-footer">
