@@ -12,10 +12,14 @@
         
         <!-- CSS INCLUDE -->        
         <link rel="stylesheet" type="text/css" id="theme" href="{!! asset('joli/css/theme-default.css') !!}"/>
-		<!-- <link rel="stylesheet" type="text/css" id="theme" href="{!! asset('joli/css/bootstrap/bootstrap-datepicker.css') !!}"/>
-        <link rel="stylesheet" type="text/css" id="theme" href="{!! asset('joli/css/bootstrap/bootstrap-datepicker.css.map') !!}"/> -->
+		    <link rel="stylesheet" type="text/css" id="theme" href="{!! asset('joli/css/bootstrap/bootstrap-datepicker.css') !!}"/>
+        <link rel="stylesheet" type="text/css" id="theme" href="{!! asset('joli/css/bootstrap/bootstrap-datepicker.css.map') !!}"/>
         <link rel="stylesheet" type="text/css" id="theme" href="{!! asset('joli/js/daterangepicker/daterangepicker.css') !!}"/>
-		<!-- EOF CSS INCLUDE -->                                    
+		<!-- EOF CSS INCLUDE -->
+        <!-- SCRIPT INCLUDE -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <script src="Https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+        <!-- END SCRIPT -->
     </head>
     <body>
 		<div class="page-container">
@@ -55,11 +59,15 @@
                             <li class="xn-openable <?php echo in_array(Request::segment(1), array("stock")) ? "active" : "" ; ?>"" >
                                 <a href="javascript:;"><span class="glyphicon glyphicon-shopping-cart"></span> Stock </a>
                                 <ul>
-									<li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("stock/adjustment")) ? "active" : "" ; ?>">
+                                <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("stock/in")) ? "active" : "" ; ?>">
+								    <a href="{{ url('stock/in') }}"><span class="fa fa-puzzle-piece"></span>Stock In</a>
+							    </li>
+								<li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("stock/adjustment")) ? "active" : "" ; ?>">
 										<a href="{{ url('stock/adjustment/listing') }}"><span class="glyphicon glyphicon-list-alt"></span> Stock Adjustment </a>
-									</li>
-                                    <li><a href="javascript:;"><span class="glyphicon glyphicon-list-alt"></span> Current Stock </a></li>
-                                    <li><a href="javascript:;"><span class="fa fa-search"></span> Stock Balance Report </a></li>
+								</li>
+                                <li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("stock/current")) ? "active" : "" ; ?>">
+                                    <a href="{{ url('stock/current') }}"><span class="glyphicon glyphicon-list-alt"></span> Current Stock </a></li>
+                                 <li><a href="javascript:;"><span class="fa fa-search"></span> Stock Balance Report </a></li>
                                 </ul>
                             </li>
                             <li><a href="javascript:;"><span class="fa fa-book"></span> Audit Trail </a></li>
@@ -75,8 +83,8 @@
                                 <a href="javascript:;"><span class="glyphicon glyphicon-shopping-cart"></span>Agent Option </a>
                                 <ul>
                                     <li>
-                                        <a href="{{ url('agent/order_stock/12221112') }}"><span class="glyphicon glyphicon-list-alt"></span> Configure </a>
-                                        <a href="javascript:;"><span class="glyphicon glyphicon-list-alt"></span> Select Product </a>
+                                        <a href="{{ url('agent/get_order_stock/display') }}/{{ Auth::user()->id }}"><span class="glyphicon glyphicon-list-alt"></span> Configure </a>
+                                        <a href="{{ url('agent/get_product_list') }}"><span class="glyphicon glyphicon-list-alt"></span> Select Product </a>
                                         <a href="javascript:;"><span class="glyphicon glyphicon-list-alt"></span> Purchase Report </a>
                                     </li>
                                     <li><a href="javascript:;"><span class="fa fa-search"></span> Stock Balance Report </a></li>

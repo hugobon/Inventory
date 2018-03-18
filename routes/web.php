@@ -28,8 +28,15 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::get('agent/register', 'Agent\AgentController@fn_get_view');
 Route::post('agent/save', 'Agent\AgentController@fn_save_agent_record');
 Route::get('agent/view','Agent\AgentController@fn_view_agent_record');
-Route::get('agent/order_stock/{agent_id?}', 'Agent\AgentController@fn_get_agent_order_stock');
+Route::get('agent/get_order_stock/{mode?}/{agent_id?}', 'Agent\AgentController@fn_get_agent_order_stock');
 Route::post('agent/save_agent_order_stock', 'Agent\AgentController@fn_save_agent_order_stock');
+Route::get('agent/get_product_list', 'Agent\AgentController@fn_get_product_list');
+Route::get('agent/get_checkout_items/{agent_id?}', 'Agent\AgentController@fn_get_checkout_items');
+Route::post('agent/save_selected_items', 'Agent\AgentController@fn_save_selected_items');
+Route::get('agent/get_cart_items', 'Agent\AgentController@fn_get_cart_items');
+Route::post('agent/delete_cart_item', 'Agent\AgentController@fn_delete_cart_item');
+Route::post('agent/update_quantity_item', 'Agent\AgentController@fn_quantity_item');
+Route::get('agent/get_product_details/{product_id?}', 'Agent\AgentController@fn_get_product_details');
 
 //=========================
 // Supplier :: Zul
@@ -39,6 +46,8 @@ Route::get('supplier/supplierDetail/form/{comp_code?}', 'Supplier\SupplierContro
 Route::post('supplier/supplierDetail/create_comp', 'Supplier\SupplierController@fn_create_comp');
 Route::post('supplier/supplierDetail/update_comp', 'Supplier\SupplierController@fn_update_comp');
 Route::get('supplier/supplierDetail/view/{comp_code}', 'Supplier\SupplierController@fn_get_detail');
+// Route::get('supplier/stockIn', 'Supplier\SupplierController@stockIn_page');
+// Route::get('supplier/supplierDO', 'Supplier\SupplierController@supplierDO_page');
 
 //=========================
 // Delivery Order :: Zul
@@ -70,7 +79,7 @@ Route::post('product/set_mainimage', 'Inventory\Product@set_mainimage');
 Route::post('product/check_existcode', 'Inventory\Product@check_existcode');
 Route::get('product/delete/{x?}', 'Inventory\Product@delete');
 Route::get('product/delete_image/{x?}', 'Inventory\Product@delete_image');
-
+Route::get('product/all_data_product/{x?}', 'Inventory\Product@all_data_product');
 // Product promotion
 Route::get('product/promotion', function () {  return redirect("promotion/listing"); });
 Route::get('product/promotion/listing', 'Inventory\Product_promotion@listing');
@@ -105,3 +114,11 @@ Route::post('configuration/stockadjustment/form_search', 'Configuration\Stockadj
 Route::get('configuration/stockadjustment/delete/{x?}', 'Configuration\Stockadjustment@delete');
 Route::post('configuration/stockadjustment/save', 'Configuration\Stockadjustment@save');
 
+//=========================
+// Stock
+//=========================
+ Route::get('stock', 'Stock\StockController@showPage');
+ Route::post('stock/stockin_insert','Stock\StockController@insertStockIn');
+ Route::get('stock/current', 'Stock\StockController@stockSupplierListing');
+ Route::get('stock/in', 'Stock\StockController@stockIn_page');
+ 

@@ -62,38 +62,45 @@ if(isset($id) && $id > 0){
 						</div>
 						<div class="col-md-6">
 							<div class="form-group">
-								<label class="col-md-3 control-label"> Code: </label>
-								<div class="col-md-9 control-label text-left">{{ isset($code) ? $code : '' }}</div>
+								<label class="col-md-4 control-label"> Code: </label>
+								<div class="col-md-8 control-label text-left">{{ isset($code) ? $code : '' }}</div>
 							</div>
 							<div class="form-group">
-								<label class="col-md-3 control-label"> Type: </label>
-								<div class="col-md-9 control-label text-left">{{ isset($typestr[$type]) ? $typestr[$type] : '' }}</div>
+								<label class="col-md-4 control-label"> Name: </label>
+								<div class="col-md-8 control-label text-left">{{ isset($name) ? $name : '' }}</div>
 							</div>
 							<div class="form-group">
-								<label class="col-md-3 control-label"> Description: </label>
-								<div class="col-md-9 control-label text-left">{{ isset($description) ? $description : '' }}</div>
+								<label class="col-md-4 control-label"> Type: </label>
+								<div class="col-md-8 control-label text-left">{{ isset($typestr[$type]) ? $typestr[$type] : '' }}</div>
 							</div>
 							<div class="form-group">
-								<label class="col-md-3 control-label"> Weight (Kg): </label>
-								<div class="col-md-9 control-label text-left">{{ isset($weight) ? number_format($weight, 2, '.', '') : '' }}</div>
+								<label class="col-md-4 control-label"> Weight (g): </label>
+								<div class="col-md-8 control-label text-left">{{ isset($weight) ? number_format($weight, 2, '.', '') : '' }}</div>
 							</div>
 						</div>
 						<div class="col-md-6">
 							<div class="form-group">
-								<label class="col-md-3 control-label"> Status: </label>
-								<div class="col-md-9 control-label text-left">{{ isset($statusArr[$status]) ? $statusArr[$status] : '' }}</div>
+								<label class="col-md-4 control-label"> Status: </label>
+								<div class="col-md-8 control-label text-left">{{ isset($statusArr[$status]) ? $statusArr[$status] : '' }}</div>
 							</div>
 							<div class="form-group">
-								<label class="col-md-3 control-label"> Year: </label>
-								<div class="col-md-9 control-label text-left">{{ isset($year) && $year > 1900 ? $year : '' }}</div>
+								<label class="col-md-4 control-label"> Year: </label>
+								<div class="col-md-8 control-label text-left">{{ isset($year) && $year > 1900 ? $year : '' }}</div>
 							</div>
 							<div class="form-group">
-								<label class="col-md-3 control-label"> Category: </label>
-								<div class="col-md-9 control-label text-left">{{ isset($category) ? $category : '' }}</div>
+								<label class="col-md-4 control-label"> Category: </label>
+								<div class="col-md-8 control-label text-left">{{ isset($category) ? $category : '' }}</div>
 							</div>
 							<div class="form-group">
-								<label class="col-md-3 control-label"> Point: </label>
-								<div class="col-md-9 control-label text-left">{{ isset($point) ? $point : '0' }}</div>
+								<label class="col-md-4 control-label"> Point: </label>
+								<div class="col-md-8 control-label text-left">{{ isset($point) ? $point : '0' }}</div>
+							</div>
+						</div>
+						<br /> &nbsp;
+						<div class="col-md-12">
+							<div class="form-group">
+								<label class="col-md-2 control-label"> Description: </label>
+								<div class="col-md-10 control-label text-left"><?php echo isset($description) ? nl2br(htmlentities($description)) : '' ?></div>
 							</div>
 						</div>
 					</div>
@@ -243,22 +250,22 @@ if(isset($id) && $id > 0){
 						</div>
 						<div class="col-md-6">
 							<div class="form-group">
-								<label class="col-md-3 control-label"> Created by: </label>
-								<div class="col-md-9 control-label text-left"> Administrator </div>
+								<label class="col-md-4 control-label"> Created by: </label>
+								<div class="col-md-8 control-label text-left">{{ $created_by_name }}</div>
 							</div>
 							<div class="form-group">
-								<label class="col-md-3 control-label"> Created at: </label>
-								<div class="col-md-9 control-label text-left">{{ isset($created_at) && !in_array($created_at, array('0000-00-00','')) ? date('d/m/Y, h:i A', strtotime($created_at)) : '' }}</div>
+								<label class="col-md-4 control-label"> Created at: </label>
+								<div class="col-md-8 control-label text-left">{{ isset($created_at) && !in_array($created_at, array('0000-00-00','')) ? date('d/m/Y, h:i A', strtotime($created_at)) : '' }}</div>
 							</div>
 						</div>
 						<div class="col-md-6">
 							<div class="form-group">
-								<label class="col-md-3 control-label"> Updated by: </label>
-								<div class="col-md-9 control-label text-left"> Administrator </div>
+								<label class="col-md-4 control-label"> Updated by: </label>
+								<div class="col-md-8 control-label text-left">{{ $updated_by_name }}</div>
 							</div>
 							<div class="form-group">
-								<label class="col-md-3 control-label"> Updated at: </label>
-								<div class="col-md-9 control-label text-left">{{ isset($updated_at) && !in_array($updated_at, array('0000-00-00','')) ? date('d/m/Y, h:i A', strtotime($updated_at)) : '' }}</div>
+								<label class="col-md-4 control-label"> Updated at: </label>
+								<div class="col-md-8 control-label text-left">{{ isset($updated_at) && !in_array($updated_at, array('0000-00-00','')) ? date('d/m/Y, h:i A', strtotime($updated_at)) : '' }}</div>
 							</div>
 						</div>
 					</div>
