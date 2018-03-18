@@ -30,12 +30,12 @@ Route::post('agent/save', 'Agent\AgentController@fn_save_agent_record');
 Route::get('agent/view','Agent\AgentController@fn_view_agent_record');
 Route::get('agent/get_order_stock/{mode?}/{agent_id?}', 'Agent\AgentController@fn_get_agent_order_stock');
 Route::post('agent/save_agent_order_stock', 'Agent\AgentController@fn_save_agent_order_stock');
-Route::get('agent/get_product_list', 'Agent\AgentController@fn_get_product_list');
+Route::get('agent/get_product_list/{mode?}', 'Agent\AgentController@fn_get_product_list');
 Route::get('agent/get_checkout_items/{agent_id?}', 'Agent\AgentController@fn_get_checkout_items');
 Route::post('agent/save_selected_items', 'Agent\AgentController@fn_save_selected_items');
 Route::get('agent/get_cart_items', 'Agent\AgentController@fn_get_cart_items');
 Route::post('agent/delete_cart_item', 'Agent\AgentController@fn_delete_cart_item');
-Route::post('agent/update_quantity_item', 'Agent\AgentController@fn_quantity_item');
+Route::post('agent/update_quantity_item', 'Agent\AgentController@fn_update_quantity_item');
 Route::get('agent/get_product_details/{product_id?}', 'Agent\AgentController@fn_get_product_details');
 
 //=========================
