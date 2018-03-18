@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use Auth;
 use Carbon\Carbon;
 
-use App\supdetail;
+use App\supplier;
 
 class SupplierController extends Controller
 {
@@ -15,27 +15,27 @@ class SupplierController extends Controller
 		
 		try{
 			
-			$supdetail = supdetail::get();
+			$supplier = supplier::get();
 			
 			$tbody = "";
-			$totalList = count($supdetail);
+			$totalList = count($supplier);
 			if($totalList > 0){
-				foreach($supdetail as $k => $v){
+				foreach($supplier as $k => $v){
 					$tbody.= "<tr>";
-					$tbody.= "<td>".$v['comp_code']."</td>";
-					$tbody.= "<td>".$v['comp_name']."</td>";
+					$tbody.= "<td>".$v['supplier_code']."</td>";
+					$tbody.= "<td>".$v['company_name']."</td>";
 					$tbody.= "<td>".$v['tel']."</td>";
 					$tbody.= "<td>".$v['fax']."</td>";
 					$tbody.= "<td>".$v['attn_no']."</td>";
 					$tbody.= "<td>".$v['email']."</td>";
 					$tbody.= "<td>
-								<a href=".url('supplier/supplierDetail/view/'.$v['comp_code'])." title=' View ".$v['comp_code']." (".$v['comp_name'].")' 
+								<a href=".url('supplier/supplierDetail/view/'.$v['id'])." title=' View ".$v['id']." (".$v['company_name'].")' 
 								class='btn btn-info btn-rounded'><span class='fa fa-eye'></span></a>
-								<a href=".url('supplier/supplierDetail/form/'.$v['comp_code'])." 
-								title=' Edit ".$v['comp_code']." (".$v['comp_name'].")'
+								<a href=".url('supplier/supplierDetail/form/'.$v['id'])." 
+								title=' Edit ".$v['supplier_code']." (".$v['company_name'].")'
 								class='btn btn-primary btn-rounded' ><span class='fa fa-edit'></span></a>
 								<a href=".url('#')." 
-								title=' Remove ".$v['comp_code']." (".$v['comp_name'].")'
+								title=' Remove ".$v['supplier_code']." (".$v['company_name'].")'
 								class='btn btn-danger btn-rounded confirm-delete' ><span class='glyphicon glyphicon-trash'></span></a>
 							 </td>";
 					/*$tbody.= "<td>
@@ -67,13 +67,13 @@ class SupplierController extends Controller
     	return view('Supplier.supplierDetail_listing', compact('outputData'));
     }
 	
-	public function supplierDetail_form_page($comp_code = null){
+	public function supplierDetail_form_page($id = null){
 		
 		try{
 			
 			$outputData = null;
-			if(!is_null($comp_code)){
-				$outputData = supdetail::where('comp_code',$comp_code)->first();
+			if(!is_null($id)){
+				$outputData = supplier::where('id',$id)->first();
 			}
 			
 			return view('Supplier.supplierDetail_form',compact('outputData'));
@@ -96,29 +96,31 @@ class SupplierController extends Controller
 		
 		try{
 			
-			$dataToInsert = [
-				'comp_code'		=> $request->get('comp_code'),
-				'comp_name'		=> $request->get('comp_name'),
-				'add1' 			=> $request->get('add1'),
-				'add2'			=> $request->get('add2'),
-				'postal_code' 	=> $request->get('poscode'),
+			$supplier = new supplier([
+				'supplier_code'	=> $request->get('supplier_code'),
+				'company_name'	=> $request->get('company_name'),
+				'street1' 		=> $request->get('street1'),
+				'street2'		=> $request->get('street2'),
+				'poscode' 		=> $request->get('poscode'),
 				'city'	 		=> $request->get('city'),
-				'region' 		=> $request->get('region'),
+				'state' 		=> $request->get('state'),
 				'country'	 	=> $request->get('country'),
 				'tel'	 		=> $request->get('tel'),
 				'fax'	 		=> $request->get('fax'),
-				'attn_no' 		=> $request->get('attnNo'),
+				'attn_no' 		=> $request->get('attn_no'),
 				'email' 		=> $request->get('email'),
 				'created_by'	=> Auth::user()->id,
 				'created_at'	=> Carbon::now(new \DateTimeZone('Asia/Kuala_Lumpur'))
-			];
+			]);
+
+			$supplier->save();
+			$new_id = $supplier->id;
 			
-			supdetail::insert($dataToInsert);
-			
-			return redirect('supplier/supplierDetail');
+			return $this->fn_get_detail($new_id);
+			// return redirect('supplier/supplierDetail');
 			
 		}catch(\Exception $e){
-			
+			return 'Error: '.$e->getMessage();
 		}
 	}
 	
@@ -126,38 +128,39 @@ class SupplierController extends Controller
 		
 		try{
 			
-			$comp_code = $request->get('comp_code');
+			$id = $request->get('id');
 			
 			$dataToUpdate = [
-				'comp_name'		=> $request->get('comp_name'),
-				'add1' 			=> $request->get('add1'),
-				'add2'			=> $request->get('add2'),
-				'postal_code' 	=> $request->get('poscode'),
+				'supplier_code'	=> $request->get('supplier_code'),
+				'company_name'	=> $request->get('company_name'),
+				'street1' 		=> $request->get('street1'),
+				'street2'		=> $request->get('street2'),
+				'poscode' 		=> $request->get('poscode'),
 				'city'	 		=> $request->get('city'),
-				'region' 		=> $request->get('region'),
+				'state' 		=> $request->get('state'),
 				'country'	 	=> $request->get('country'),
 				'tel'	 		=> $request->get('tel'),
 				'fax'	 		=> $request->get('fax'),
-				'attn_no' 		=> $request->get('attnNo'),
+				'attn_no' 		=> $request->get('attn_no'),
 				'email' 		=> $request->get('email'),
 				'updated_by'	=> Auth::user()->id,
 				'updated_at'	=> Carbon::now(new \DateTimeZone('Asia/Kuala_Lumpur'))
 			];
 			
-			supdetail::where('comp_code',$comp_code)->update($dataToUpdate);
+			supplier::where('id',$id)->update($dataToUpdate);
 			
 		}catch(\Exception $e){
 			return 'Error: '.$e;
 		}
 		
-		return $this->fn_get_detail($comp_code);
+		return $this->fn_get_detail($id);
 	}
 	
-	public function fn_get_detail($comp_code = null){
+	public function fn_get_detail($id = null){
 		
 		try{
 			
-			$outputData = supdetail::where('comp_code',$comp_code)->first();
+			$outputData = supplier::where('id',$id)->first();
 			
 			return view('Supplier.supplierDetail_view',compact('outputData'));
 			
@@ -165,5 +168,12 @@ class SupplierController extends Controller
 		}catch(\Exception $e){
 			
 		}
+	}
+
+	public function do_show_page(Request $request){
+		
+		$so = $request->get('sales_order');
+
+		return view('Supplier.supplierDO_form', compact('so'));
 	}
 }
