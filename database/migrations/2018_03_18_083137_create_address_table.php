@@ -12,10 +12,11 @@ class CreateAddressTable extends Migration
      * @return void
      */
     public function up()
-    {
+    {   
+        Schema::dropIfExists('address');
         Schema::create('address', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('address_code', 20);
+            $table->string('address_code', 20)->unique();
             $table->string('street1', 255);
             $table->string('street2', 255)->nullable();
             $table->integer('poscode');

@@ -12,10 +12,11 @@ class CreateCourierTable extends Migration
      * @return void
      */
     public function up()
-    {
+    {   
+        Schema::dropIfExists('courier');
         Schema::create('courier', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('courier_code', 10);
+            $table->string('courier_code', 10)->unique();
             $table->string('courier_name', 150);
             $table->integer('address');
             $table->string('tel', 16);
