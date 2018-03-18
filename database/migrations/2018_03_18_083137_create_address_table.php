@@ -22,8 +22,8 @@ class CreateAddressTable extends Migration
             $table->string('city', 100);
             $table->string('state', 100);
             $table->string('country', 100);
-            $table->integer('created_by', 45)->nullable();
-            $table->integer('updated_by', 45)->nullable();
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
         });
     }

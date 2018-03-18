@@ -21,8 +21,8 @@ class CreateCourierTable extends Migration
             $table->string('tel', 16);
             $table->string('fax', 16);
             $table->string('email', 255);
-            $table->integer('created_by', 45)->nullable();
-            $table->integer('updated_by', 45)->nullable();
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
         });
     }

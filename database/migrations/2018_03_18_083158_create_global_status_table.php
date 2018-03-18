@@ -18,8 +18,8 @@ class CreateGlobalStatusTable extends Migration
             $table->string('table', 30);
             $table->string('status', 2);
             $table->string('description', 100);
-            $table->integer('created_by', 45)->nullable();
-            $table->integer('updated_by', 45)->nullable();
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
         });
     }

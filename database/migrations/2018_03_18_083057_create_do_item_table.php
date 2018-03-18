@@ -18,8 +18,8 @@ class CreateDoItemTable extends Migration
             $table->string('do_no', 15);
             $table->integer('product_id');
             $table->string('serial_no', 20);
-            $table->integer('created_by', 45)->nullable();
-            $table->integer('updated_by', 45)->nullable();
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
         });
     }

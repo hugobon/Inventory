@@ -26,8 +26,8 @@ class CreateOrderHdrTable extends Migration
             $table->string('status', 2);
             $table->integer('bill_address');
             $table->integer('ship_address');
-            $table->integer('created_by', 45)->nullable();
-            $table->integer('updated_by', 45)->nullable();
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
 
             $table->primary('order_no');

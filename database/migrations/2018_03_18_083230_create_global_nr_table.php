@@ -23,8 +23,8 @@ class CreateGlobalNrTable extends Migration
             $table->string('nrfrom', 5);
             $table->string('nrto', 5);
             $table->string('nrcurrent', 5);
-            $table->integer('created_by', 45)->nullable();
-            $table->integer('updated_by', 45)->nullable();
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
         });
     }

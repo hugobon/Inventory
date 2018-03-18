@@ -19,8 +19,8 @@ class CreateDoHdrTable extends Migration
             $table->string('tracking_no', 20);
             $table->integer('courier_id');
             $table->string('delivery_status', 2);
-            $table->integer('created_by', 45)->nullable();
-            $table->integer('updated_by', 45)->nullable();
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
 
             $table->primary('do_no');

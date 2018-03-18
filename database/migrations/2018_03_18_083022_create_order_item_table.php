@@ -21,8 +21,8 @@ class CreateOrderItemTable extends Migration
             $table->integer('product_qty');
             $table->string('product_typ', 5);
             $table->string('product_status', 2);
-            $table->integer('created_by', 45)->nullable();
-            $table->integer('updated_by', 45)->nullable();
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
         });
     }
