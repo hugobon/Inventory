@@ -8,7 +8,12 @@ use App\Http\Controllers\Controller;
 use App\agentmaster;
 use App\users;
 use App\agent_order_stock;
+use App\inventory\product_m;
+use App\inventory\product_image_m;
+use App\inventory\product_package_m;
+use App\agent_select_product;
 use Auth;
+use DB;
 
 class AgentController extends Controller
 {
@@ -95,7 +100,7 @@ class AgentController extends Controller
     	return view('Agent.agent_view')->with($data);
     }
 
-    public function fn_get_agent_order_stock($agent_id = null){
+    public function fn_get_agent_order_stock($mode = null,$agent_id = null){
 
         try{
 
@@ -103,7 +108,7 @@ class AgentController extends Controller
                                 ->where('agent_id',$agent_id)
                                 ->first();
 
-            $return['message'] = 'succssfuly';
+            $return['message'] = 'succssfuly save record';
             $return['status'] = '01';
         }
         catch(\Exception $e){
@@ -114,12 +119,27 @@ class AgentController extends Controller
 
         
         if(isset($data)){
-            // return $data;
-            return view('Agent.agent_order_stock',['return' => $return,'data' => $data]);
+
+            if($data['delivery_type'] == "01"){
+                $data['delivery_type_desc'] = "Same Address";
+            }
+            else if($data['delivery_type'] == "02"){
+                $data['delivery_type_desc'] = "Different Address";
+            }
+            else if($data['delivery_type'] == "03"){
+                $data['delivery_type_desc'] = "Self Collect";
+            }
+
+            if($mode == "display"){
+                return view('Agent.agent_order_stock_view',['return' => $return,'data' => $data]);
+            }
+            else if($mode == "edit"){
+                return view('Agent.agent_order_stock',['return' => $return,'data' => $data]);
+            }
         }
         else{
 
-            $data = [ 
+            $data = [
 
                 'agent_id' => $agent_id,
                 'country' => "",
@@ -138,27 +158,57 @@ class AgentController extends Controller
 
         try{
 
-            $data = [
+            $data = agent_order_stock::select('agent_id')
+                                ->where('agent_id',$request->get('agent_id'))
+                                ->first();
 
-                'agent_id' => $request->get('agent_id'),
-                'country' => $request->get('country'),
-                'delivery_type' => $request->get('delivery_type'),
-                'optional' => $request->get('optional'),
-                'poscode' => $request->get('poscode'),
-                'city' => $request->get('city'),
-                'state' => $request->get('state')
-            ];
-
-            $data['created_by'] = Auth::user()->name;
-            $data['created_at'] = \Carbon\Carbon::now();
-
-            // print_r($data);
+            // echo "<pre>";
+            // var_dump($data);
+            // echo "</pre>";
             // die();
 
-            agent_order_stock::insert($data);
+            if($data == null){
 
-            $return['message'] = 'succssfuly';
-            $return['status'] = '01';
+                $dataInsert = [
+
+                    'agent_id' => $request->get('agent_id'),
+                    'country' => $request->get('country'),
+                    'delivery_type' => $request->get('delivery_type'),
+                    'optional' => $request->get('address'),
+                    'poscode' => $request->get('poscode'),
+                    'city' => $request->get('city'),
+                    'state' => $request->get('state'),
+                    'created_by' => Auth::user()->name,
+                    'created_at' => \Carbon\Carbon::now()
+                ];
+
+                agent_order_stock::insert($dataInsert);
+
+                $return['message'] = 'succssfuly created';
+                $return['status'] = '01';
+            }
+            else{
+
+                $dataUpdate = [
+
+                    'country' => $request->get('country'),
+                    'delivery_type' => $request->get('delivery_type'),
+                    'optional' => $request->get('address'),
+                    'poscode' => $request->get('poscode'),
+                    'city' => $request->get('city'),
+                    'state' => $request->get('state'),
+                    'updated_by' =>  Auth::user()->name,
+                    'updated_at' => \Carbon\Carbon::now()
+                ];
+
+                agent_order_stock::where('agent_id',$request->get('agent_id'))
+                                ->update($dataUpdate);
+
+                $return['message'] = 'succssfuly updated';
+                $return['status'] = '01';
+            }
+
+             
         }
         catch(\Exception $e){
 
@@ -168,6 +218,266 @@ class AgentController extends Controller
 
         // return $return;
 
-        return redirect('agent/order_stock')->with('return');
+        return redirect('agent/get_order_stock/'.'display'.'/'.$request->get('agent_id'))->with($return);
+    }
+
+    public function fn_get_product_list(){
+
+        try{
+            
+            $data = product_m::select("*")->paginate(12);
+
+            $count = agent_select_product::where('agent_id',Auth::user()->id)->count();
+
+            $return['message'] = 'succssfuly';
+            $return['status'] = '01';
+        }
+        catch(\Exception $e){
+            $return['message'] = $e->getMessage();
+            $return['status'] = '02';
+            $image = "";
+        }
+
+        return view('Agent.agent_product_list',compact('data','count'));
+    }
+
+    public function fn_get_checkout_items($agent_id = null){
+
+        try{
+
+            $cartItems = agent_select_product::leftJoin('product','product.id','=','agent_select_product.product_id')
+                                            ->leftJoin('agent_order_stock','agent_order_stock.agent_id','=','agent_select_product.agent_id')
+                                            ->select('agent_select_product.id','product.id as product_id','product.description','product.price_wm','product.price_em','product.picture_path','product.start_promotion','product.end_promotion','product.promotion_status','product.quantity_min'
+                                                ,'product.quantity as stock_quantity','agent_select_product.total_price','agent_select_product.quantity as total_quantity','agent_order_stock.state')
+                                            ->where('agent_select_product.agent_id','=',$agent_id)
+                                            ->get();
+
+            foreach ($cartItems as $key => $value) {
+
+                if($value->state == "Sabah" || $value->state == "Sarawak"){
+                    $cartItems[$key]['price'] = number_format(floatval($value->price_em),2);
+                }
+                else{
+                    $cartItems[$key]['price'] = number_format(floatval($value->price_wm),2);
+                }
+
+                $cartItems[$key]['total_price'] = number_format(floatval($value->total_price),2);
+            }
+
+            $return['message'] = "succssfuly retrived";
+            $return['status'] = "01";
+
+        }
+        catch(\Exception $e){
+
+            $return['message'] = $e->getMessage();
+            $return['status'] = "02";
+        }
+
+        return view('Agent.agent_checkout',compact('cartItems'));
+    }
+
+    public function fn_save_selected_items(Request $request){
+
+            $data = (!empty($request->get('item')) ? $request->get('item') : []);
+
+        try{
+    
+            $product = product_m::select('type','code','price_wm','price_em','price_staff','quantity')
+                                ->where('id',$data['product_id'])
+                                ->first();
+
+            $agent = agent_order_stock::select('country','delivery_type','poscode','city','state')
+                                ->where('agent_id',$data['agent_id'])
+                                ->first();
+
+            $cartItem = agent_select_product::select('id','product_id','agent_id','quantity','total_price')
+                                            ->where('product_id',$data['product_id'])
+                                            ->where('agent_id',$data['agent_id'])
+                                            ->first();
+
+            if($cartItem == null){
+
+                if($agent->state == "Sabah" || $agent->state == "Sarawak"){
+
+                    $total_price = number_format(floatval($product->price_em * (int)$data['quantity']),2);
+                }
+                else{
+
+                    $total_price = number_format(floatval($product->price_wm * (int)$data['quantity']),2);
+                }
+
+                $total_price = str_replace(",", "", $total_price);
+                $addToCart = Array(
+
+                    'agent_id' => $data['agent_id'],
+                    'product_id' => $data['product_id'],
+                    'quantity' => $data['quantity'], 
+                    'total_price' => $total_price,
+                    'created_by' => Auth::user()->id,
+                    'created_at' => \Carbon\Carbon::now(new \DateTimeZone('Asia/Kuala_Lumpur'))
+                );
+
+                agent_select_product::insertGetId($addToCart);
+            }
+            else{
+
+                if($agent->state == "Sabah" || $agent->state == "Sarawak"){
+
+                    $total_price = number_format(floatval($product->price_em),2) * (int)$data['quantity'];
+                }
+                else{
+
+                    $total_price = number_format(floatval($product->price_wm),2) * (int)$data['quantity'];
+                }
+
+                // dd(str_replace(",","",$total_price));
+
+                $updateQuantity = $data['quantity'] + $cartItem->quantity;
+                $updateTotalPrice = number_format(floatval($total_price + $cartItem->total_price),2);
+                $updateTotalPrice = str_replace(",","",$updateTotalPrice);
+                agent_select_product::where('product_id',$data['product_id'])
+                                        ->where('agent_id',$data['agent_id'])
+                                        ->update([
+
+                                            'quantity' => $updateQuantity,
+                                            'total_price' => $updateTotalPrice,
+                                            'updated_by' =>  Auth::user()->id,
+                                            'updated_at' => \Carbon\Carbon::now()
+
+                                        ]);
+
+            }
+
+            $count = agent_select_product::count();
+            
+            $return['message'] = "succssfuly inserted";
+            $return['status'] = "01";
+        } 
+        catch (\Exception $e){
+            
+            $return['message'] = $e->getMessage();
+            $return['status'] = "02";
+        }
+
+        return compact('data','return','product','agent','count');
+    }
+
+    public function fn_get_cart_items(Request $request){
+
+        $agent_id = (!empty($request->get('agent_id')) ? $request->get('agent_id') : '');
+        $product_id = (!empty($request->get('product_id')) ? $request->get('product_id') : '');
+
+        try{
+
+            $cartItems = agent_select_product::leftJoin('product','product.id','=','agent_select_product.product_id')
+                                            ->select('product.id','product.description','product.picture_path','product.start_promotion'
+                                                ,'product.end_promotion','product.promotion_status','product.quantity_min'
+                                                ,'product.quantity as stock_quantity','agent_select_product.total_price'
+                                                ,'agent_select_product.quantity as total_quantity')
+                                            ->where('agent_select_product.agent_id','=',$agent_id)
+                                            ->get();
+
+            $count = count($cartItems);
+
+            $return['message'] = "succssfuly retrived";
+            $return['status'] = "01";
+        }
+        catch(\Exception $e){
+
+            $return['message'] = $e->getMessage();
+            $return['status'] = "02";
+        }
+
+        return compact('cartItems','count','return');
+    }
+
+    public function fn_delete_cart_item(Request $request){
+
+            $id = $request->get('item');
+
+        try{
+
+            agent_select_product::where('id',$id)->delete();
+
+            $return['message'] = "succssfuly retrived";
+            $return['status'] = "01";
+
+        }
+        catch(\Exception $e){
+
+            $return['message'] = $e->getMessage();
+            $return['status'] = "02";
+
+        }
+
+        return compact('return');
+    }
+
+    public function fn_quantity_item(Request $request){
+
+        $id = $request->get('item');
+
+        try {
+
+            $cartItem = agent_select_product::select('id','product_id','agent_id','quantity','total_price')
+                                            ->where('id',$id)
+                                            ->first();
+
+            $product = product_m::select('type','code','price_wm','price_em','price_staff','quantity')
+                                ->where('id',$cartItem['product_id'])
+                                ->first();
+
+            $agent = agent_order_stock::select('country','delivery_type','poscode','city','state')
+                                ->where('agent_id',$cartItem['agent_id'])
+                                ->first();
+
+
+            if($agent->state == "Sabah" || $agent->state == "Sarawak"){
+
+                    $total_price = $product->price_em * (int)$cartItem['quantity'];
+            }
+            else{
+
+                $total_price = $product->price_wm * (int)$cartItem['quantity'];
+            }
+
+            $updateQuantity = $cartItem['quantity'] + $cartItem->quantity;
+            $updateTotalPrice = number_format(floatval($total_price + $cartItem->total_price),2);
+
+            agent_select_product::where('id',$id)
+                                    ->update([
+
+                                        'quantity' => $updateQuantity,
+                                        'total_price' => $updateTotalPrice,
+                                        'updated_by' =>  Auth::user()->id,
+                                        'updated_at' => \Carbon\Carbon::now()
+
+                                    ]);
+
+            $return['message'] = "succssfuly retrived";
+            $return['status'] = "01";
+            
+        } 
+        catch (\Exception $e) {
+
+            $return['message'] = $e->getMessage();
+            $return['status'] = "02";
+            
+        }
+
+        return compact('return');
+    }
+
+    public function fn_get_product_details($product_id = null){
+
+        try {
+            
+        }
+        catch(\Exception $e){
+            
+        }
+
+        return view('Agent.agent_product_detail');
     }
 }

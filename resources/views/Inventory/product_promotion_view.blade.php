@@ -65,7 +65,7 @@ if(isset($id) && $id > 0){
 								<label class="col-md-3 control-label"> Product / Package </label>
 								<div class="col-md-7 control-label text-left">
 								<a href="{{ url('product/view/' . $product_id) }}" class="" title="View Promotion {{ $productArr['code'] . ' (' . $productArr['description'] . ')' }}" >
-								{{ $productArr['code'] . ' (' . $productArr['description'] . ')' }}</a>
+								{{ $productArr['code'] . ' (' . $productArr['name'] . ')' }}</a>
 								</div>
 							</div>
 							<div class="form-group">
@@ -175,7 +175,7 @@ if(isset($id) && $id > 0){
 						<div class="col-md-6">
 							<div class="form-group">
 								<label class="col-md-4 control-label"> Created by: </label>
-								<div class="col-md-8 control-label text-left"> Administrator </div>
+								<div class="col-md-8 control-label text-left">{{ $created_by_name }}</div>
 							</div>
 							<div class="form-group">
 								<label class="col-md-4 control-label"> Created at: </label>
@@ -185,7 +185,7 @@ if(isset($id) && $id > 0){
 						<div class="col-md-6">
 							<div class="form-group">
 								<label class="col-md-4 control-label"> Updated by: </label>
-								<div class="col-md-8 control-label text-left"> Administrator </div>
+								<div class="col-md-8 control-label text-left">{{ $updated_by_name }}</div>
 							</div>
 							<div class="form-group">
 								<label class="col-md-4 control-label"> Updated at: </label>

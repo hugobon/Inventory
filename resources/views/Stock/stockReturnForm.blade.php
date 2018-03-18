@@ -1,11 +1,5 @@
 @extends('header')
-<style>
-textarea {
-   resize: none;
-}
-
-</style>
-@section('title','Stock In')
+@section('title','Stock Return')
 
 @section('content')
 
@@ -71,9 +65,11 @@ textarea {
                         			<div class="col-md-9">
                         				<select class="form-control" name="supplier_code">
 											<option value=""></option>
-                                            @foreach($supplier as $supp)
-													<option value="{{ $supp->id }}">{{$supp->comp_code}}</option>
-												@endforeach
+                                            <option value="1">Option 1</option>
+                                            <option value="2">Option 2</option>
+                                            <option value="3">Option 3</option>
+                                            <option value="4">Option 4</option>
+                                            <option value="5">Option 5</option>
                                         </select>
                         			</div>
                         		</div>
@@ -89,21 +85,19 @@ textarea {
                         			</div>
                         		</div>
                         		<div class="form-group">
-                        			<label class="col-md-3 control-label">Barcode List</label>
-									<div class="col-md-9">
-										<div class="input-group ">
-											<input type="file" name="barcode" class="form-control"></input>
-											<input type="text" name="barcode_scan_json" id="barcode_scan_hidden" hidden>
-											<span class="input-group-addon"><button type="button" name="barcode_scanner" class="btn btn-sm  btn-default"  data-toggle="modal" data-target="#myModal"><i class="fa fa-barcode"></i>Scanner</button></span>
-                        				</div>
-									</div>	
-                        		</div>
-								<div class="form-group">
                         			<label class="col-md-3 control-label">Quantity</label>
                         			<div class="col-md-9">
-                        				<input required type="text" id="quantity" name="quantity" class="form-control">
+                        				<input required type="text" name="quantity" class="form-control">
                         			</div>
                         		</div>
+                        		<div class="form-group">
+                        			<label class="col-md-3 control-label">Barcode List</label>
+                        			<div class="col-md-9">
+                        				<input type="file" name="barcode" class="form-control"></input>
+                        			</div>
+                        		</div>
+
+
                         		<div class="form-group">
                         			<label class="col-md-3 control-label">Description</label>
                         			<div class="col-md-9">
@@ -124,61 +118,7 @@ textarea {
     </div>
 </div>
 
-<!-- Modal -->
-<div id="myModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Scan Barcode</h4>
-      </div>
-      <div class="modal-body">
-	  <form action="" id="barcode_list">
-	  		<input type="text" class="input_barcode form-control">
-			<textarea name="" id="textarea_barcode" cols="30" rows="10" disabled class="form-control"></textarea>
-	  </form>
-    
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-success" data-dismiss="modal">Done</button>
-      </div>
-    </div>
-
-  </div>
-</div>
 <script>
-$(document).ready(function() {
-    $('.datepicker').datepicker('setDate', 'today');
-})
-$(".input_barcode").keyup(function(event) {
-    if (event.keyCode === 13 || event.keyCode === 116) {
-        var input = $('.input_barcode').val();
-		$('#textarea_barcode').append(input+"\n");
-		$('.input_barcode').val('');
-
-		var barcode_val = $("#textarea_barcode").val() 
-		var barcode_arr = barcode_val.split("\n")
-		var temp = [];
-
-		for(let i of barcode_arr)
-			i && temp.push(i); // copy each non-empty value to the 'temp' array
-
-		barcode_arr = temp;
-		delete temp; 
-		$('#barcode_scan_hidden').val(JSON.stringify(barcode_arr));
-		
-		$('#quantity').val(barcode_arr.length)
-    } 
-});
-$('#barcode_list').on('keyup keypress', function(e) {
-  var keyCode = e.keyCode || e.which;
-  if (keyCode === 13) { 
-    e.preventDefault();
-    return false;
-  }
-});
 $('#submitBtn').click(function(){
 	$('#submit_form').submit();
 	// var form,data;
