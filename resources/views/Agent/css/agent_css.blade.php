@@ -5,8 +5,8 @@
 	  display: none;
 	  top: -5px;
 	  left: -15px;
-	  width: 20px;
-	  height: 20px;
+	  width: 15px;
+	  height: 15px;
 	  border-radius: 50%;
 	  background: red;
 	  color: white;
@@ -15,8 +15,8 @@
 
 	.item-detail{
 
-		max-width: 230px;
-		min-width: 230px;
+		max-width: 260px;
+		min-width: 260px;
 	}
 	
 	.item-content{

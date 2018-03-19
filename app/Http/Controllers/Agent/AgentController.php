@@ -265,7 +265,7 @@ class AgentController extends Controller
 
             $cartItems = agent_select_product::leftJoin('product','product.id','=','agent_select_product.product_id')
                                             ->leftJoin('agent_order_stock','agent_order_stock.agent_id','=','agent_select_product.agent_id')
-                                            ->select('agent_select_product.id','product.id as product_id','product.description','product.price_wm','product.price_em','product.quantity_min'
+                                            ->select('agent_select_product.id','product.id as product_id','product.name','product.description','product.price_wm','product.price_em','product.quantity_min'
                                                 ,'product.quantity as stock_quantity','agent_select_product.total_price','agent_select_product.quantity as total_quantity','agent_order_stock.state')
                                             ->where('agent_select_product.agent_id','=',$agent_id)
                                             ->get();
@@ -409,7 +409,7 @@ class AgentController extends Controller
         try{
 
             $cartItems = agent_select_product::leftJoin('product','product.id','=','agent_select_product.product_id')
-                                            ->select('product.id','product.description','product.picture_path','product.start_promotion'
+                                            ->select('product.id','product.name','product.description','product.picture_path','product.start_promotion'
                                                 ,'product.end_promotion','product.promotion_status','product.quantity_min'
                                                 ,'product.quantity as stock_quantity','agent_select_product.total_price'
                                                 ,'agent_select_product.quantity as total_quantity')

@@ -18,12 +18,12 @@
 			<div class="panel panel-default">
 				<div class="horizontal">
 					<div class="panel-heading">
-						<h3 class="panel-title"><strong>Shopping Cart</strong> </h3>
-						<ul class="panel-controls">
+						<h3 class="panel-title"><strong>Shopping Cart</strong></h3>
+						<ul class="panel-controls pull-right">
 							<a href="{{ url('agent/get_checkout_items') }}/{{ Auth::user()->id }}" style="font-size: 30px;">
 								<i class="glyphicon glyphicon-shopping-cart cart"></i>
 							</a>
-							<span id="itemCount"></span>
+							<span class="informer informer-danger" id="itemCount"></span>
 						</ul>
 					</div>
 				</div>
@@ -47,7 +47,7 @@
 									<div class="panel panel-default item-content">
 								        <div class="panel-heading">
 								            <div class="media clearfix" style="height: 20px; word-wrap: break-word;">
-								                <h3 class="font-bold" style="font-size: 15px;">{{ $value['description'] }}</h3>
+								                <h3 class="font-bold" style="font-size: 15px;">{{ $value['name'] }}</h3>
 								            </div>
 								        </div>
 								        <div class="panel-image">
@@ -73,7 +73,7 @@
 												<input type="hidden" name="_token" id="_token" value="{!! csrf_token() !!}">
 												<div class="col-md-3 info" style="margin: 5px;">
 													<div class="form-group info-detail">
-										                <label>Quantity</label>
+										                <label class="control-label">Quantity</label>
 										                <input type="text" class="form-control quantity" name="quantity" id="quantity">
 									                </div>
 												</div>
@@ -94,6 +94,23 @@
 		</div>
 	</div>
 </div>
+
+<button type="button" class="btn btn-default mb-control" data-box="#message-box-default">Default</button>
+
+
+<div class="message-box animated fadeIn open" id="message-box-default">
+            <div class="mb-container">
+            	<div class="mb-header"><i class="fa fa-times-circle-o pull-right mb-control-close" style="font-size: 30px;"></i></div>
+                <div class="mb-middle">
+                    <div class="mb-title"><span class="fa fa-globe"></span> Some <strong>Title</strong></div>
+                    <div class="mb-content">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at tellus sed mauris mollis pellentesque nec a ligula. Quisque ultricies eleifend lacinia. Nunc luctus quam pretium massa semper tincidunt. Praesent vel mollis eros. Fusce erat arcu, feugiat ac dignissim ac, aliquam sed urna. Maecenas scelerisque molestie justo, ut tempor nunc.</p>                    
+                    </div>
+                    <div class="mb-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
 
 <script type="text/javascript">
 

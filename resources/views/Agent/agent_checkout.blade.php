@@ -57,8 +57,7 @@
                                                         <input type="hidden" id="id" value="{{ $value->id }}">
                                                         <a class="thumbnail pull-left img-content" href="#"> <img class="media-object" src="{{ $value['image'] == '' ? asset('invalid_image.png') : asset('storage/'.$value['image']) }}" style="width: 72px; height: 72px;"> </a>
                                                         <div class="media-body">
-                                                            <h4 class="media-heading"><a href="#">{{ $value->description }}</a></h4>
-                                                            <h5 class="media-heading"> by <a href="#">Brand name</a></h5>
+                                                            <h4 class="media-heading"><a href="#">{{ $value->name }}</a></h4>
                                                         </div>
                                                     </div>
                                                 </td>

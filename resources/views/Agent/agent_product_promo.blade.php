@@ -47,7 +47,7 @@
 									<div class="panel panel-default item-content">
 								        <div class="panel-heading">
 								            <div class="media clearfix" style="height: 20px; word-wrap: break-word;">
-								                <h3 class="font-bold" style="font-size: 15px;">{{ $value['description'] }}</h3>
+								                <h3 class="font-bold" style="font-size: 15px;">{{ $value['name'] }}</h3>
 								            </div>
 								        </div>
 								        <div class="panel-image">
