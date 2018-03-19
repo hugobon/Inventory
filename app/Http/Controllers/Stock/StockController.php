@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 
 use App\supplier_stock_assign;
 use App\inventory\product_m;
-use App\supdetail;
+use App\supplier;
 use App\barcode;
 use App\inventory\stockadjustment_m;
 use App\configuration\config_stockadjustment_m;
@@ -29,7 +29,7 @@ class StockController extends Controller
 
     public function stockIn_page(){
         $product =  product_m::get();
-        $supplier = supdetail::get();
+        $supplier = supplier::get();
     	return view('Stock.stockIn',compact('product','supplier'));
     }
 
@@ -80,7 +80,7 @@ class StockController extends Controller
     public function stockListing(){
         
         $stocks = supplier_stock_assign::leftjoin('product','supplier_stock_assign.stock_product','=','product.id')
-                                        ->leftjoin('supdetail','supplier_stock_assign.stock_supplier','=','supdetail.id')
+                                        ->leftjoin('supplier','supplier_stock_assign.stock_supplier','=','supplier.id')
                                         ->leftjoin('barcode','supplier_stock_assign.id','=','barcode.supplier_stock_assign')
                                         ->selectRaw('product.description as product_description,product.code as product_code, count(product.id) as stocksCount ,product.id as product_id')
                                         ->groupBy('product_description','product_code','product_id')

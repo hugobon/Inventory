@@ -58,7 +58,7 @@ textarea {
                                                 <div class="col-md-6 col-xs-12">
                                                         <div class="input-group">
                                                             <span class="input-group-addon"><span class="fa fa-calendar"></span></span>
-                                                            <input type="text" class="form-control datepicker" name="instock_date" id="stockDate">                                            
+                                                            <input type="date" class="form-control datepicker" name="instock_date" id="stockDate">                                            
                                                         </div>
                                                         
                                                     </div>
@@ -69,7 +69,7 @@ textarea {
                                                         <select class="form-control select" name="supplier_code" id="supplier">
                                                                 <option value=""></option>
                                                                 @foreach($supplier as $supp)
-                                                                        <option value="{{ $supp->id }}">{{$supp->comp_code}}</option>
+                                                                        <option value="{{ $supp->id }}">{{$supp->supplier_code}}</option>
                                                                     @endforeach
                                                             </select>
                                                 </div>
@@ -175,7 +175,16 @@ textarea {
       <script type='text/javascript' src="{!! asset('joli/js/plugins/validationengine/jquery.validationEngine.js') !!}"></script>   
       <script>
             $(document).ready(function() {
-                $('.datepicker').datepicker('setDate', 'today');
+               // $('.datepicker').datepicker('setDate', 'today');
+
+               var now = new Date();
+
+                var day = ("0" + now.getDate()).slice(-2);
+                var month = ("0" + (now.getMonth() + 1)).slice(-2);
+
+                var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
+
+                $('.datepicker').val(today);
                 var t = $('.datatable').DataTable();
                 var counter = 1;
                 var arrayCol;

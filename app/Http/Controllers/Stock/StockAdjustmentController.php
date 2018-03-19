@@ -177,7 +177,7 @@ class StockAdjustmentController extends Controller
 		$adjustmentConfig = config_stockadjustment_m::select('adjustment','remarks','operation')->where('id',$adjustment)->where('status','1')->first();
 
 		$stocks = supplier_stock_assign::leftjoin('product','supplier_stock_assign.stock_product','=','product.id')
-				->leftjoin('supdetail','supplier_stock_assign.stock_supplier','=','supdetail.id')
+				->leftjoin('supplier','supplier_stock_assign.stock_supplier','=','supplier.id')
 				->leftjoin('barcode','supplier_stock_assign.id','=','barcode.supplier_stock_assign')
 				->selectRaw('product.description as product_description,product.code as product_code, count(product.id) as stocksCount')
 				->groupBy('product_description','product_code')
