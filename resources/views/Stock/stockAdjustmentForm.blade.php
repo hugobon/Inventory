@@ -185,7 +185,6 @@ textarea {
       <script type='text/javascript' src="{!! asset('joli/js/plugins/validationengine/jquery.validationEngine.js') !!}"></script>   
       <script>
             $(document).ready(function() {
-				$('.datepicker').datepicker('setDate', 'today');
 				
                 var t = $('.datatable').DataTable({
 			"ordering": false,			
