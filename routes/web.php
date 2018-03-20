@@ -52,8 +52,8 @@ Route::get('supplier/supplierDetail/view/{comp_code}', 'Supplier\SupplierControl
 //=========================
 // Delivery Order :: Zul
 //=========================
-Route::get('delivery_order/listing', 'Supplier\SupplierController@supplierDO_page');
-Route::post('delivery_order/form', 'Supplier\SupplierController@do_show_page');
+Route::get('delivery_order/listing', 'DeliveryOrder\DeliveryOrderController@deliveryOrder_show_page');
+Route::post('delivery_order/form', 'DeliveryOrder\DeliveryOrderController@deliveryOrder_form');
 
 //=========================
 // Inventory :: Aqi

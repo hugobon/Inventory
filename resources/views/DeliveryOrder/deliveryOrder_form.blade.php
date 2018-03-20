@@ -37,7 +37,7 @@
                                 <li><a href="#tab-item" role="tab" data-toggle="tab">Items</a></li>
                             </ul>
                         </div>
-                    </div>
+                    </div>  
                     <div class="panel-body">
                         <div class="row">
                             <div class="panel-body tab-content">
@@ -53,6 +53,12 @@
                                             <label class="col-md-3 control-label">Delivery Type</label>
                                             <div class="col-md-9">
                                                 <input type="text" class="form-control" name="delivery_ty">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">Invoice No</label>
+                                            <div class="col-md-9">
+                                                <input type="text" class="form-control" name="purchase_date">
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -78,7 +84,13 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="col-md-3 control-label">Invoice No</label>
+                                            <label class="col-md-3 control-label">Courier Service</label>
+                                            <div class="col-md-9">
+                                                <input type="text" class="form-control" name="purchase_date">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">Tracking No</label>
                                             <div class="col-md-9">
                                                 <input type="text" class="form-control" name="purchase_date">
                                             </div>
@@ -86,7 +98,7 @@
                                     </div>
                                 </div>
                                 <div class="tab-pane" id="tab-item">
-                                    Item List:
+                                    Item List: {!! $outputData['totalitem'] !!}
                                     <div class="table-responsive">
                                         <table class="table table-bordered">
                                             <thead>
@@ -99,6 +111,7 @@
                                                 <tr>
                                             </thead>
                                             <tbody>
+                                                {!! $outputData['order_item'] !!}
                                             </tbody>
                                         </table>
                                     </div>

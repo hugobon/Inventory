@@ -9,6 +9,7 @@ use Carbon\Carbon;
 
 use App\supplier;
 
+
 class SupplierController extends Controller
 {
     public function supplierDetail_show_page(){
@@ -173,6 +174,8 @@ class SupplierController extends Controller
 	public function do_show_page(Request $request){
 		
 		$so = $request->get('sales_order');
+
+
 
 		return view('Supplier.supplierDO_form', compact('so'));
 	}
