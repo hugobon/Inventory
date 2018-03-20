@@ -218,6 +218,18 @@
 								<br /> &nbsp;
 								<div class="col-md-12">
 									<div class="form-group">
+										<label class="col-md-3 control-label"> Add/Minus </label>
+										<div class="col-md-9">        
+										<select class="form-control form-adjustment_id" name="add_minus" >
+												<option value="-">-</option>
+												<option value="+">+</option>
+										</select>
+										</div>
+									</div>
+								</div>
+								<br /> &nbsp;
+								<div class="col-md-12">
+									<div class="form-group">
 										<label class="col-md-3 control-label"> Remarks </label>
 										<div class="col-md-9">        
 											<input type="text" class="form-control form-remarks" name="remarks" value="" />
@@ -255,10 +267,14 @@
 				<div class="modal-body">
 					<div class="row">
 						<div class="col-md-12">
-							<div class="form-group">
+						<div class="form-group">
+						<input type="text" class="input_barcode col-md-4 bold text-right">
+						<textarea name="" id="textarea_barcode" cols="30" rows="10" disabled class="col-md-8 product"></textarea>
+						</div>
+							<!-- <div class="form-group">
 								<div class="col-md-4 bold text-right"> Product: </div>
 								<div class="col-md-8 product"></div>
-							</div>
+							</div> -->
 						</div>
 						<br /> &nbsp;
 						<div class="col-md-12">
@@ -344,6 +360,34 @@ $(function() {
 	$('body').on('click', '.addstockadjustment', function(){
 		$('#stockadjusmentModal').modal('show');
 	});
+
+	$(".input_barcode").keyup(function(event) {
+    if (event.keyCode === 13 || event.keyCode === 116) {
+        var input = $('.input_barcode').val();
+		$('#textarea_barcode').append(input+"\n");
+		$('.input_barcode').val('');
+
+		var barcode_val = $("#textarea_barcode").val() 
+		var barcode_arr = barcode_val.split("\n")
+		var temp = [];
+
+		for(let i of barcode_arr)
+			i && temp.push(i); // copy each non-empty value to the 'temp' array
+
+		barcode_arr = temp;
+		delete temp; 
+		$('#barcode_scan_hidden').val(JSON.stringify(barcode_arr));
+		
+		$('#quantity').val(barcode_arr.length)
+    } 
+});
+$('#barcode_list').on('keyup keypress', function(e) {
+  var keyCode = e.keyCode || e.which;
+  if (keyCode === 13) { 
+    e.preventDefault();
+    return false;
+  }
+});
 	
 	$('body').on('click', '.viewstockadjustment', function(){
 		$('#viewModal').find('.product').html( $(this).data('product'));

@@ -53,23 +53,24 @@
                                             @foreach($cartItems as $key => $value)
                                             <tr class="row-cart-item">
                                                 <td class="col-sm-8 col-md-4 column-cart-item">
-                                                <div class="media cart-content">
-                                                    <input type="hidden" id="id" value="{{ $value->id }}">
-                                                    <a class="thumbnail pull-left img-content" href="#"> <img class="media-object" src="{{ asset('FotoJet.jpg') }}" style="width: 72px; height: 72px;"> </a>
-                                                    <div class="media-body">
-                                                        <h4 class="media-heading"><a href="#">{{ $value->description }}</a></h4>
-                                                        <h5 class="media-heading"> by <a href="#">Brand name</a></h5>
+                                                    <div class="media cart-content">
+                                                        <input type="hidden" id="id" value="{{ $value->id }}">
+                                                        <a class="thumbnail pull-left img-content" href="#"> <img class="media-object" src="{{ $value['image'] == '' ? asset('invalid_image.png') : asset('storage/'.$value['image']) }}" style="width: 72px; height: 72px;"> </a>
+                                                        <div class="media-body">
+                                                            <h4 class="media-heading"><a href="#">{{ $value->name }}</a></h4>
+                                                        </div>
                                                     </div>
-                                                </div></td>
-                                                <td class="col-sm-1 col-md-1" style="text-align: center">
-                                                <input type="email" class="form-control quantity" value="{{ $value->total_quantity }}">
                                                 </td>
-                                                <td class="col-sm-1 col-md-1 text-center"><strong>RM {{ $value->price }}</strong></td>
-                                                <td class="col-sm-1 col-md-1 text-center"><strong>RM {{ $value->total_price }}</strong></td>
+                                                <td class="col-sm-1 col-md-1 quantity-item" style="text-align: center">
+                                                    <input type="number" class="form-control quantity" id="quantity" value="{{ $value->total_quantity }}">
+                                                </td>
+                                                <td class="col-sm-1 col-md-1 text-center"><strong>RM{{ $value->price }}</strong></td>
+                                                <td class="col-sm-1 col-md-1 text-center"><strong>RM{{ $value->total_price }}</strong></td>
                                                 <td class="col-sm-1 col-md-1">
-                                                <button type="button" class="btn btn-danger remove-item">
-                                                    <i class="glyphicon glyphicon-trash"></i>Remove
-                                                </button></td>
+                                                    <button type="button" class="btn btn-danger remove-item">
+                                                        <i class="glyphicon glyphicon-trash"></i>Remove
+                                                    </button>
+                                                </td>
                                             </tr>
                                             @endforeach
                                         </tbody>
@@ -78,21 +79,23 @@
                                                 <td>   </td>
                                                 <td>   </td>
                                                 <td>   </td>
-                                                <td><h5>Subtotal<br>Estimated shipping</h5><h3>Total</h3></td>
-                                                <td class="text-right"><h5><strong>$24.59<br>$6.94</strong></h5><h3>$31.53</h3></td>
+                                                <td><h3>Grand Total</h3></td>
+                                                <td><h3>RM{{ $grandTotal['grandTotalPrice'] }}</h3></td>
                                             </tr>
                                             <tr>
                                                 <td>   </td>
                                                 <td>   </td>
                                                 <td>   </td>
                                                 <td>
-                                                <button type="button" class="btn btn-default">
-                                                    <i class="glyphicon glyphicon-shopping-cart"></i> Continue Shopping
-                                                </button></td>
+                                                    <button type="button" class="btn btn-default continue-shopping">
+                                                        <i class="glyphicon glyphicon-shopping-cart"></i> Continue Shopping
+                                                    </button>
+                                                </td>
                                                 <td>
-                                                <button type="button" class="btn btn-success">
-                                                    Checkout <i class="glyphicon glyphicon-ok"></i>
-                                                </button></td>
+                                                    <button type="button" class="btn btn-success">
+                                                        Checkout <i class="glyphicon glyphicon-ok"></i>
+                                                    </button>
+                                                </td>
                                             </tr>
                                         </tfoot>
                                     </table>
@@ -105,7 +108,6 @@
         </div>
     </div>
 </div>
-
 
 <script type="text/javascript">
     
@@ -150,15 +152,21 @@
     $('.quantity').change(function(){
 
         var id = $(this).closest('.row-cart-item').find('input#id').val();
+        var quantity = $(this).closest('.quantity-item').find('input#quantity').val();
+        // console.log(quantity)
+        // console.log($(this).closest('.quantity-item').find('.quantity').val())
 
         // var item = {
-        //     id : id
+
+        //     id       : id,
+        //     quantity : quantity
         // };
 
         var data = {
 
             _token : "{!! csrf_token() !!}",
-            item   :  id
+            id   :  id,
+            quantity : quantity
         };
 
         $.ajax({
@@ -181,6 +189,11 @@
 
         });
     });
+
+    $('.continue-shopping').click(function(){
+        
+        window.location.href = "{{ url('agent/get_product_list/all') }}";
+    })
 
 </script>
 @endsection

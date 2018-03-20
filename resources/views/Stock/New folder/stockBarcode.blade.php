@@ -1,5 +1,5 @@
 @extends('header')
-@section('title','Current Stock Listing')
+@section('title','Barcode Listing')
 
 @section('content')
 <style>
@@ -38,8 +38,8 @@
 				<div class="panel-heading">
 					<h3 class="panel-title">Current Stock Listing</h3>
 					<div class="actions pull-right">
-						<a href="{{ url('stock/in') }}" class="btn btn-default  btn-sm btn-circle" title="Add New Stock" >
-							<i class="fa fa-plus"></i> Stock In </a>
+						<a href="{{ url('stock/adjustment/listing') }}" class="btn btn-default  btn-sm btn-circle" title="Add New Stock" >
+							<i class="fa fa-plus"></i> Stock Adjustment </a>
 					</div>
 				</div>
 				<div class="panel-body panel-body-table">
@@ -56,19 +56,6 @@
 										</div>
 									</div>
 								</div>
-								<!-- <div class="col-md-5">
-									<div class="form-group">
-										<label class="col-md-4 control-label"> Type </label>
-										<div class="col-md-8">        
-											<select class="form-control product-type" name="type" >
-												<option value=""> All </option>
-												<option value="1" {{ isset($type) && $type == 1 ? "selected" : "" }}> By Item </option>
-												<option value="2" {{ isset($type) && $type == 2 ? "selected" : "" }}> Package </option>
-												<option value="3" {{ isset($type) && $type == 3 ? "selected" : "" }}> Monthly Promotion </option>
-											</select>
-										</div>
-									</div>
-								</div> -->
 								<div class="col-md-1">
 									<button type="submit" class="btn btn-primary">Search</button>
 								</div>
@@ -88,9 +75,6 @@
                                     <!-- <th>Supplier</th> -->
                                     <th>Product Name</th>
                                     <th>Stock left</th>
-                                    <!-- <th>In Stock Date</th>
-                                    <th>Stock Received</th>
-                                    <th>Stock Description</th> -->
                                     <th></th>
                                     <!-- <th></th>
                                     <th></th> -->
