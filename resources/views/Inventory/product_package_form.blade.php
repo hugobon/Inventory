@@ -569,13 +569,6 @@ $(function() {
 		}
 	});
 	
-	$('.promotion .input-daterange').datepicker({
-		format: "dd/mm/yyyy",
-		clearBtn: true,
-		autoclose: true,
-		todayHighlight: true
-	});
-	
 	$('#submit_form').on('change', 'input, select', function(){
 		$(this).closest('.form-group').removeClass('has-error');
 	});
