@@ -21,7 +21,8 @@
 <div class="page-content-wrap">
     <div class="row">
         <div class="col-md-12">
-            <form class="form-horizontal">
+            <form class="form-horizontal" action="{!! url('delivery_order/create') !!}" method="POST">
+                {{ csrf_field() }}
                 <div class="panel panel-default">
                     <div class="panel-heading" style="padding-bottom: 0px;">
                          <div class="row">
@@ -46,53 +47,51 @@
                                         <div class="form-group">
                                             <label class="col-md-3 control-label">Purchase Date</label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control" name="purchase_date">
+                                                <input type="text" class="form-control" value="{!! $outputData['order_hdr']->purchase_date !!}" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="col-md-3 control-label">Delivery Type</label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control" name="delivery_ty">
+                                                <input type="text" class="form-control" value="{!! $outputData['order_hdr']->delivery_type !!}" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="col-md-3 control-label">Invoice No</label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control" name="purchase_date">
+                                                <input type="text" class="form-control" value="{!! $outputData['order_hdr']->invoice_no !!}" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="col-md-3 control-label">Shipping Address</label>
+                                            <label class="col-md-3 control-label">Sales Order No</label>
                                             <div class="col-md-9">
-                                                <!-- <input type="text" class="form-control" name="delivery_ty"> -->
-                                                <textarea class="form-control"></textarea>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="col-md-3 control-label">Billing Address</label>
-                                            <div class="col-md-9">
-                                                <!-- <input type="text" class="form-control" name="delivery_ty"> -->
-                                                <textarea class="form-control"></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="col-md-3 control-label">Purchase Order No</label>
-                                            <div class="col-md-9">
-                                                <input type="text" class="form-control" name="purchase_date">
+                                                <input type="text" class="form-control" name="order_no" value="{!! $outputData['order_hdr']->order_no !!}" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="col-md-3 control-label">Courier Service</label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control" name="purchase_date">
+                                                <select class="form-control" name="courier_id">{!! $outputData['order_hdr']->courier !!}</select>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="col-md-3 control-label">Tracking No</label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control" name="purchase_date">
+                                                <input type="text" class="form-control" name="tracking_no">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">Shipping Address</label>
+                                            <div class="col-md-9">
+                                                <textarea class="form-control" rows="6" readonly>{!! $outputData['order_hdr']->ship_address !!}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">Billing Address</label>
+                                            <div class="col-md-9">
+                                                <textarea class="form-control" rows="6" readonly>{!! $outputData['order_hdr']->bill_address !!}</textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -120,8 +119,9 @@
                         </div>
                     </div>
                     <div class="panel-footer">
-                        <button class="btn btn-default">Clear Form</button>
-                        <button class="btn btn-primary pull-right">Save</button>
+                        <button type="button" class="btn btn-default">Cancel</button>
+                        <button type="button" class="btn btn-success pull-right">Ready to Pickup</button>
+                        <button type="button" class="btn btn-primary pull-right" style="margin-right: 0.3%;">Save</button>
                     </div>
                 </div>
             </form>
