@@ -93,14 +93,7 @@ Route::post('product/promotion/insert', 'Inventory\Product_promotion@insert');
 Route::get('product/promotion/edit/{x?}', 'Inventory\Product_promotion@edit');
 Route::post('product/promotion/update/{x?}', 'Inventory\Product_promotion@update');
 Route::get('product/promotion/delete/{x?}', 'Inventory\Product_promotion@delete');
-// Stock Adjustment
-// Route::get('stock/adjustment', function () {  return redirect("stock/adjustment/listing"); });
 
-Route::get('stock/adjustment/listing', 'Inventory\Stockadjustment@listing');
-Route::get('stock/adjustment/search/{x?}', 'Inventory\Stockadjustment@search');
-Route::post('stock/adjustment/form_search', 'Inventory\Stockadjustment@form_search');
-
-Route::get('stock/adjustment/delete/{x?}', 'Inventory\Stockadjustment@delete');
 
 //=========================
 // Configuration :: Aqi
@@ -118,14 +111,25 @@ Route::get('configuration/stockadjustment/delete/{x?}', 'Configuration\Stockadju
 Route::post('configuration/stockadjustment/save', 'Configuration\Stockadjustment@save');
 
 //=========================
-// Stock
+// Stock In
 //=========================
- Route::get('stock', 'Stock\StockController@showPage');
- Route::post('stock/submit_stock-in','Stock\StockController@submitStockIn');
- Route::get('stock/listing', 'Stock\StockController@stockListing');
- Route::get('stock/in', 'Stock\StockController@stockIn_page');
- Route::get('stock/adjustment', 'Stock\StockController@stockAdjustment');
- Route::post('stock/submit_adjustment', 'Stock\StockAdjustmentController@submit');
- Route::post('stock/load_stock_adjust', 'Stock\StockAdjustmentController@loadStockAdjust');
+ Route::post('stock/submit_stock-in','Stock\StockInController@insertStockIn');
+ Route::get('stock/in', 'Stock\StockInController@index');
+
+
  
- 
+//=========================
+// Stock adjustment
+//=========================
+Route::get('stock/adjustment', 'Stock\StockAdjustmentController@index');
+Route::post('stock/submit_adjustment', 'Stock\StockAdjustmentController@submit');
+Route::post('stock/load_stock_adjust', 'Stock\StockAdjustmentController@loadStockAdjust');
+// Route::get('stock/adjustment/listing', 'Inventory\Stockadjustment@listing');
+// Route::get('stock/adjustment/search/{x?}', 'Inventory\Stockadjustment@search');
+// Route::post('stock/adjustment/form_search', 'Inventory\Stockadjustment@form_search');
+// Route::get('stock/adjustment/delete/{x?}', 'Inventory\Stockadjustment@delete');
+
+//=========================
+// Current Stock
+//=========================
+Route::get('stock/listing', 'Stock\StockController@index');
