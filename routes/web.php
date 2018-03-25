@@ -134,3 +134,7 @@ Route::post('stock/load_stock_adjust', 'Stock\StockAdjustmentController@loadStoc
 // Current Stock
 //=========================
 Route::get('stock/listing', 'Stock\StockController@index');
+//=========================
+// Stock Report
+//=========================
+Route::get('stock/report', 'Stock\StockReportController@index');

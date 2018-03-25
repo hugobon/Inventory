@@ -67,7 +67,7 @@
 								</li>
                                 <li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("stock/listing")) ? "active" : "" ; ?>">
                                     <a href="{{ url('stock/listing') }}"><span class="glyphicon glyphicon-list-alt"></span> Current Stock </a></li>
-                                 <li><a href="javascript:;"><span class="fa fa-search"></span> Stock Balance Report </a></li>
+                                 <li><a href="{{ url('stock/report') }}"><span class="fa fa-search"></span> Stock Balance Report </a></li>
                                 </ul>
                             </li>
                             <li><a href="javascript:;"><span class="fa fa-book"></span> Audit Trail </a></li>

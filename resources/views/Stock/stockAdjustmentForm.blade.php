@@ -107,7 +107,7 @@ textarea {
                 <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">Adjustment View</h3>
-                            <div class="actions pull-right">
+                            <div class="actions pull-right hide">
                                     <button type="button" class="btn btn-md  btn-default"  data-toggle="modal" data-target="#uploadModal"><i class="fa fa-upload"></i>Upload CSV</button>
                                    <button type="button"  class="btn btn-md  btn-default"  data-toggle="modal" data-target="#scannerModal"><i class="fa fa-barcode"></i>Scanner</button>
                                 </div>
@@ -118,6 +118,7 @@ textarea {
                                 <table class="table  datatable" id="table_listing">
                                     <thead>
                                         <tr>
+                                            <th></th>
 											<th>Product Name</th>
 											<th>Quantity</th>                                      
                                                                                         
@@ -125,14 +126,17 @@ textarea {
                                     </thead>
                                     <tbody>
 										<tr>
+                                            <td></td>
 											<td>In Store</td>
 											<td>0</td>
 										</tr>
 										<tr>
+                                            <td class="detail-control"></td>
 											<td>Adjusting</td>
 											<td>0</td>
 										</tr>
 											<tr>
+                                                    <td></td>
 													<td><strong>Balance</strong></td>
 													<td><strong>0</strong></td>
 											</tr>
@@ -186,9 +190,12 @@ textarea {
       <script>
             $(document).ready(function() {
 				
-                var t = $('.datatable').DataTable({
-			"ordering": false,			
-		});
+            var t = $('.datatable').DataTable({
+                    "order": [[1, 'asc']],
+                    "searching": false, 
+                    "paging": false,
+			        "ordering": false,			
+		            });
 		$( t.table().footer() ).addClass( 'highlight' );
 
                 var counter = 1;
@@ -222,6 +229,23 @@ textarea {
 	$('.datatable tbody').on( 'click', 'td', function () {
     console.log( );
 		} );
+
+           // Add event listener for opening and closing details
+   $('.datatable tbody').on('click', 'td.details-control', function () {
+        var tr = $(this).closest('tr');
+        var row = table.row( tr );
+ 
+        if ( row.child.isShown() ) {
+            // This row is already open - close it
+            row.child.hide();
+            tr.removeClass('shown');
+        }
+        else {
+            // Open this row
+            row.child( format(row.data()) ).show();
+            tr.addClass('shown');
+        }
+    } );
 
             })
 
@@ -322,6 +346,26 @@ textarea {
 			return ProdStockCount + quantity_input;
 		}
 	}
+
+    /* Formatting function for row details - modify as you need */
+function format ( d ) {
+    // `d` is the original data object for the row
+    return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
+        '<tr>'+
+            '<td>Full name:</td>'+
+            '<td>'+d.name+'</td>'+
+        '</tr>'+
+        '<tr>'+
+            '<td>Extension number:</td>'+
+            '<td>'+d.extn+'</td>'+
+        '</tr>'+
+        '<tr>'+
+            '<td>Extra info:</td>'+
+            '<td>And any further details here (images etc)...</td>'+
+        '</tr>'+
+    '</table>';
+}
+
 
     
 

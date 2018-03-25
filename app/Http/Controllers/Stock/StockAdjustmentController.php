@@ -8,6 +8,7 @@ use App\inventory\product_m;
 use App\inventory\stockadjustment_m;
 use App\configuration\config_stockadjustment_m;
 use App\stock_in;
+use App\product_serial_number;
 
 use Auth;
 use Carbon\Carbon;
@@ -19,6 +20,7 @@ class StockAdjustmentController extends Controller
     }
 	
 	public function index(){
+
         $configstockadjustmentdata = New config_stockadjustment_m;
 		$data = $configstockadjustmentdata->orderBy('adjustment', 'asc')->get();
 		$adjustmentArr = array();
@@ -39,6 +41,7 @@ class StockAdjustmentController extends Controller
 			'stockadjustmentArr' => $stockadjustmentdata->orderBy('id', 'desc')->paginate(10),
 			'adjustmentArr' => $adjustmentArr,
 			'productArr' => $productArr,
+
 		);
         return view('Stock/stockAdjustmentForm',$data);
 	}

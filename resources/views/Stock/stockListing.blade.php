@@ -60,8 +60,8 @@ textarea {
                                                         <span class="fa fa-truck"></span>
                                                     </div>                             
                                                     <div class="widget-data">
-                                                        <div class="widget-int num-count">{{'48'}}</div>
-                                                        <div class="widget-title">Total Products</div>
+                                                        <div class="widget-int num-count">{{$dashboards['totalActiveStock']}}</div>
+                                                        <div class="widget-title">Total available Stock</div>
                                                         {{--  <div class="widget-subtitle">In your mailbox</div>  --}}
                                                     </div>      
                                                     {{--  <div class="widget-controls">                                
@@ -75,8 +75,8 @@ textarea {
                                                         <span class="glyphicon glyphicon-warning-sign"></span>
                                                     </div>                             
                                                     <div class="widget-data">
-                                                        <div class="widget-int num-count">{{'48'}}</div>
-                                                        <div class="widget-title">Low in stocks</div>
+                                                        <div class="widget-int num-count">{{$dashboards['totalLessStock']}}</div>
+                                                        <div class="widget-title">Product low in stocks</div>
                                                         <div class="widget-subtitle"></div>
                                                     </div>      
                                                     {{--  <div class="widget-controls">                                
@@ -87,10 +87,10 @@ textarea {
                                     <div class="col-md-3">
                                             <div class="widget widget-default widget-item-icon">
                                                     <div class="widget-item-left">
-                                                        <span class="fa fa-truck"></span>
+                                                        <span class="fa fa-adjust"></span>
                                                     </div>                             
                                                     <div class="widget-data">
-                                                        <div class="widget-int num-count">{{date("Y-m-d", strtotime( '-1 days' ) )}}</div>
+                                                        <div class="widget-int num-count">{{$dashboards['lastAdjustment']}}</div>
                                                         <div class="widget-title">Last Adjustment</div>
                                                         <div class="widget-subtitle"></div>
                                                     </div>      
@@ -102,12 +102,12 @@ textarea {
                                     <div class="col-md-3">
                                             <div class="widget widget-default widget-item-icon">
                                                     <div class="widget-item-left">
-                                                        <span class="fa fa-truck"></span>
+                                                        <span class="fa fa-shopping-cart"></span>
                                                     </div>                             
                                                     <div class="widget-data">
-                                                        <div class="widget-int num-count">{{'48'}}</div>
-                                                        <div class="widget-title">Total Products</div>
-                                                        <div class="widget-subtitle">In your mailbox</div>
+                                                        <div class="widget-int num-count">{{$dashboards['totalProduct']}}</div>
+                                                        <div class="widget-title">Products</div>
+                                                        <div class="widget-subtitle"></div>
                                                     </div>      
                                                     {{--  <div class="widget-controls">                                
                                                         <a href="#" class="widget-control-right widget-remove" data-toggle="tooltip" data-placement="top" title="Remove Widget"><span class="fa fa-times"></span></a>
