@@ -55,6 +55,7 @@ Route::get('supplier/supplierDetail/view/{comp_code}', 'Supplier\SupplierControl
 Route::get('delivery_order/listing', 'DeliveryOrder\DeliveryOrderController@deliveryOrder_show_page');
 Route::post('delivery_order/form', 'DeliveryOrder\DeliveryOrderController@deliveryOrder_form');
 Route::post('delivery_order/create', 'DeliveryOrder\DeliveryOrderController@deliveryOrder_create');
+Route::post('delivery_order/get_itemDetail', 'DeliveryOrder\DeliveryOrderController@get_itemDetail');
 
 //=========================
 // Inventory :: Aqi
