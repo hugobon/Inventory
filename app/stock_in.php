@@ -11,6 +11,7 @@ class stock_in extends Model
 
     public function totalProduct()
     {
-        return $this->hasMany('App\product_serial_number');
+        return $this->hasMany('App\product_serial_number','stock_in_id');
     }
+
 }

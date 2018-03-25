@@ -24,14 +24,29 @@ class StockController extends Controller
 
     public function index(){
         $data = [];
-        
-        $stocks = stock_in::leftjoin('product','stock_in.stock_product','=','product.id')
-                                        ->join('supplier','stock_in.stock_supplier','=','supplier.id')
-                                        ->join('product_serial_number','stock_in.id','=','product_serial_number.stock_in_id')
-                                        ->selectRaw('product.description as product_description,product.code as product_code, count(product.id) as stocksCount ,product.id as product_id')
-                                        ->groupBy('product_description','product_code','product_id')
-                                        ->get();
-                    
+        $totalActiveStock = 0;
+        $totalLessStock = 0;
+        $lastAdjustment = '';
+        $totalProduct = 0;
+        #Model
+        $product_m = new product_m;  
+        $stockadjustment_m = new stockadjustment_m;
+        $product_serial_number = new product_serial_number;
+
+        //minidashboard
+		#1 Total Product in stock
+		$totalActiveStock = $product_serial_number->where('status','01')->get()->count();
+
+		#2 Total Less Stock
+		$totalLessStock = $product_m->totalProductCount()->havingRaw('stocksCount <= 3')->get()->count();
+
+        #3 Last Adjustment
+        $lastAdjustment = $stockadjustment_m->selectRaw('MAX(created_at) as last_adjust')->value('last_adjust');
+
+		#4 Total product
+        $totalProduct = $product_m->count();
+
+        $stocks = $product_m->totalProductCount()->get();         
             foreach($stocks as $key=>$value){
                 $productId = $value->product_id;
                 $totalserial_number = $value->stocksCount;
@@ -49,13 +64,21 @@ class StockController extends Controller
                     $data[] = [
                         'product_description' => $value->product_description,
                         'product_code' => $value->product_code,
-                        'stocksCount' => $totalserial_number
+                        'stocksCount' => $totalserial_number,
                     ];
                 }             
 
             }
+        $dashboards = [            
+            'totalActiveStock' => $totalActiveStock,
+            'totalLessStock' => $totalLessStock,
+            'lastAdjustment' => Carbon::parse($lastAdjustment)->format('Y-m-d'),
+            'totalProduct' => $totalProduct
+        ];
     
-            return view('Stock/stockListing', compact('data'));
+            return view('Stock/stockListing', compact('data','dashboards'));
+           //return compact('dashboards');
+
             
     }
 
