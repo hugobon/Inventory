@@ -190,7 +190,7 @@
         </div>
 
         <div class="message-box animated fadeIn" id="create_delivery_order">
-            <div class="mb-container">
+            <div class="mb-container" style="background: none !important;">
                 <div class="mb-middle">
                     <div class="mb-content">
                         <form class="form-horizontal" action="{{ url('delivery_order/form') }}" method="POST">
