@@ -98,7 +98,7 @@ textarea {
                                                 </div>
                                                 
                                         </div>
-                                        <input type="text" name="barcode_scan_json" id="barcode_scan_hidden" hidden>
+                                        <input type="text" name="serial_number_scan_json" id="serial_number_scan_json" hidden>
 
                                     </form>
                             </div>
@@ -243,7 +243,7 @@ textarea {
 
 		// barcode_arr = temp;
 		// delete temp; 
-		$('#barcode_scan_hidden').val(JSON.stringify(barcode_arr));		
+		$('#serial_number_scan_json').val(JSON.stringify(barcode_arr));		
 		return barcode_arr;
     }
 
@@ -261,7 +261,7 @@ textarea {
         var product = $('#product').val();
         var quantity = $('#quantity').val();
         var description = $('#stockNo').val();
-        var serial = $('#barcode_scan_hidden').val();
+        var serial = $('#serial_number_scan_json').val();
         
         if(stockNo != '' && stockDate != '' &&supplier != '' &&product != '' && quantity != '' && description != '' && serial != ''){
             $('#submit_form').submit();
