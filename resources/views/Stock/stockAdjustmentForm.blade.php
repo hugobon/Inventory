@@ -186,6 +186,9 @@ textarea {
       
         </div>
       </div>
+@endsection
+
+@section('script')
       <script type='text/javascript' src="{!! asset('joli/js/plugins/validationengine/jquery.validationEngine.js') !!}"></script>   
       <script>
             $(document).ready(function() {

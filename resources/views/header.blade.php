@@ -249,11 +249,12 @@
         <script type="text/javascript" src="{!! asset('joli/js/daterangepicker/moment.min.js') !!}" ></script> 
         <script type="text/javascript" src="{!! asset('joli/js/daterangepicker/daterangepicker.js') !!}" ></script>
         <!-- END THIS PAGE PLUGINS-->
-
+        @yield('script')    
         <!-- START TEMPLATE -->
         <script type="text/javascript" src="{!! asset('joli/js/plugins.js') !!}"></script>        
         <script type="text/javascript" src="{!! asset('joli/js/actions.js') !!}"></script>
         <script type="text/javascript" src="{!! asset('joli/js/demo_dashboard.js') !!}"></script>    
         <!-- END TEMPLATE -->
+             
     </body>
 </html>
