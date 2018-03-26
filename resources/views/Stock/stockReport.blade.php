@@ -44,7 +44,7 @@ textarea {
                     <thead>
                         <tr>
                             <td>Product Name</td>
-                                <?php
+                            @php  
 
                                 $startdate = date('Y-m-01');
                                 $enddate = date("Y-m-t");
@@ -61,7 +61,7 @@ textarea {
                                         echo "<td>".$cur_date . "</td>";
                                 }
                                 
-                                ?>
+                                @endphp
                            <td>Stock In Month</td>
                            <td>Total Adjustment In Month (-)</td>
                            <td>Total Adjustment In Month (+)</td>
