@@ -214,7 +214,6 @@ if(isset($id) && $id > 0){
 										<th class="col-md-4"> Description </th>
 										<th class="col-md-6"> Date Range </th>
 										<th class="col-md-1"> Status </th>
-										<th ></th>
 									</tr>
 								</thead>
 								<tbody class="tbody-product">
@@ -224,19 +223,56 @@ if(isset($id) && $id > 0){
 										<tr class="">
 											<td>{{ $key + 1 }}</td>
 											<td>{{ $row->id }}</td>
-											<td>{{ $row->description }}</td>
+											<td><a href="{{ url('product/promotion/view/' . $row->id) }}" 
+												title=" View {{ $row->code.' ('.$row->description.')' }}"
+												class="">{{ $row->description }}</a></td>
 											<td>{{ date('d/m/Y h:i A', strtotime($row->start)) . ' - '. date('d/m/Y h:i A', strtotime($row->end)) }}</td>
 											<td>{{ $row->status == 1 ? 'On' : ($row->status == 0 ? 'Off' : 'Unknown') }}</td>
-											<td>
-												<a href="{{ url('product/promotion/view/' . $row->id) }}" 
-												title=" View Promotion {{ $row->description }}"
-												class=""><span class="fa fa-eye"></span></a>
-											</td>
 										</tr>
 										@endforeach
 									@else
 									<tr class="">
-										<td class="text-center" colspan="6"> This product still has no promotion yet </td>
+										<td class="text-center" colspan="5"> This product still has no promotion yet </td>
+									</tr>
+									@endif
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<br /> &nbsp;
+					<div class="row">
+						<div class="col-md-12">
+							<h3> Product Package </h3>
+							<hr />
+						</div>
+						<div class="col-md-12">
+							<table class="table table-striped">
+								<thead>
+									<tr>
+										<th ></th>
+										<th class="col-md-6"> Product Package </th>
+										<th class="col-md-2" title="After GST" > West Malaysia </th>
+										<th class="col-md-2" title="After GST" > East Malaysia </th>
+										<th class="col-md-2" title="After GST" > Staff </th>
+									</tr>
+								</thead>
+								<tbody class="tbody-product">
+									@if(isset($packageArr) && count($packageArr) > 0)
+										
+										@foreach($packageArr as $key => $package)
+										<tr class="">
+											<td>{{ $key + 1 }}</td>
+											<td><a href="{{ url('product/package_view/' . $package['id']) }}" 
+												title=" View {{ $package['code'].' ('.$package['name'].')' }}"
+												class="">{{ $package['code'] . ' (' . $package['name'] . ')' }}</a></td>
+											<td title="After GST">RM {{ number_format($package['wm_aftergst'],2) }}</td>
+											<td title="After GST">RM {{ number_format($package['em_aftergst'],2) }}</td>
+											<td title="After GST">RM {{ number_format($package['staff_aftergst'],2) }}</td>
+										</tr>
+										@endforeach
+									@else
+									<tr class="">
+										<td class="text-center" colspan="5"> This product still has no Package yet </td>
 									</tr>
 									@endif
 								</tbody>

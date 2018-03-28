@@ -95,7 +95,7 @@ select{cursor:pointer;}
 								<div class="col-md-7">
 									@if(isset($id) && $id > 0)
 										<div class="form-control">
-											{{ $productArr['code'] . ' (' . $productArr['description'] . ')' }}
+											{{ $productArr['code'] . ' (' . $productArr['name'] . ')' }}
 										</div>
 									@else
 									<select class="form-control select-product" name="product_id" >

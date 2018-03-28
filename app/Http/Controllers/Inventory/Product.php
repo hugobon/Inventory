@@ -147,7 +147,8 @@ class Product extends Controller{
 	
 	public function view($id = 0){
 		if($id > 0){
-			$data = product_m::where('id', $id)->first();
+			$productdata = New product_m;
+			$data = $productdata->where('id', $id)->first();
 			if($data == false)
 				return redirect("product/listing")->with("errorid"," Not Found ");
 				
@@ -166,6 +167,7 @@ class Product extends Controller{
 			$imagedata = New product_image_m;
 			$promotiondata = New product_promotion_m;
 			$userdata = New user_m;
+			$packagedata = New product_package_m;
 			
 			$created_by_name = $updated_by_name = "";
 			$user = $userdata->where('id', $data['created_by'])->first();
@@ -174,12 +176,68 @@ class Product extends Controller{
 			$user2 = $userdata->where('id', $data['updated_by'])->first();
 			if($user2)
 				$updated_by_name = $user2['name'];
-				
+			
+			#get package if exist
+			$packageArr = array();
+			$querypackage = $packagedata->where('product_id',$id)->orderBy('id', 'desc')->get();
+			if(count($querypackage) > 0){
+				foreach($querypackage->all() as $key => $row){
+					$package_id = $row->package_id;
+					$datap = $productdata->where('id', $package_id)->first();
+					
+					$type = "Product";
+					if($datap['type'] == 2)
+						$type = "Package";
+						
+					$productid = $datap['id'];
+					
+					#price after gst
+					$price_wm = $datap['price_wm'];
+					$price_em = $datap['price_em'];
+					$price_staff = $datap['price_staff'];
+					$wm_gst = $wm_aftergst = $em_gst = $em_aftergst = $staff_gst = $staff_aftergst = 0;
+					if($price_wm > 0){
+						$wm_gst = ($price_wm / 100) * $gstpercentage;
+						$wm_aftergst = $price_wm + $wm_gst;
+					}
+					if($price_em > 0){
+						$em_gst = ($price_em / 100) * $gstpercentage;
+						$em_aftergst = $price_em + $em_gst;
+					}
+					if($price_staff > 0){
+						$staff_gst = ($price_staff / 100) * $gstpercentage;
+						$staff_aftergst = $price_staff + $staff_gst;
+					}
+					
+					$packageArr[] = array(
+						'id' => $productid,
+						'code' => $datap['code'],
+						'type' => $type,
+						'name' => $datap['name'],
+						'year' => $datap['year'],
+						'category' => $datap['category'],
+						'weight' => $datap['weight'],
+						'point' => $datap['point'],
+						'price_wm' => number_format($price_wm, 2, '.', ''),
+						'wm_gst' => number_format($wm_gst, 2, '.', ''),
+						'wm_aftergst' => number_format($wm_aftergst, 2, '.', ''),
+						'price_em' => number_format($price_em, 2, '.', ''),
+						'em_gst' => number_format($em_gst, 2, '.', ''),
+						'em_aftergst' => number_format($em_aftergst, 2, '.', ''),
+						'price_staff' => number_format($price_staff, 2, '.', ''),
+						'staff_gst' => number_format($staff_gst, 2, '.', ''),
+						'staff_aftergst' => number_format($staff_aftergst, 2, '.', ''),
+						
+					);
+				}
+			}
+			
 			$data['created_by_name'] = $created_by_name;
 			$data['updated_by_name'] = $updated_by_name;
 			$data['imageArr'] = $imagedata->where('product_id',$id)->orderBy('status', 'desc')->orderBy('id', 'desc')->get();
 			$data['promotion_list'] = $promotiondata->where('product_id',$id)->orderBy('id', 'desc')->get();
 			$data['statusArr'] = array('1' => 'Active', '0' => 'Inactive');
+			$data['packageArr'] = $packageArr;
 			$data['gstpercentage'] = $gstpercentage;
 			
 			return view('Inventory/product_view',$data);
@@ -885,15 +943,15 @@ class Product extends Controller{
 			'productArr' => $productArr,
 			'typeArr' => array( '0' => '', '1' => 'Product','2' => 'Package ','3' => 'Promotion' ),
 		);
-		
 		return $datalisting;
     }
 	
 	public function single_data_product($id = 0){
 		$data = array();
 		if($id > 0){
-			$data = product_m::where('id', $id)->first();
-			if($data){
+			$productdata = New product_m;
+			$datap = $productdata->where('id', $id)->first();
+			if($datap){
 				# get Tax GST percentage		
 				$taxgst = config_tax_m::where('code', 'gst')->first();
 				if($taxgst == false)
@@ -901,9 +959,9 @@ class Product extends Controller{
 				else
 					$gstpercentage = $taxgst['percent'];
 					
-				$price_wm = $data['price_wm'];
-				$price_em = $data['price_em'];
-				$price_staff = $data['price_staff'];
+				$price_wm = $datap['price_wm'];
+				$price_em = $datap['price_em'];
+				$price_staff = $datap['price_staff'];
 				$wm_gst = $wm_aftergst = $em_gst = $em_aftergst = $staff_gst = $staff_aftergst = 0;
 				if($price_wm > 0){
 					$wm_gst = ($price_wm / 100) * $gstpercentage;
@@ -917,7 +975,93 @@ class Product extends Controller{
 					$staff_gst = ($price_staff / 100) * $gstpercentage;
 					$staff_aftergst = $price_staff + $staff_gst;
 				}
+				$packagedata = New product_package_m;
+				if($datap['type'] == 2){
+					#get product name
+					$product_list = $packagedata->where('package_id', $id)->get();
+					$productArr = array();
+					if(count($product_list) > 0){
+						foreach($product_list->all() as $key => $row){
+							$package_item = $productdata->where('id', $row->product_id)->where('type','<>', 2)->first();
+							$productArr[$package_item['id']] = $package_item;
+							
+							$price_wm2 = $package_item['price_wm'];
+							$price_em2 = $package_item['price_em'];
+							$price_staff2 = $package_item['price_staff'];
+							$wm_gst2 = $wm_aftergst2 = $em_gst2 = $em_aftergst2 = $staff_gst2 = $staff_aftergst2 = 0;
+							if($price_wm2 > 0){
+								$wm_gst2 = ($price_wm2 / 100) * $gstpercentage;
+								$wm_aftergst2 = $price_wm2 + $wm_gst2;
+							}
+							if($price_em2 > 0){
+								$em_gst2 = ($price_em2 / 100) * $gstpercentage;
+								$em_aftergst2 = $price_em2 + $em_gst2;
+							}
+							if($price_staff2 > 0){
+								$staff_gst2 = ($price_staff2 / 100) * $gstpercentage;
+								$staff_aftergst2 = $price_staff2 + $staff_gst2;
+							}
+							
+							$productArr[$package_item['id']]['price_wm'] = number_format($price_wm2, 2, '.', '');
+							$productArr[$package_item['id']]['wm_gst'] = number_format($wm_gst2, 2, '.', '');
+							$productArr[$package_item['id']]['wm_aftergst'] = number_format($wm_aftergst2, 2, '.', '');
+							$productArr[$package_item['id']]['price_em'] = number_format($price_em2, 2, '.', '');
+							$productArr[$package_item['id']]['em_gst'] = number_format($em_gst2, 2, '.', '');
+							$productArr[$package_item['id']]['em_aftergst'] = number_format($em_aftergst2, 2, '.', '');
+							$productArr[$package_item['id']]['price_staff'] = number_format($price_staff2, 2, '.', '');
+							$productArr[$package_item['id']]['staff_gst'] = number_format($staff_gst2, 2, '.', '');
+							$productArr[$package_item['id']]['staff_aftergst'] = number_format($staff_aftergst2, 2, '.', '');
+						}
+					}
+					$data['productArr'] = $productArr;
+					$data['product_list'] = $product_list;
+					$data['typename'] = 'Package';
+				}
+				else{
+					#get package name
+					$packageArr = array();
+					$package_list = $packagedata->where('product_id',$id)->orderBy('id', 'desc')->get();
+					if(count($package_list) > 0){
+						foreach($package_list->all() as $key => $row){
+							$package_id = $row->package_id;
+							$package = $productdata->where('id', $package_id)->first();
+							$productArr[$package['id']] = $package;
+							
+							$price_wm2 = $package['price_wm'];
+							$price_em2 = $package['price_em'];
+							$price_staff2 = $package['price_staff'];
+							$wm_gst2 = $wm_aftergst2 = $em_gst2 = $em_aftergst2 = $staff_gst2 = $staff_aftergst2 = 0;
+							if($price_wm2 > 0){
+								$wm_gst2 = ($price_wm2 / 100) * $gstpercentage;
+								$wm_aftergst2 = $price_wm2 + $wm_gst2;
+							}
+							if($price_em2 > 0){
+								$em_gst2 = ($price_em2 / 100) * $gstpercentage;
+								$em_aftergst2 = $price_em2 + $em_gst2;
+							}
+							if($price_staff2 > 0){
+								$staff_gst2 = ($price_staff2 / 100) * $gstpercentage;
+								$staff_aftergst2 = $price_staff2 + $staff_gst2;
+							}
+							
+							$productArr[$package['id']]['price_wm'] = number_format($price_wm2, 2, '.', '');
+							$productArr[$package['id']]['wm_gst'] = number_format($wm_gst2, 2, '.', '');
+							$productArr[$package['id']]['wm_aftergst'] = number_format($wm_aftergst2, 2, '.', '');
+							$productArr[$package['id']]['price_em'] = number_format($price_em2, 2, '.', '');
+							$productArr[$package['id']]['em_gst'] = number_format($em_gst2, 2, '.', '');
+							$productArr[$package['id']]['em_aftergst'] = number_format($em_aftergst2, 2, '.', '');
+							$productArr[$package['id']]['price_staff'] = number_format($price_staff2, 2, '.', '');
+							$productArr[$package['id']]['staff_gst'] = number_format($staff_gst2, 2, '.', '');
+							$productArr[$package['id']]['staff_aftergst'] = number_format($staff_aftergst2, 2, '.', '');
+						}
+					}
+							
+					$data['productArr'] = $productArr;
+					$data['package_list'] = $package_list;
+					$data['typename'] = 'Package';
+				}
 				
+				$data['data'] = $datap;
 				$data['price_wm'] = number_format($price_wm, 2, '.', '');
 				$data['wm_gst'] = number_format($wm_gst, 2, '.', '');
 				$data['wm_aftergst'] = number_format($wm_aftergst, 2, '.', '');
@@ -936,7 +1080,6 @@ class Product extends Controller{
 				$data['gstpercentage'] = $gstpercentage;
 			}
 		}
-		dd($data);
 		return $data;
     }
 	

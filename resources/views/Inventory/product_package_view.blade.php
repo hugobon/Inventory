@@ -126,7 +126,9 @@ if(isset($id) && $id > 0){
 										@foreach($product_list->all() as $key => $row)
 										<tr class="">
 											<td class="text-center">{{ ($key + 1) }}</td>
-											<td>{{ isset($productArr[$row->product_id]) ? $productArr[$row->product_id] : '' }}</td>
+											<td><a href="{{ url('product/view/' . $row->product_id) }}" 
+												title=" View {{ isset($productArr[$row->product_id]) ? $productArr[$row->product_id] : '' }}"
+												class="">{{ isset($productArr[$row->product_id]) ? $productArr[$row->product_id] : '' }}</a></td>
 											<td>{{ $row->quantity }}</td>
 											<td>{{ $row->description }}</td>
 										</tr>
@@ -260,19 +262,17 @@ if(isset($id) && $id > 0){
 										<tr class="">
 											<td>{{ $key + 1 }}</td>
 											<td>{{ $row->id }}</td>
-											<td>{{ $row->description }}</td>
+											<td><a href="{{ url('product/promotion/view/' . $row->id) }}" 
+												title=" View {{ $row->code.' ('.$row->description.')' }}"
+												class="">{{ $row->description }}</a></td>
 											<td>{{ date('d/m/Y h:i A', strtotime($row->start)) . ' - '. date('d/m/Y h:i A', strtotime($row->end)) }}</td>
 											<td>{{ $row->status == 1 ? 'On' : ($row->status == 0 ? 'Off' : 'Unknown') }}</td>
-											<td>
-												<a href="{{ url('product/promotion/view/' . $row->id) }}" 
-												title=" View {{ $row->code.' ('.$row->description.')' }}"
-												class=""><span class="fa fa-eye"></span></a>
-											</td>
+										
 										</tr>
 										@endforeach
 									@else
 									<tr class="">
-										<td class="text-center" colspan="6"> This product still has no promotion yet </td>
+										<td class="text-center" colspan="5"> This product still has no promotion yet </td>
 									</tr>
 									@endif
 								</tbody>

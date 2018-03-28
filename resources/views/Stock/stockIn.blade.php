@@ -58,7 +58,7 @@ textarea {
                                                 <div class="col-md-6 col-xs-12">
                                                         <div class="input-group">
                                                             <span class="input-group-addon"><span class="fa fa-calendar"></span></span>
-                                                            <input type="date" class="form-control datepicker" name="instock_date" id="stockDate">                                            
+                                                            <input type="date" class="form-control" name="instock_date" id="stockDate">                                            
                                                         </div>
                                                         
                                                     </div>
@@ -66,7 +66,7 @@ textarea {
                                         <div class="form-group">
                                                 <label class="col-md-3 col-xs-12 control-label">Supplier</label>
                                                 <div class="col-md-6 col-xs-12">
-                                                        <select class="form-control select" name="supplier_code" id="supplier">
+                                                        <select class="form-control" name="supplier_code" id="supplier">
                                                                 <option value=""></option>
                                                                 @foreach($supplier as $supp)
                                                                         <option value="{{ $supp->id }}">{{$supp->supplier_code}}</option>
@@ -77,7 +77,7 @@ textarea {
                                         <div class="form-group">
                                                 <label class="col-md-3 col-xs-12 control-label">Product</label>
                                                 <div class="col-md-6 col-xs-12">
-                                                        <select class="form-control select " name="product_code" id="product">
+                                                        <select class="form-control" name="product_code" id="product">
                                                                 <option value=""></option>
                                                                 @foreach($product as $prod)
                                                                     <option value="{{ $prod->id }}">{{$prod->description}}</option>
@@ -98,7 +98,7 @@ textarea {
                                                 </div>
                                                 
                                         </div>
-                                        <input type="text" name="barcode_scan_json" id="barcode_scan_hidden" hidden>
+                                        <input type="text" name="serial_number_scan_json" id="serial_number_scan_json" hidden>
 
                                     </form>
                             </div>
@@ -157,11 +157,8 @@ textarea {
             </div>
             <div class="modal-body">
             <form action="" id="barcode_list">
-                  <input type="text" class="input_barcode form-control">
-                  
-                    <img src="{{ asset('images/barcodescan.gif') }}" alt="scanner">
-                  
-                  
+                  <input type="text" class="input_barcode form-control">                  
+                    <img src="{{ asset('images/barcodescan.gif') }}" alt="scanner">                      
             </form>
           
             </div>
@@ -172,19 +169,58 @@ textarea {
       
         </div>
       </div>
+<!-- Modal -->
+<div id="uploadModal" class="modal fade" role="dialog">
+        <form action="" id="#" role="form" class="form-horizontal">
+    <div class="modal-dialog">      
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Scan</h4>
+        </div>
+        <div class="modal-body">
+        
+            <div class="form-group">
+                <label class="col-md-2 control-label">Upload CSV here</label>
+                <div class="col-md-5">
+                    <input type="file" class="fileinput btn-danger" name="csv" id="inputCsv" data-filename-placement="inside" title="File name goes inside" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+                    
+                </div>
+            </div>
+            <div class="form-group">
+                            <div class="col-md-12">
+                    <div class="progress">
+                            <div class="progress-bar progress_upload" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
+                           
+                        </div>
+                </div>
+            </div>
+      
+      
+        </div>
+        <div class="modal-footer">
+          <button id="csv-upload" type="button" class="btn btn-primary"  >Upload</button>
+        </div>
+      </div>
+  
+    </div>
+</form>
+  </div>
+@endsection
+
+@section('script')
       <script type='text/javascript' src="{!! asset('joli/js/plugins/validationengine/jquery.validationEngine.js') !!}"></script>   
+      <script type='text/javascript' src="{!! asset('joli/js/plugins/bootstrap/bootstrap-file-input.js') !!}"></script> 
+      <script type='text/javascript' src="{!! asset('js/papaparse.min.js') !!}"></script> 
       <script>
             $(document).ready(function() {
-               // $('.datepicker').datepicker('setDate', 'today');
-
                var now = new Date();
 
                 var day = ("0" + now.getDate()).slice(-2);
                 var month = ("0" + (now.getMonth() + 1)).slice(-2);
 
                 var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
-
-                $('.datepicker').val(today);
                 var t = $('.datatable').DataTable();
                 var counter = 1;
                 var arrayCol;
@@ -208,15 +244,55 @@ textarea {
                         }else{
                             alert('Input cannot be empty')
                         }
-                        $('.input_barcode').val('');                       
-                       
-                    } 
-                    
+                        $('.input_barcode').val('');             
+                    }                     
+                });       
+
+            $('#csv-upload').on("click",function(e){
+                    e.preventDefault();
+                    $('#inputCsv').parse({
+                        config: {
+                            delimiter: "auto",
+                            complete: displayHTMLTable,
+                        },
+                        before: function(file, inputElem)
+                        {
+                            console.log("Parsing file...", file);
+                        },
+                        error: function(err, file)
+                        {
+                            console.log("ERROR:", err, file);
+                        },
+                        complete: function()
+                        {
+                            console.log("Done with all files");
+                        }
+                    });
                 });
-
-
-
             })
+
+
+
+
+        function displayHTMLTable(results){
+        var table = "";
+        var data = results.data;
+        
+        for(i=0;i<data.length;i++){
+        table+= "<tr>";
+        var row = data[i];
+        var cells = row.join(",").split(",");
+        
+        for(j=0;j<cells.length;j++){
+        table+= "<td>";
+        table+= cells[j];
+        table+= "</th>";
+        }
+        table+= "</tr>";
+        }
+        table+= "";
+        $("#table_listing").html(table);
+        }
 
     $('#barcode_list').on('keyup keypress', function(e) {
     var keyCode = e.keyCode || e.which;
@@ -243,7 +319,7 @@ textarea {
 
 		// barcode_arr = temp;
 		// delete temp; 
-		$('#barcode_scan_hidden').val(JSON.stringify(barcode_arr));		
+		$('#serial_number_scan_json').val(JSON.stringify(barcode_arr));		
 		return barcode_arr;
     }
 
@@ -261,7 +337,7 @@ textarea {
         var product = $('#product').val();
         var quantity = $('#quantity').val();
         var description = $('#stockNo').val();
-        var serial = $('#barcode_scan_hidden').val();
+        var serial = $('#serial_number_scan_json').val();
         
         if(stockNo != '' && stockDate != '' &&supplier != '' &&product != '' && quantity != '' && description != '' && serial != ''){
             $('#submit_form').submit();
