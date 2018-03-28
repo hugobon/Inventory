@@ -14,37 +14,81 @@
     // Store data from controller to temp array
     var dataReceive = JSON.parse(JSON.stringify({!! json_encode($outputData) !!}));
 
-    var dataToSend = {
+    var gt_dataToSend = {
         do_hdr  : dataReceive.do_hdr,
         do_item : dataReceive.do_item
     };
 
+    var gt_idVerify = "";
+
     function get_itemDetail(e){
 
-        var headerTitle = "";
+        var headerTitle = "Item Detail";
+        gt_idVerify = e;
 
-        $('#serialno_switch').prop('checked', false);
-        $('#serialNo').css('display', 'none');
-        $('#serialNo_list').css('display', 'none');
+        var lv_order_id = "";
+        var lv_product_code = "";
+        var lv_product_desc = "";
+        var lv_product_qty = "";
+        var lv_product_typ = "";
+        var lv_serialno_list = [];
 
-        if(e.path['3'].cells == undefined){
+        if(e.target.textContent == "Add New Item"){
 
-            $('#product_code').val("");
-            $('#product_desc').val("");
-            $('#product_qty').val("");
-            $('#product_typ').val("");
+            headerTitle = e.target.textContent;
+            var last_id = $('#tbody_item tr:last')[0].cells[0].textContent;
+            console.log(last_id);
+            if(last_id.indexOf('new') > -1){
+                lv_order_id = "new_"+(+last_id.split("_")[1]+1);
+            }else{ lv_order_id = "new_0";}
 
-            headerTitle = "Add New Item";
+            $('#serialno_switch').prop('checked', false);
+            $('#serialNo').css('display', 'none');
+            $('#serialNo_list').css('display', 'none');
         }
         else{
 
-            $('#product_code').val(e.path['3'].cells['2'].textContent);
-            $('#product_desc').val(e.path['3'].cells['3'].textContent);
-            $('#product_qty').val(e.path['3'].cells['4'].textContent);
-            $('#product_typ').val(e.path['3'].cells['5'].textContent);
+            for(var i=0; i<gt_dataToSend.do_item.length; i++){
+                if(gt_dataToSend.do_item[i].order_id == e.path['3'].cells['0'].textContent){
 
-            headerTitle = "Item Detail";
+                    lv_order_id     = gt_dataToSend.do_item[i].order_id;
+                    lv_product_code = gt_dataToSend.do_item[i].product_code;
+                    lv_product_desc = gt_dataToSend.do_item[i].product_desc;
+                    lv_product_qty  = gt_dataToSend.do_item[i].product_qty;
+                    lv_product_typ  = gt_dataToSend.do_item[i].product_typ;
+                    lv_serialno_list= gt_dataToSend.do_item[i].serialno;
+                    break;
+                }
+            }
+
+            if(lv_serialno_list.length > 0){
+
+                $('#serialno_switch').prop('checked', true);
+                $('#serialNo_list').empty();
+
+                $('#serialNo').css('display', 'inherit');
+                $('#serialNo_list').css('display', 'inherit');
+
+                for(var j=0; j<lv_serialno_list.length; j++){
+                    $('#serialNo_list').append('<div class="col-md-6" style="margin-bottom: 0.5%;"><input type="text" class="form-control" value="'+lv_serialno_list[j]+'"></div>');
+                }
+
+                var total_serialno = $('#serialNo_list')['0'].children.length;
+                $('#serialNo_title').html("Serial No. List ("+total_serialno+")");
+            }
+            else{
+
+                $('#serialno_switch').prop('checked', false);
+                $('#serialNo').css('display', 'none');
+                $('#serialNo_list').css('display', 'none');
+            }
         }
+
+        $('#order_id').val(lv_order_id);
+        $('#product_code').val(lv_product_code);
+        $('#product_desc').val(lv_product_desc);
+        $('#product_qty').val(lv_product_qty);
+        $('#product_typ').val(lv_product_typ);
 
         var total_serialno = $('#serialNo_list')['0'].children.length;
         $('#serialNo_title').html("Serial No. List ("+total_serialno+")");
@@ -52,11 +96,6 @@
         $('#largeModalHead').html(headerTitle);
 
         $("#add_delivery_order").modal("show");
-    }
-
-    function fn_saveItemDetail(){
-
-
     }
 
     function fn_add_serialno(){
@@ -89,6 +128,187 @@
             $('#serialNo').css('display', 'none');
             $('#serialNo_list').css('display', 'none');
         }
+    }
+
+    function fn_saveItemDetail(){
+
+        var dataToStore = [];
+        var serialList = ($('#serialNo_list'))[0].children;
+        for(var i=0; i<serialList.length; i++){
+            dataToStore.push(serialList[i].children[0].value);
+        }
+
+        for(var x=0; x<gt_dataToSend.do_item.length; x++){
+            if(gt_dataToSend.do_item[x].order_id == $('#order_id').val()){
+                gt_dataToSend.do_item[x].product_code = $('#product_code').val();
+                gt_dataToSend.do_item[x].product_desc = $('#product_desc').val();
+                gt_dataToSend.do_item[x].product_qty  = $('#product_qty').val();
+                gt_dataToSend.do_item[x].product_typ  = $('#product_typ').val();
+                gt_dataToSend.do_item[x].serialno     = dataToStore;
+                break;
+            }
+        }
+
+        if(gt_idVerify.target.textContent == "Add New Item"){
+
+            gt_dataToSend.do_item.push({
+                order_id        : $('#order_id').val(),
+                product_code    : $('#product_code').val(),
+                product_desc    : $('#product_desc').val(),
+                product_qty     : $('#product_qty').val(),
+                product_typ     : $('#product_typ').val(),
+                serialno        : dataToStore
+            });
+
+            lv_row = "<tr>";
+            lv_row+= "<td style='display:none;'>"+$('#order_id').val()+"</td>";
+            lv_row+= "<td>"+(+$('#tbody_item tr:last')[0].cells[1].textContent + 1)+"</td>";
+            lv_row+= "<td>"+$('#product_code').val()+"</td>";
+            lv_row+= "<td>"+$('#product_desc').val()+"</td>";
+            lv_row+= "<td>"+$('#product_qty').val()+"</td>";
+            lv_row+= "<td>"+$('#product_typ').val()+"</td>";
+            lv_row+= '<td><a href="#" onclick="get_itemDetail(event)"><span class="label label-warning">Draft</span></a></td>';
+            lv_row+= "</tr>";
+
+            $('#tbody_item').append(lv_row);
+        }
+        else{
+
+            $(gt_idVerify.target).removeClass();
+            $(gt_idVerify.target).addClass('label label-warning').html('Draft');
+        }            
+
+        $("#add_delivery_order").modal("hide");
+    }
+
+    function fn_verifyItemDetail(){
+
+        var error = false;
+        var dataToStore = [];
+        if($('#serialno_switch')[0].checked){
+            var serialList = ($('#serialNo_list'))[0].children;
+            if(serialList.length >= $('#product_qty').val()){
+                for(var i=0; i<serialList.length; i++){
+                    if(serialList[i].children[0].value == ""){
+                        error = true;
+                        msg = "Serial No cannot be empty to verified";
+                        break;
+                    }
+
+                    dataToStore.push(serialList[i].children[0].value);
+                }
+            }
+            else{error = true; msg = "Serial no list not match with quantity";}
+        }
+
+        if(error){
+            console.log(msg);
+        }
+        else{
+            console.log("Verified!");
+
+            if(gt_idVerify.target.textContent == "Add New Item"){
+
+                gt_dataToSend.do_item.push({
+                    order_id        : $('#order_id').val(),
+                    product_code    : $('#product_code').val(),
+                    product_desc    : $('#product_desc').val(),
+                    product_qty     : $('#product_qty').val(),
+                    product_typ     : $('#product_typ').val(),
+                    serialno        : dataToStore
+                });
+
+                lv_row = "<tr>";
+                lv_row+= "<td style='display:none;'>"+$('#order_id').val()+"</td>";
+                lv_row+= "<td>"+(+$('#tbody_item tr:last')[0].cells[1].textContent + 1)+"</td>";
+                lv_row+= "<td>"+$('#product_code').val()+"</td>";
+                lv_row+= "<td>"+$('#product_desc').val()+"</td>";
+                lv_row+= "<td>"+$('#product_qty').val()+"</td>";
+                lv_row+= "<td>"+$('#product_typ').val()+"</td>";
+                lv_row+= '<td><a href="#" onclick="get_itemDetail(event)"><span class="label label-success">Verified</span></a></td>';
+                lv_row+= "</tr>";
+
+                $('#tbody_item').append(lv_row);
+                
+            }
+            else{
+
+                for(var x=0; x<gt_dataToSend.do_item.length; x++){
+                    if(gt_dataToSend.do_item[x].order_id == $('#order_id').val()){
+                        gt_dataToSend.do_item[x].product_code = $('#product_code').val();
+                        gt_dataToSend.do_item[x].product_desc = $('#product_desc').val();
+                        gt_dataToSend.do_item[x].product_qty  = $('#product_qty').val();
+                        gt_dataToSend.do_item[x].product_typ  = $('#product_typ').val();
+                        gt_dataToSend.do_item[x].serialno     = dataToStore;
+                        break;
+                    }
+                }
+
+                $(gt_idVerify.target).removeClass();
+                $(gt_idVerify.target).addClass('label label-success').html('Verified');
+            }
+
+            $("#add_delivery_order").modal("hide");
+        }
+    }
+
+    function fn_saveDO(){
+
+        gt_dataToSend.do_hdr.delivery_status = "01";
+        gt_dataToSend.do_hdr.courier_id = $('#courier_id').val();
+        gt_dataToSend.do_hdr.tracking_no = $('#tracking_no').val();
+        ajax_send();
+    }
+
+    function fn_verifyDO(){
+
+        var tbody = $('#tbody_item')[0].children;
+        var error = false;
+        var msg = "";
+
+        if($('#tracking_no').val() != ""){
+            for(var i=0; i<tbody.length; i++){
+                if(tbody[i].cells[6].textContent != "Verified"){
+                    error = true;
+                    msg = "Please verify all item before proceed to pickup";
+                    break;
+                }
+            }
+        }
+        else{
+            error = true;
+            msg = "Please insert tracking no / consigment note";
+        }
+
+        if(error){
+            console.log(msg);
+        }
+        else{
+            console.log("DO ready to pickup!");
+            gt_dataToSend.do_hdr.delivery_status = "02";
+            gt_dataToSend.do_hdr.courier_id = $('#courier_id').val();
+            gt_dataToSend.do_hdr.tracking_no = $('#tracking_no').val();
+            ajax_send();
+        }
+    }
+
+    function ajax_send(){
+
+        console.log(gt_dataToSend);
+
+        // $.ajax({
+        //     url: "",
+        //     type: "POST",
+        //     data: gt_dataToSend,
+        //     success: function(response){
+        //         console.log(response);
+        //     },
+        //     error: function(jqXHR, errorThrown, textStatus){
+        //         console.log(jqXHR);
+        //         console.log(errorThrown);
+        //         console.log(textStatus);
+        //     }
+        // });
     }
 
 </script>
@@ -165,13 +385,13 @@
                                         <div class="form-group">
                                             <label class="col-md-3 control-label">Courier Service</label>
                                             <div class="col-md-9">
-                                                <select class="form-control" name="courier_id">{!! $outputData['order_hdr']->courier !!}</select>
+                                                <select class="form-control" id="courier_id">{!! $outputData['order_hdr']->courier !!}</select>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="col-md-3 control-label">Tracking No</label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control" name="tracking_no">
+                                                <input type="text" class="form-control" id="tracking_no">
                                             </div>
                                         </div>
                                     </div>
@@ -200,11 +420,12 @@
                                     <div class="col-md-4">
                                         <p class="form-control-static">Item List: {!! $outputData['totalitem'] !!}</p>
                                     </div>
-                                    <div class="col-md-8">
-                                        <ul class="panel-controls">
+                                    <!-- <div class="col-md-8"> -->
+                                        <!-- <ul class="panel-controls">
                                             <li><a href="#" onclick="get_itemDetail(event)"><span class="fa fa-plus"></span></a></li>
-                                        </ul>
-                                    </div>
+                                        </ul> -->
+                                        <button type="button" class="btn btn-default pull-right" onclick="get_itemDetail(event)"><i class="fa fa-plus"></i>Add New Item</button>
+                                    <!-- </div> -->
                                 </div>
                                 <div class="form-group">
                                     <div class="table-responsive">
@@ -219,7 +440,7 @@
                                                     <th>Status</th>
                                                 <tr>
                                             </thead>
-                                            <tbody>
+                                            <tbody id="tbody_item">
                                                 {!! $outputData['item_list'] !!}
                                             </tbody>
                                         </table>
@@ -230,8 +451,8 @@
                     </div>
                     <div class="panel-footer">
                         <button type="button" class="btn btn-default">Cancel</button>
-                        <button type="button" class="btn btn-success pull-right">Ready to Pickup</button>
-                        <button type="button" class="btn btn-primary pull-right" style="margin-right: 0.3%;">Save</button>
+                        <button type="button" class="btn btn-success pull-right" onclick="fn_verifyDO()">Ready to Pickup</button>
+                        <button type="button" class="btn btn-primary pull-right" onclick="fn_saveDO()" style="margin-right: 0.3%;">Save</button>
                     </div>
                 </div>
             </form>
@@ -250,6 +471,12 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
+                        <div class="form-group" style="display: none;">
+                            <label class="col-md-3 control-label">ID</label>
+                            <div class="col-md-9">
+                                <input type="text" id="order_id" class="form-control">
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label class="col-md-3 control-label">Product Code</label>
                             <div class="col-md-9">
@@ -293,8 +520,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
-                    <button type="button" class="btn btn-success" data-dismiss="modal">Verified</button>
+                    <button type="button" class="btn btn-primary" onclick="fn_saveItemDetail()">Save</button>
+                    <button type="button" class="btn btn-success" onclick="fn_verifyItemDetail()">Verified</button>  <!-- data-dismiss="modal" -->
                 </div>
             </form>
         </div>
