@@ -46,7 +46,7 @@
                                                 <th>Quantity</th>
                                                 <th class="text-center">Unit Price</th>
                                                 <th class="text-center">Total</th>
-                                                <th><input type="hidden" id="agent_id" value="{{ $returnData['agent_id'] }}"></th>
+                                                <th hidden=""><input type="hidden" id="agent_id" value="{{ $returnData['agent_id'] }}"></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -63,11 +63,11 @@
                                                     </div>
                                                 </td>
                                                 <td class="col-sm-1 col-md-1 quantity-item" style="text-align: center">
-                                                    <input type="text" class="form-control quantity" id="quantity" value="{{ $value->total_quantity }}">
+                                                    <p>{{ $value->total_quantity }}</p>
                                                 </td>
                                                 <td class="col-sm-1 col-md-1 text-center"><strong>RM{{ $value->price }}</strong></td>
                                                 <td class="col-sm-1 col-md-1 text-center"><strong>RM{{ $value->total_price }}</strong></td>
-                                                <td class="col-sm-1 col-md-1">
+                                                <td hidden="">
                                                     <button type="button" class="btn btn-danger remove-item">
                                                         <i class="glyphicon glyphicon-trash"></i>Remove
                                                     </button>
@@ -77,18 +77,27 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="col-md-12 col-md-4">
+                                <div class="col-md-4">
                                    <div class="row" id="form-field">
                                         <div class="col-md-12">
-                                            <div class="col-md-8">
-                                                <p><span id="form-title"> Delivery Type </span></p>
-                                                <div class="form-group">
-                                                    <div class="col-md-12" id="">        
-                                                        <select class="form-control delivery-type">
-                                                            @foreach($deliveryType as $key => $value)
-                                                            <option value="{{ $value->code }}">{{ $value->description }}</option>
-                                                            @endforeach
-                                                        </select>
+                                            <div class="col-md-12">
+                                                <p><span id="form-title"> Shipping & Billing</span></p>
+                                                <div class="form-group col-md-12">
+                                                   <label class="control-label"> Shiping To </label>
+                                                    <div class="" id="">
+                                                        <a href="#" style="font-size: 15px;" {{ $returnData['address']['btnstatus'] }}><i class="pull-right fa fa-edit"></i></a>
+                                                        <p>{!! $returnData['address']['name'] !!}</p>   
+                                                        <p>{!! $returnData['address']['address'] !!}</p>
+                                                        <input type="hidden" id="shipping-code" value="{{ $returnData['address']['code'] }}">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-md-12">
+                                                    <label class="control-label"> Billing To </label>
+                                                    <div class="" id="">
+                                                        <a href="#" style="font-size: 15px;" {{ $returnData['address']['btnstatus'] }}><i class="pull-right fa fa-edit"></i></a> 
+                                                        <p>{!! $returnData['address']['name'] !!}</p>   
+                                                        <p>{!! $returnData['address']['address'] !!}</p>
+                                                        <input type="hidden" id="billing-code" value="{{ $returnData['address']['code'] }}">
                                                     </div>
                                                 </div>
                                             </div>
@@ -106,14 +115,14 @@
                                                 <td><h3>RM{{ $returnData['grandTotalPrice'] }}</h3></td>
                                             </tr>
                                             <tr>
-                                                <td>
+                                                <td hidden="">
                                                     <button type="button" class="btn btn-default continue-shopping">
                                                         Continue Shopping <i class="glyphicon glyphicon-shopping-cart"></i>
                                                     </button>
                                                 </td>
                                                 <td>
-                                                    <button type="button" class="btn btn-success checkout-item">
-                                                        Checkout <i class="glyphicon glyphicon-ok"></i>
+                                                    <button type="button" class="btn btn-success place-order-item">
+                                                        Place order <i class="glyphicon glyphicon-ok"></i>
                                                     </button>
                                                 </td>
                                             </tr>
@@ -131,25 +140,29 @@
 
 <script type="text/javascript">
     
-    $('.remove-item').on('click', function () {
+    $('.place-order-item').click(function(){
 
-        // console.log($(this).closest('.row-cart-item').find('input#id').val())
-        
-        var id = $(this).closest('.row-cart-item').find('input#id').val();
+        var agent_id = "{{ $returnData['agent_id'] }}";
+        var shiping_code = $('#shipping-code').val();
+        var billing_code = $('#billing-code').val();
+        var total_price = "{{ $returnData['grandTotalPrice'] }}";
+        var shipping_fee = "{{ $returnData['shippingPrice'] }}";
 
-        // var item = {
-        //     id : id
-        // };
+        console.log(agent_id,shiping_code, billing_code,total_price,shipping_fee);
 
-        var data = {
+         var data = {
 
             _token : "{!! csrf_token() !!}",
-            item   :  id
+            agent_id   :  agent_id,
+            shiping_code : shiping_code,
+            billing_code : billing_code,
+            total_price : total_price,
+            shipping_fee : shipping_fee
         };
 
         $.ajax({
 
-            url : "/agent/delete_cart_item",
+            url : "/agent/procced_to_payment",
             dataType : "json",
             type : "POST",
             data: JSON.stringify(data),
@@ -158,49 +171,8 @@
         }).done(function(response){
 
             if(response.return.status == "01"){
-                document.location.reload();
-            }
+                // document.location.reload();
 
-            console.log(response)
-
-        }).fail(function(){
-
-
-        });
-    });
-
-    $('.quantity').change(function(){
-
-        var id = $(this).closest('.row-cart-item').find('input#id').val();
-        var quantity = $(this).closest('.quantity-item').find('input#quantity').val();
-        // console.log(quantity)
-        // console.log($(this).closest('.quantity-item').find('.quantity').val())
-
-        // var item = {
-
-        //     id       : id,
-        //     quantity : quantity
-        // };
-
-        var data = {
-
-            _token : "{!! csrf_token() !!}",
-            id   :  id,
-            quantity : quantity
-        };
-
-        $.ajax({
-
-            url : "/agent/update_quantity_item",
-            dataType : "json",
-            type : "POST",
-            data: JSON.stringify(data),
-            contentType : "application/json"
-
-        }).done(function(response){
-
-            if(response.return.status == "01"){
-                document.location.reload();
             }
 
             console.log(response)
@@ -208,62 +180,9 @@
         }).fail(function(){
 
         });
-    });
-
-    $('.continue-shopping').click(function(){
-        
-        window.location.href = "{{ url('agent/get_product_list/all') }}";
-    })
-
-    $('.checkout-item').click(function(){
-       
-        var agent_id = $('#agent_id').val();
-        var table_item = $('.table-cart-item').find('.row-cart-item');
-        var delivery_type = $('.delivery-type').val();
-        var cartItems = {!! $cartItems !!};
-        console.log(cartItems)
-        console.log(agent_id)
-        console.log(delivery_type);
-
-        // for(var i=0;i<table_item.length;i++){
-
-        //     console.log(table_item.eq(i).find('input').eq(0).attr('value'));
-        //     console.log(table_item.eq(i).find('input').eq(2).attr('value'));
-        //     console.log(table_item.eq(i).find('strong').eq(0).html());
-        //     console.log(table_item.eq(i).find('strong').eq(1).html());
-        // }
-
-        var data = {
-
-            _token : "{!! csrf_token() !!}",
-            id   :  agent_id,
-            delivery_type : delivery_type
-        };
-
-        // $.ajax({
-
-        //     url : "/agent/get_place_order_items",
-        //     dataType : "json",
-        //     type : "GET",
-        //     data: JSON.stringify(data),
-        //     contentType : "application/json"
-
-        // }).done(function(response){
-
-        //     if(response.return.status == "01"){
-        //         // document.location.reload();
-
-        //     }
-
-        //     console.log(response)
-
-        // }).fail(function(){
-
-        // });
-
-        window.location.href = "{{ url('agent/get_place_order_items') }}"+"/"+agent_id+"/"+delivery_type
 
     });
 
 </script>
+
 @endsection

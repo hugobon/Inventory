@@ -37,6 +37,11 @@ Route::get('agent/get_cart_items', 'Agent\AgentController@fn_get_cart_items');
 Route::post('agent/delete_cart_item', 'Agent\AgentController@fn_delete_cart_item');
 Route::post('agent/update_quantity_item', 'Agent\AgentController@fn_update_quantity_item');
 Route::get('agent/get_product_details/{product_id?}', 'Agent\AgentController@fn_get_product_details');
+Route::get('agent/get_address/display', 'Agent\AgentController@fn_get_address_listing');
+Route::post('agent/save_address', 'Agent\AgentController@fn_save_address');
+Route::get('agent/delete_address/{id?}', 'Agent\AgentController@fn_delete_address');
+Route::get('agent/get_place_order_items/{agent_id?}/{deliveryType?}', 'Agent\AgentController@fn_get_place_order_items');
+Route::post('agent/procced_to_payment', 'Agent\AgentController@fn_proceed_to_payment');
 
 //=========================
 // Supplier :: Zul

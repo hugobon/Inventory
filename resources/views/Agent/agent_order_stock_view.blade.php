@@ -18,7 +18,7 @@
 			<div class="panel panel-default">
 				<div class="form-horizontal">
 					<div class="panel-heading">
-						<h3 class="panel-title"><strong>Register</strong> View </h3>
+						<h3 class="panel-title"><strong>Shipment & Billing</strong> View </h3>
 						<ul class="panel-controls">
 							<a href=" {{ url('agent/get_order_stock/edit') }}/{{ Auth::user()->id }}" id="edit_button"><span class="fa fa-edit" style="font-size:20px"></span></a>
 						</ul>
