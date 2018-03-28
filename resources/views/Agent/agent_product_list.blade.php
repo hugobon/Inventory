@@ -40,6 +40,12 @@
 							</a>
 							<span id="itemCount"></span>
 						</div> -->
+						<div class="alert alert-danger" role="alert">
+						    <button type="button" class="close" data-dismiss="alert">
+						    	<span aria-hidden="true">×</span><span class="sr-only">Close</span>
+						    </button>
+						    <strong></strong>
+						</div>
 						<div class="container" style="margin-top:50px; width: 100%;">
 							<div class='row'>
 								@foreach($data['productArr']['Product'] as $key => $value)
@@ -98,27 +104,38 @@
 <button type="button" class="btn btn-default mb-control" data-box="#message-box-default">Default</button>
 
 
-<div class="message-box animated fadeIn open" id="message-box-default">
-            <div class="mb-container">
-            	<div class="mb-header"><i class="fa fa-times-circle-o pull-right mb-control-close" style="font-size: 30px;"></i></div>
-                <div class="mb-middle">
-                    <div class="mb-title"><span class="fa fa-globe"></span> Some <strong>Title</strong></div>
-                    <div class="mb-content">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at tellus sed mauris mollis pellentesque nec a ligula. Quisque ultricies eleifend lacinia. Nunc luctus quam pretium massa semper tincidunt. Praesent vel mollis eros. Fusce erat arcu, feugiat ac dignissim ac, aliquam sed urna. Maecenas scelerisque molestie justo, ut tempor nunc.</p>                    
-                    </div>
-                    <div class="mb-footer">
-                    </div>
-                </div>
+<div class="message-box animated fadeIn open promo-advs" id="message-box-default">
+    <div class="mb-container">
+    	<div class="mb-header"><i class="fa fa-times-circle-o pull-right mb-control-close" style="font-size: 30px;"></i></div>
+        <div class="mb-middle">
+            <div class="mb-title"><span class="fa fa-globe"></span> Some <strong>Title</strong></div>
+            <div class="mb-content">
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at tellus sed mauris mollis pellentesque nec a ligula. Quisque ultricies eleifend lacinia. Nunc luctus quam pretium massa semper tincidunt. Praesent vel mollis eros. Fusce erat arcu, feugiat ac dignissim ac, aliquam sed urna. Maecenas scelerisque molestie justo, ut tempor nunc.</p>                    
+            </div>
+            <div class="mb-footer">
             </div>
         </div>
+    </div>
+</div>
 
 <script type="text/javascript">
 
 
 	$(document).ready(function(){
 
-		var count = {{ $count == '0' ? "" : $count }}
-		$('#itemCount').html(count).css('display', 'block'); 
+		var count = '{!! $count !!}';
+		console.log(count);
+		if(count != 0){
+			$('#itemCount').html(count).css('display', 'block' ); 
+		}
+		else{
+			$('#itemCount').html(count).css('display', 'none' ); 
+		}
+
+		$('.alert-danger').hide();
+
+		$('.promo-advs').css('display','none')
+
 	});
 
 	// $('div.item-detail').click(function(){
@@ -206,13 +223,27 @@
 			        setTimeout(function () {
 			        }, 1500);
 		    	}
+		    	else if(respone.return.status == "03"){
+
+		    		$('.alert-danger').show();
+		    		$('.alert-danger').children('strong').html(respone.return.message);
+
+		    	}
 
 			}).fail(function(XHR, textStatus, errorThrown){
 				var errorText = JSON.parse(XHR.responseText);
 			  	console.log(errorText);
 			});
+		}
+		else{
+
+			$(this).closest('form.save-item').find('.quantity').css('border','2px solid red');
 		}	
     });
+
+    $('.quantity').change(function(){
+    	$(this).closest('form.save-item').find('.quantity').css('border','none');
+    })
 
 function fn_get_cart_items(product_id,agent_id){
 
