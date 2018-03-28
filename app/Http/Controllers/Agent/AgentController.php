@@ -12,6 +12,8 @@ use App\inventory\product_m;
 use App\inventory\product_image_m;
 use App\inventory\product_package_m;
 use App\agent_select_product;
+use App\address;
+use App\delivery_type;
 use Auth;
 use DB;
 
@@ -296,10 +298,15 @@ class AgentController extends Controller
 
             $grandTotalPrice = number_format(floatval($grandTotalPrice),2);
 
-            $grandTotal = [
+            $returnData = [
 
-                'grandTotalPrice' => $grandTotalPrice
+                'agent_id'        => $agent_id,
+                'grandTotalPrice' => $grandTotalPrice,
+                'shippingPrice'  => "0.00"
             ];
+
+            $deliveryType = delivery_type::select('delivery_code as code','type_description as description')
+                                        ->get();
 
             $return['message'] = "succssfuly retrived";
             $return['status'] = "01";
@@ -312,7 +319,7 @@ class AgentController extends Controller
         }
         // dd($grandTotal);
         // return $return;
-        return view('Agent.agent_checkout',compact('cartItems','grandTotal'));
+        return view('Agent.agent_checkout',compact('cartItems','returnData','deliveryType'));
     }
 
     public function fn_save_selected_items(Request $request){
@@ -333,64 +340,73 @@ class AgentController extends Controller
                                             ->where('product_id',$data['product_id'])
                                             ->where('agent_id',$data['agent_id'])
                                             ->first();
+            if($agent != null){
+                if($cartItem == null){
 
-            if($cartItem == null){
+                    if($agent->state == "Sabah" || $agent->state == "Sarawak"){
 
-                if($agent->state == "Sabah" || $agent->state == "Sarawak"){
+                        $total_price = number_format(floatval($this->fn_calc_gst_price($product->price_em) * (int)$data['quantity']),2);
+                    }
+                    else{
 
-                    $total_price = number_format(floatval($this->fn_calc_gst_price($product->price_em) * (int)$data['quantity']),2);
+                        $total_price = number_format(floatval($this->fn_calc_gst_price($product->price_wm) * (int)$data['quantity']),2);
+                    }
+
+                    $total_price = str_replace(",", "", $total_price);
+                    
+                    $addToCart = Array(
+
+                        'agent_id' => $data['agent_id'],
+                        'product_id' => $data['product_id'],
+                        'quantity' => $data['quantity'], 
+                        'total_price' => $total_price,
+                        'created_by' => Auth::user()->id,
+                        'created_at' => \Carbon\Carbon::now(new \DateTimeZone('Asia/Kuala_Lumpur'))
+                    );
+
+                    agent_select_product::insertGetId($addToCart);
                 }
                 else{
 
-                    $total_price = number_format(floatval($this->fn_calc_gst_price($product->price_wm) * (int)$data['quantity']),2);
+                    if($agent->state == "Sabah" || $agent->state == "Sarawak"){
+
+                        $total_price = number_format(floatval($this->fn_calc_gst_price($product->price_em) * (int)$data['quantity']),2);
+                    }
+                    else{
+
+                        $total_price = number_format(floatval($this->fn_calc_gst_price($product->price_wm) * (int)$data['quantity']),2);
+                    }
+
+                    // dd(str_replace(",","",$total_price));
+
+                    $updateQuantity = $data['quantity'] + $cartItem->quantity;
+                    $updateTotalPrice = number_format(floatval($total_price + $cartItem->total_price),2);
+                    $updateTotalPrice = str_replace(",","",$updateTotalPrice);
+                    agent_select_product::where('product_id',$data['product_id'])
+                                            ->where('agent_id',$data['agent_id'])
+                                            ->update([
+
+                                                'quantity' => $updateQuantity,
+                                                'total_price' => $updateTotalPrice,
+                                                'updated_by' =>  Auth::user()->id,
+                                                'updated_at' => \Carbon\Carbon::now()
+
+                                            ]);
+
                 }
 
-                $total_price = str_replace(",", "", $total_price);
-                $addToCart = Array(
-
-                    'agent_id' => $data['agent_id'],
-                    'product_id' => $data['product_id'],
-                    'quantity' => $data['quantity'], 
-                    'total_price' => $total_price,
-                    'created_by' => Auth::user()->id,
-                    'created_at' => \Carbon\Carbon::now(new \DateTimeZone('Asia/Kuala_Lumpur'))
-                );
-
-                agent_select_product::insertGetId($addToCart);
+                $count = agent_select_product::count();
+                $return['message'] = "succssfuly inserted";
+                $return['status'] = "01";
             }
             else{
 
-                if($agent->state == "Sabah" || $agent->state == "Sarawak"){
-
-                    $total_price = number_format(floatval($this->fn_calc_gst_price($product->price_em) * (int)$data['quantity']),2);
-                }
-                else{
-
-                    $total_price = number_format(floatval($this->fn_calc_gst_price($product->price_wm) * (int)$data['quantity']),2);
-                }
-
-                // dd(str_replace(",","",$total_price));
-
-                $updateQuantity = $data['quantity'] + $cartItem->quantity;
-                $updateTotalPrice = number_format(floatval($total_price + $cartItem->total_price),2);
-                $updateTotalPrice = str_replace(",","",$updateTotalPrice);
-                agent_select_product::where('product_id',$data['product_id'])
-                                        ->where('agent_id',$data['agent_id'])
-                                        ->update([
-
-                                            'quantity' => $updateQuantity,
-                                            'total_price' => $updateTotalPrice,
-                                            'updated_by' =>  Auth::user()->id,
-                                            'updated_at' => \Carbon\Carbon::now()
-
-                                        ]);
-
+                $return['message'] = "config you shipping address";
+                $return['status'] = "03";
+                $count = 0;
             }
-
-            $count = agent_select_product::count();
             
-            $return['message'] = "succssfuly inserted";
-            $return['status'] = "01";
+            
         } 
         catch (\Exception $e){
             
@@ -401,25 +417,88 @@ class AgentController extends Controller
         return compact('data','return','product','agent','count');
     }
 
-    public function fn_get_cart_items(Request $request){
+    public function fn_get_place_order_items($agent_id = null,$deliveryType = null){
 
-        $agent_id = (!empty($request->get('agent_id')) ? $request->get('agent_id') : '');
-        $product_id = (!empty($request->get('product_id')) ? $request->get('product_id') : '');
+        // $agent_id = (!empty($request->get('agent_id')) ? $request->get('agent_id') : '');
+        // $delivery_type = (!empty($request->get('delivery_type')) ? $request->get('delivery_type') : '');
 
+        // dd($delivery_type);
         try{
 
             $cartItems = agent_select_product::leftJoin('product','product.id','=','agent_select_product.product_id')
-                                            ->select('product.id','product.name','product.description','product.picture_path','product.start_promotion'
-                                                ,'product.end_promotion','product.promotion_status','product.quantity_min'
-                                                ,'product.quantity as stock_quantity','agent_select_product.total_price'
-                                                ,'agent_select_product.quantity as total_quantity')
+                                            ->leftJoin('agent_order_stock','agent_order_stock.agent_id','=','agent_select_product.agent_id')
+                                            ->select('agent_select_product.id','product.id as product_id','product.name','product.description','product.price_wm','product.price_em','product.quantity_min'
+                                                ,'product.quantity as stock_quantity','agent_select_product.total_price','agent_select_product.quantity as total_quantity','agent_order_stock.state')
                                             ->where('agent_select_product.agent_id','=',$agent_id)
                                             ->get();
 
-            $count = count($cartItems);
+            // var_dump($cartItems);die();
+            $grandTotalPrice = 0.00;
+            foreach ($cartItems as $key => $value){
+
+                if($value->state == "Sabah" || $value->state == "Sarawak"){
+                    $cartItems[$key]['price'] = $this->fn_calc_gst_price(number_format(floatval($value->price_em),2));
+                }
+                else{
+                    $cartItems[$key]['price'] = $this->fn_calc_gst_price(number_format(floatval($value->price_wm),2));
+                }
+
+                $cartItems[$key]['total_price'] = number_format(floatval($value->total_price),2);
+
+                $image = product_image_m::select('type','description','file_name','path')
+                                        ->where('product_id',$value->product_id)
+                                        ->orderBy('status','desc')
+                                        ->first();
+
+                $cartItems[$key]['image'] = ($image['path'] == null ? '' : $image['path']);
+
+                $grandTotalPrice = $grandTotalPrice + str_replace(",","",$value->total_price);
+
+            }
+
+            $grandTotalPrice = number_format(floatval($grandTotalPrice),2);
+
+
+            if($deliveryType == "01"){
+
+                $addressData = address::select('id','address_code','street1','street2','poscode','city','state','country')
+                                    ->where('address_code','=',"1AGENT_01")
+                                    ->first();
+
+                $address = [
+
+                    'name'      => "Mohd Aminuddin",
+                    'address' => $addressData->street1.",".$addressData->street1.",".$addressData->poscode.",".$addressData->city.",".$addressData->state.",".$addressData->country,
+                    'btnstatus' => "",
+                    'code' => $addressData->address_code
+                ];
+
+            }
+            elseif($deliveryType == "02"){
+
+                $addressData = [];
+                $address = [
+
+                    'name'      => "",
+                    'address' =>  "Self Pickup",
+                    'btnstatus' => "hidden",
+                    'code' => ""
+                ];
+            }
+
+            $returnData = [
+
+                'agent_id'        => $agent_id,
+                'grandTotalPrice' => $grandTotalPrice,
+                'shippingPrice'  => "0.00",
+                'address' => $address
+            ];
+
 
             $return['message'] = "succssfuly retrived";
             $return['status'] = "01";
+
+            // dd($address);    
         }
         catch(\Exception $e){
 
@@ -427,7 +506,8 @@ class AgentController extends Controller
             $return['status'] = "02";
         }
 
-        return compact('cartItems','count','return');
+        // return $address;
+        return view('Agent.agent_place_order',compact('cartItems','returnData','address','deliveryType'));
     }
 
     public function fn_delete_cart_item(Request $request){
@@ -538,5 +618,166 @@ class AgentController extends Controller
         }
         // dd($AfterGst);
         return $AfterGst;
+    }
+
+    public function fn_save_address(Request $request){
+
+        // dd($request->get('item'));
+        $newAddress = $request->get('item');
+
+        try{
+
+            if($newAddress['id'] != "" && $newAddress['address_code'] != ""){
+
+                $newAddress['updated_by'] =  Auth::user()->id;
+                $newAddress['updated_at'] = \Carbon\Carbon::now();
+
+                address::where('id',$newAddress['id'])
+                        ->where('address_code', $newAddress['address_code'])
+                        ->update($newAddress);
+
+                $return['message'] = "succssfuly updated";
+                $return['status'] = "01";
+
+            }
+            else{
+
+                $newAddress['address_code'] = Auth::user()->id."AGENT_01";
+                $newAddress ['created_by'] =  Auth::user()->id;
+                $newAddress['created_at'] = \Carbon\Carbon::now();
+
+                // dd($newAddress);
+                address::insert($newAddress);
+
+                $return['message'] = "succssfuly saved";
+                 $return['status'] = "01";
+            }
+
+            
+
+        }
+        catch(\Exception $e){
+
+            $return['message'] = $e->getMessage();
+            $return['status'] = "02";
+
+        }
+
+        return compact('return');
+    }
+
+    public function fn_get_address_listing(){
+
+        try{
+
+            $data = address::select('id','address_code','street1','street2','poscode','city','state','country')
+                                ->where('address_code','=', "1AGENT_01")
+                                ->get();
+
+            $return['message'] = "succssfuly retrived";
+            $return['status'] = "01";
+
+        }
+        catch(\Exception $e){
+
+            $return['message'] = $e->getMessage();
+            $return['status'] = "02";
+        }
+
+        // dd($data);
+        return view('Agent.agent_address',compact('return','data'));
+    }
+
+    public function fn_delete_address($id = null){
+
+        // dd($id);
+        try{
+
+            address::where('id',$id)
+                        ->delete();
+
+            $return['message'] = "succssfuly deleted";
+            $return['status'] = "01";
+
+        }
+        catch(\Exception $e){
+
+            $return['message'] = $e->getMessage();
+            $return['status'] = "02";
+
+        }
+
+        // dd($return);
+        return back();
+    }
+
+    public function fn_proceed_to_payment(Request $request){
+
+            $agent_id = (!empty($request->get('agent_id')) ? $request->get('agent_id') : '');
+            $shipping_code = (!empty($request->get('shipping_code')) ? $request->get('shipping_code') : '');
+            $billing_code = (!empty($request->get('billing_code')) ? $request->get('billing_code') : '');
+            $total_price = (!empty($request->get('total_price')) ? $request->get('total_price') : '');
+            $shipping_fee = (!empty($request->get('shipping_fee')) ? $request->get('shipping_fee') : '');
+
+            // dd($request);
+        try{
+
+            $cartItems = agent_select_product::leftJoin('product','product.id','=','agent_select_product.product_id')
+                                            ->leftJoin('agent_order_stock','agent_order_stock.agent_id','=','agent_select_product.agent_id')
+                                            ->select('agent_select_product.id','product.id as product_id','product.name','product.description','product.price_wm','product.price_em','product.quantity_min'
+                                                ,'product.quantity as stock_quantity','agent_select_product.total_price','agent_select_product.quantity as total_quantity','agent_order_stock.state')
+                                            ->where('agent_select_product.agent_id','=',$agent_id)
+                                            ->get();
+            $order_item = [];
+            $total_product_quantity = 0;
+            foreach($cartItems as $k => $v){
+
+                $item = Array(
+
+                    'order_no' => "",
+                    'do_no' => "",
+                    'product_id' => $v->product_id,
+                    'product_qty' => $v->total_quantity,
+                    'product_type' => "",
+                    'product_status' => "01",
+                    'created_by' =>  Auth::user()->id,
+                    'created_at' => \Carbon\Carbon::now()
+                );
+
+                $order_item[] = $item;
+
+                $total_product_quantity = $total_product_quantity + $v->total_quantity;
+            }
+
+            $orderHdr = [
+
+                'order_no' => "",
+                'agent_id' => $agent_id,
+                'invoice_no' => "",
+                'gst' => "6%",
+                'shipping_fee' => $shipping_fee,
+                'total_price' => $total_product_quantity,
+                'delivery_type' => "",
+                'purchase_date' => "",
+                'status' => "01",
+                'bill_address' => $billing_code,
+                'ship_address' => $shipping_code,
+                'created_by' =>  Auth::user()->id,
+                'created_at' => \Carbon\Carbon::now()
+
+            ];
+
+            // dd($orderHdr,$order_item);
+
+            $return['message'] = "succssfuly deleted";
+            $return['status'] = "01";
+        }
+        catch(\Exception $e){
+            
+            $return['message'] = $e->getMessage();
+            $return['status'] = "02";
+        }
+
+        return $return;
     }
 }
