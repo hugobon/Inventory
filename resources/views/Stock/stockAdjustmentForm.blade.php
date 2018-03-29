@@ -119,7 +119,7 @@ textarea {
                                     <thead>
                                         <tr>
                                             <th></th>
-											<th>Product Name</th>
+											<th>Product Status</th>
 											<th>Quantity</th>                                      
                                                                                         
                                         </tr>
@@ -297,11 +297,11 @@ textarea {
         // var description = $('#stockNo').val();
         var serial = $('#barcode_scan_hidden').val();
         
-        // if(quantity_input != '' && remarks_input != '' &&product_input != '' &&adjustment_select != '' ){
+        if(quantity_input != '' && remarks_input != '' &&product_input != '' &&adjustment_select != '' ){
             $('#submit_form').submit();
-        // }else{
-        //     alert('Please fill the fields')
-        // }   
+        }else{
+            alert('Please fill the fields')
+        }   
 	})
 
 	$('#adjust_btn').click(function(){
@@ -326,13 +326,13 @@ textarea {
 			var ProdStockCount = result.stocks.stocksCount;
 			var AdjustmentOperator = result.adjustmentConfig.operation;
 
-			var cell1 = t.cell({row: 0, column: 1});
+			var cell1 = t.cell({row: 0, column: 2});
 			cell1.data(ProdStockCount).draw();
 			
-			var cell2 = t.cell({row: 1, column: 1});
+			var cell2 = t.cell({row: 1, column: 2});
 			cell2.data(quantity_input).draw() 
 
-			var cell3 = t.cell({row: 2, column: 1});
+			var cell3 = t.cell({row: 2, column: 2});
 			cell3.data(calcBalance(ProdStockCount,quantity_input,AdjustmentOperator)).draw() 
    		
 		},

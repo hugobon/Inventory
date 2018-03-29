@@ -86,7 +86,7 @@
                                                     <div class="col-md-12" id="">        
                                                         <select class="form-control delivery-type">
                                                             @foreach($deliveryType as $key => $value)
-                                                            <option value="{{ $value->code }}">{{ $value->description }}</option>
+                                                            <option data-code="{{ $value->id }}" value="{{ $value->code }}" >{{ $value->description }}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -220,10 +220,11 @@
         var agent_id = $('#agent_id').val();
         var table_item = $('.table-cart-item').find('.row-cart-item');
         var delivery_type = $('.delivery-type').val();
+        var delivery_id = $('.delivery-type').children('option').data('code');
         var cartItems = {!! $cartItems !!};
         console.log(cartItems)
         console.log(agent_id)
-        console.log(delivery_type);
+        console.log(delivery_id);
 
         // for(var i=0;i<table_item.length;i++){
 
@@ -233,12 +234,12 @@
         //     console.log(table_item.eq(i).find('strong').eq(1).html());
         // }
 
-        var data = {
+        // var data = {
 
-            _token : "{!! csrf_token() !!}",
-            id   :  agent_id,
-            delivery_type : delivery_type
-        };
+        //     _token : "{!! csrf_token() !!}",
+        //     id   :  agent_id,
+        //     delivery_type : delivery_type
+        // };
 
         // $.ajax({
 

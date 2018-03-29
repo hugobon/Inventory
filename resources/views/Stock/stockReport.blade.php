@@ -13,7 +13,7 @@ textarea {
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
 	<li><a href="{{ url('home') }}">Home</a></li>                    
-	<li><a href="{{ url('stock/report') }}">Stock Report</a></li>
+	<li><a href="{{ url('stock/report/balance') }}">Stock Report</a></li>
 </ul>
 <!-- END BREADCRUMB -->   
 
@@ -40,7 +40,48 @@ textarea {
 
     <div class="row">
             <div class="col-md-12">
-                <table class="table table-bordered">
+                <h2>Stock Summary</h2>
+                <form action="" id="changeMonthForm" name="changeMonthForm">
+                    <div class="form-group">
+                    <select name="month" id="monthSelect" class="col-md-5">
+                    <option value="">Select Month</option>
+                    <option value="01">January</option>
+                    <option value="02">February</option>
+                    <option value="03">March</option>
+                    <option value="04">April</option>
+                    <option value="05">May</option>
+                    <option value="06">June</option>
+                    <option value="07">July</option>
+                    <option value="08">August</option>
+                    <option value="09">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                </select>
+                    </div>
+                </form>
+                </div>
+</div>
+ <div class="row">
+  <div class="col-md-12">
+              {{--  <div class="table-responsive">
+                <table class="table table-bordered datatable">
+                    <thead>
+                        <tr>
+                           <td>Doc Date</td>                            
+                           <td>Doc No</td>
+                           <td>Description</td>
+                           <td>Amount</td>
+                        </tr>
+                    </thead>
+                        <tbody>
+                           
+                        </tbody>
+
+                </table>
+            </div>    --}}
+                <div class="table-responsive">
+                <table class="table table-bordered datatable">
                     <thead>
                         <tr>
                             <td>Product Name</td>
@@ -54,11 +95,9 @@ textarea {
                                 $currentdate = $start;
                                 while($currentdate < $end)
                                 {
-                                        $cur_date = date('d', $currentdate);
-                                
-                                        $currentdate = strtotime('+1 day', $currentdate);
-                                
+                                        $cur_date = date('d', $currentdate);                                
                                         echo "<td>".$cur_date . "</td>";
+                                        $currentdate = strtotime('+1 day', $currentdate);
                                 }
                                 
                                 @endphp
@@ -69,23 +108,23 @@ textarea {
                         </tr>
                     </thead>
                         <tbody>
-                            @foreach($productDetail as $prodDetail)
+                            @foreach($reports as $report)
                             <tr>
-                                <td>{{$prodDetail->description}}</td>
-                                @foreach($stockAdjustmentValue as $stockAdjust)
+                                <td>{{$report->description}}</td>
+                                @foreach($report->stockAdjustmentValue as $stockAdjust)
                                 <td>{{$stockAdjust['day']}}</td>
                                 @endforeach
-                            <td>{{$prodDetail->stockInMonth}}</td>
-                            <td>{{$prodDetail->totalAdjustment}}</td>
+                            <td>{{$report->stockInMonth}}</td>
+                            <td>{{$report->totalAdjustment}}</td>
                             <td></td>
-                            <td>{{$prodDetail->stockBalance}}</td>
+                            <td>{{$report->stockBalance}}</td>
                             </tr>
                             @endforeach
                         </tbody>
 
 
                 </table>
-                        
+            </div>
 
                 </div>
 
@@ -94,4 +133,15 @@ textarea {
 </div>
 
  
+@endsection
+@section('script')
+<script>
+        $(document).ready(function() {
+            var t = $('.datatable').DataTable();
+
+              $('#monthSelect').on('change', function() {
+                document.forms["changeMonthForm"].submit();
+            });
+        });
+</script>
 @endsection

@@ -53,7 +53,7 @@ class StockAdjustmentController extends Controller
 		$quantity = $request->get('quantity');
 		$remarks = $request->get('remarks');
 
-		$adjustmentConfig = config_stockadjustment_m::select('adjustment','remarks','operation')->where('id',$adjustment)->where('status','1')->first();
+		$adjustmentConfig = config_stockadjustment_m::select('adjustment','remarks','operation')->where('id',$adjustment)->where('status','01')->first();
 
 		$stocks = stock_in::leftjoin('product','stock_in.stock_product','=','product.id')
 				->join('supplier','stock_in.stock_supplier','=','supplier.id')
@@ -73,6 +73,7 @@ class StockAdjustmentController extends Controller
 	}
 
 	public function submit(Request $postdata){
+		$stockIn = new stock_in;
 		$this->validate($postdata,[
 			'product_id' => 'required',
 			'adjustment_id' => 'required',
@@ -98,6 +99,13 @@ class StockAdjustmentController extends Controller
 		);
 		$stockadjustmentdata = New stockadjustment_m;
 		$stockadjustmentdata->insert($data);
+
+		//random update
+		$updateStock = $stockIn->take($postdata->input("quantity"));
+
+		foreach($updateStock as $stockQty){
+			$stockIn->where('id',$stockQty->id)->update(['status'=>03]);
+		}
 		
 		return redirect('stock/adjustment')
 		->with("message","Success Submit Product ".$checkproduct["code"]." (".$checkproduct["description"]."),

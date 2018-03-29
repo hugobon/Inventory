@@ -50,7 +50,7 @@ textarea {
                                         <div class="form-group">
                                                 <label class="col-md-3 col-xs-12 control-label">Stock Received No.</label>
                                                 <div class="col-md-6 col-xs-12">
-                                                    <input required type="text" name="stock_receive" class="form-control" id="stockNo">
+                                                    <input required type="text" name="stock_receive" class="form-control" id="stockNo" value="SR">
                                                 </div>
                                         </div>
                                         <div class="form-group">
@@ -336,7 +336,7 @@ textarea {
         var supplier = $('#supplier').val();
         var product = $('#product').val();
         var quantity = $('#quantity').val();
-        var description = $('#stockNo').val();
+        var description = $('#textarea_barcode').val();
         var serial = $('#serial_number_scan_json').val();
         
         if(stockNo != '' && stockDate != '' &&supplier != '' &&product != '' && quantity != '' && description != '' && serial != ''){
