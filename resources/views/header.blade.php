@@ -67,7 +67,7 @@
 								</li>
                                 <li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("stock/listing")) ? "active" : "" ; ?>">
                                     <a href="{{ url('stock/listing') }}"><span class="glyphicon glyphicon-list-alt"></span> Current Stock </a></li>
-                                 <li><a href="{{ url('stock/report') }}"><span class="fa fa-search"></span> Stock Balance Report </a></li>
+                                 <li><a href="{{ url('stock/report/balance') }}"><span class="fa fa-search"></span> Stock Balance Report </a></li>
                                 </ul>
                             </li>
                             <li><a href="javascript:;"><span class="fa fa-book"></span> Audit Trail </a></li>
@@ -94,7 +94,7 @@
                                     <li><a href="javascript:;"><span class="fa fa-search"></span> Stock Balance Report </a></li>
                                 </ul>
                             </li>
-                            <li><a href="javascript:;"><span class="fa fa-book"></span> Audit Trail </a></li>
+                            <!-- <li><a href="javascript:;"><span class="fa fa-book"></span> Audit Trail </a></li> -->
                         </ul>
                     </li>
                     <li class="xn-openable <?php echo in_array(Request::segment(1), array("supplier")) ? "active" : "" ; ?>">
@@ -102,9 +102,6 @@
                         <ul>
                             <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("supplier/supplierDetail")) ? "active" : "" ; ?>">
 								<a href="{{ url('supplier/supplierDetail') }}"><span class="fa fa-puzzle-piece"></span>Supplier Detail</a>
-							</li>
-                            <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("supplier/stockIn")) ? "active" : "" ; ?>">
-								<a href="{{ url('supplier/stockIn') }}"><span class="fa fa-puzzle-piece"></span>Stock In</a>
 							</li>
                             <!-- <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("supplier/supplierDO")) ? "active" : "" ; ?>">
 								<a href="{{ url('supplier/supplierDO') }}"><span class="fa fa-puzzle-piece"></span>Delivery Order</a>
