@@ -1,0 +1,99 @@
+@extends('header')
+@include('Agent.js.agent_control')
+@include('Agent.css.agent_css')
+@section('title','Config')
+@section('content')
+
+<!-- START BREADCRUMB -->
+<ul class="breadcrumb">
+    <li><a href="javascript:;">Home</a></li>                    
+    <li class="{{ url('agent') }}">Agent</li>
+    <li class="{{ url('agent') }}">Select Product</li>
+</ul>
+<!-- END BREADCRUMB -->
+<!-- PAGE CONTENT WRAPPER -->
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="horizontal">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><strong>Cart List</strong> </h3>
+                        <ul class="panel-controls">
+                            <!-- <a href=" {{ url('agent/get_order_stock/12221112/edit') }}" id="edit_button"><span class="fa fa-edit" style="font-size:20px"></span></a> -->
+                        </ul>
+                    </div>
+                </div>
+                <div class="panel-body form-horizontal">
+                    <div class="row">
+                        <div class="col-md-11">
+                            <div class="col-md-2 col-md-offset-5">
+                                <p><span id="form-title"> </span></p>
+                            </div>
+                        </div>
+                        <div class="container cart-list" style="margin-top:0px;">
+                            <div class="row cart-row">
+                                <div class="col-sm-12 col-md-12">
+                                    <div class="wizard">
+                                        <ul class="steps_4 anchor">
+                                            <li>
+                                                <a href="#step-1" class="selected" isdone="1" rel="1">
+                                                    <span class="stepNumber">1</span>
+                                                    <span class="stepDesc">In Progress<br><small>Step 1 description</small></span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#step-2" class="disabled" isdone="0" rel="2">
+                                                    <span class="stepNumber">2</span>
+                                                    <span class="stepDesc">Shiped<br><small>Step 2 description</small></span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#step-3" class="disabled" isdone="0" rel="3">
+                                                    <span class="stepNumber">3</span>
+                                                    <span class="stepDesc">Delivery<br><small>Step 3 description</small></span>                   
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#step-4" class="disabled" isdone="0" rel="4">
+                                                    <span class="stepNumber">4</span>
+                                                    <span class="stepDesc">Complete<br><small>Step 4 description</small></span>                   
+                                                </a>
+                                            </li>
+                                        </ul>
+                                        
+                                        <div class="stepContainer" style="height: 54px;">
+                                            <div id="step-1" class="content" style="display: block;">   
+                                                <h4>Step 1 Content</h4>
+                                                <p>Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam id dolor id nibh ultricies vehicula.</p>
+                                            </div>
+                                            <div id="step-2" class="content" style="display: none;">
+                                                <h4>Step 2 Content</h4>
+                                                <p>Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam id dolor id nibh ultricies vehicula.</p>
+                                            </div>
+                                            <div id="step-3" class="content" style="display: none;">
+                                                <h4>Step 3 Content</h4>
+                                                <p>Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam id dolor id nibh ultricies vehicula.</p>
+                                            </div>
+                                            <div id="step-4" class="content" style="display: none;">
+                                                <h4>Step 4 Content</h4>
+                                                <p>Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam id dolor id nibh ultricies vehicula.</p>
+                                            </div>
+                                        </div>
+                                        <div class="actionBar">
+                                            <div class="loader">Loading</div>
+                                            <a href="#" class="btn btn-primary pull-right disabled">Finish</a>
+                                            <a href="#" class="btn btn-default pull-right">Next</a>
+                                            <a href="#" class="btn btn-default pull-left disabled">Previous</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
