@@ -336,7 +336,7 @@ textarea {
         var supplier = $('#supplier').val();
         var product = $('#product').val();
         var quantity = $('#quantity').val();
-        var description = $('#stockNo').val();
+        var description = $('#textarea_barcode').val();
         var serial = $('#serial_number_scan_json').val();
         
         if(stockNo != '' && stockDate != '' &&supplier != '' &&product != '' && quantity != '' && description != '' && serial != ''){

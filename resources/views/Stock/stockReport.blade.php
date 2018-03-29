@@ -13,7 +13,7 @@ textarea {
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
 	<li><a href="{{ url('home') }}">Home</a></li>                    
-	<li><a href="{{ url('stock/report') }}">Stock Report</a></li>
+	<li><a href="{{ url('stock/report/balance') }}">Stock Report</a></li>
 </ul>
 <!-- END BREADCRUMB -->   
 
@@ -41,21 +41,29 @@ textarea {
     <div class="row">
             <div class="col-md-12">
                 <h2>Stock Summary</h2>
-                <select name="month" id="">
-                    <option>Select Month</option>
-                    <option>January</option>
-                    <option>February</option>
-                    <option>March</option>
-                    <option>April</option>
-                    <option>May</option>
-                    <option>June</option>
-                    <option>July</option>
-                    <option>August</option>
-                    <option>September</option>
-                    <option>October</option>
-                    <option>November</option>
-                    <option>December</option>
+                <form action="" id="changeMonthForm" name="changeMonthForm">
+                    <div class="form-group">
+                    <select name="month" id="monthSelect" class="col-md-5">
+                    <option value="">Select Month</option>
+                    <option value="01">January</option>
+                    <option value="02">February</option>
+                    <option value="03">March</option>
+                    <option value="04">April</option>
+                    <option value="05">May</option>
+                    <option value="06">June</option>
+                    <option value="07">July</option>
+                    <option value="08">August</option>
+                    <option value="09">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
                 </select>
+                    </div>
+                </form>
+                </div>
+</div>
+ <div class="row">
+  <div class="col-md-12">
               {{--  <div class="table-responsive">
                 <table class="table table-bordered datatable">
                     <thead>
@@ -130,5 +138,10 @@ textarea {
 <script>
         $(document).ready(function() {
             var t = $('.datatable').DataTable();
+
+              $('#monthSelect').on('change', function() {
+                document.forms["changeMonthForm"].submit();
+            });
         });
+</script>
 @endsection
