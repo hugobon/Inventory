@@ -88,6 +88,7 @@
                                         <a href="{{ url('agent/get_product_list/all') }}"><span class="glyphicon glyphicon-list-alt"></span> Product List </a>
                                         <a href="{{ url('agent/get_product_list/package') }}"><span class="glyphicon glyphicon-list-alt"></span> Product Package </a>
                                         <a href="{{ url('agent/get_product_list/promo') }}"><span class="glyphicon glyphicon-list-alt"></span> Product Promo </a>
+                                        <a href="{{ url('agent/get_delivery_status') }}"><span class="glyphicon glyphicon-list-alt"></span> Delivery Status </a>
                                         <a href="javascript:;"><span class="glyphicon glyphicon-list-alt"></span> Purchase Report </a>
                                     </li>
                                     <li><a href="javascript:;"><span class="fa fa-search"></span> Stock Balance Report </a></li>

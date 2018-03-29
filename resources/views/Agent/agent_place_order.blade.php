@@ -85,7 +85,7 @@
                                                 <div class="form-group col-md-12">
                                                    <label class="control-label"> Shiping To </label>
                                                     <div class="" id="">
-                                                        <a href="#" style="font-size: 15px;" {{ $returnData['address']['btnstatus'] }}><i class="pull-right fa fa-edit"></i></a>
+                                                        <a href="#" style="font-size: 15px;" {{ $returnData['address']['btnstatus'] }} class="editbutton"><i class="pull-right fa fa-edit"></i></a>
                                                         <p>{!! $returnData['address']['name'] !!}</p>   
                                                         <p>{!! $returnData['address']['address'] !!}</p>
                                                         <input type="hidden" id="shipping-code" value="{{ $returnData['address']['code'] }}">
@@ -94,7 +94,7 @@
                                                 <div class="form-group col-md-12">
                                                     <label class="control-label"> Billing To </label>
                                                     <div class="" id="">
-                                                        <a href="#" style="font-size: 15px;" {{ $returnData['address']['btnstatus'] }}><i class="pull-right fa fa-edit"></i></a> 
+                                                        <a href="#" style="font-size: 15px;" {{ $returnData['address']['btnstatus'] }} class="editbutton"><i class="pull-right fa fa-edit"></i></a> 
                                                         <p>{!! $returnData['address']['name'] !!}</p>   
                                                         <p>{!! $returnData['address']['address'] !!}</p>
                                                         <input type="hidden" id="billing-code" value="{{ $returnData['address']['code'] }}">
@@ -138,7 +138,78 @@
     </div>
 </div>
 
+
+<!-- Modal -->
+<div class="modal fade" id="ModalAddress" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Address</h4>
+            </div>
+            <div class="modal-body">
+                <div class="panel-body"> 
+                    <div class="row" id="form-field">
+                        <div class="col-md-12 address-field">
+                            <p id="name"></p>   
+                            <p id="address"></p>
+                            <input type="hidden" id="billing-code" value="{{ $returnData['address']['code'] }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="position: relative;">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script type="text/javascript">
+
+    $(document).ready(function(){
+
+    $(".createButton").click(function(){
+
+
+        $("#ModalAddress").modal();
+    });
+
+    $(".editbutton").click(function(){
+
+        var data = { 
+            _token : "{!! csrf_token() !!}"
+        };
+
+        $.ajax({
+
+            url : "/agent/get_address",
+            dataType : "json",
+            type : "GET",
+            data: JSON.stringify(data),
+            contentType : "application/json"
+
+        }).done(function(response){
+            console.log(response)
+            if(response.return.status == "01"){
+
+                for(var i=0;i<response.address.length;i++){
+
+                    $('p#name').clone().html(response.address[i].name);
+                    $('p#address').clone().html(response.address[i].address);
+                }
+            }
+
+            console.log(response)
+
+        }).fail(function(){
+
+        });
+
+        $("#ModalAddress").modal();
+    });
+});
     
     $('.place-order-item').click(function(){
 
@@ -147,6 +218,7 @@
         var billing_code = $('#billing-code').val();
         var total_price = "{{ $returnData['grandTotalPrice'] }}";
         var shipping_fee = "{{ $returnData['shippingPrice'] }}";
+        var delivery_type = "{{ $returnData['deliveryType'] }}";
 
         console.log(agent_id,shiping_code, billing_code,total_price,shipping_fee);
 
@@ -157,7 +229,8 @@
             shiping_code : shiping_code,
             billing_code : billing_code,
             total_price : total_price,
-            shipping_fee : shipping_fee
+            shipping_fee : shipping_fee,
+            delivery_type : delivery_type
         };
 
         $.ajax({
@@ -169,9 +242,10 @@
             contentType : "application/json"
 
         }).done(function(response){
-
+            console.log(response)
             if(response.return.status == "01"){
                 // document.location.reload();
+                window.location.href = "{{ url('agent/get_delivery_status') }}";
 
             }
 
