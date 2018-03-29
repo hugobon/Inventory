@@ -13,7 +13,7 @@
     
     <!-- START WIDGETS -->                    
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-4">
         <!-- START USERS ACTIVITY BLOCK -->
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -51,7 +51,7 @@
         </div>
         <!-- END USERS ACTIVITY BLOCK -->
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
         <!-- START AGENT BLOCK -->
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -89,7 +89,7 @@
         </div>
         <!-- END USERS ACTIVITY BLOCK -->
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
         <!-- START DELIVER BLOCK -->
         <div class="panel panel-default">
             <div class="panel-heading">
