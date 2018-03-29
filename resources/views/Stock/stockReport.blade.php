@@ -40,7 +40,40 @@ textarea {
 
     <div class="row">
             <div class="col-md-12">
-                <table class="table table-bordered">
+                <h2>Stock Summary</h2>
+                <select name="month" id="">
+                    <option>Select Month</option>
+                    <option>January</option>
+                    <option>February</option>
+                    <option>March</option>
+                    <option>April</option>
+                    <option>May</option>
+                    <option>June</option>
+                    <option>July</option>
+                    <option>August</option>
+                    <option>September</option>
+                    <option>October</option>
+                    <option>November</option>
+                    <option>December</option>
+                </select>
+              {{--  <div class="table-responsive">
+                <table class="table table-bordered datatable">
+                    <thead>
+                        <tr>
+                           <td>Doc Date</td>                            
+                           <td>Doc No</td>
+                           <td>Description</td>
+                           <td>Amount</td>
+                        </tr>
+                    </thead>
+                        <tbody>
+                           
+                        </tbody>
+
+                </table>
+            </div>    --}}
+                <div class="table-responsive">
+                <table class="table table-bordered datatable">
                     <thead>
                         <tr>
                             <td>Product Name</td>
@@ -54,11 +87,9 @@ textarea {
                                 $currentdate = $start;
                                 while($currentdate < $end)
                                 {
-                                        $cur_date = date('d', $currentdate);
-                                
-                                        $currentdate = strtotime('+1 day', $currentdate);
-                                
+                                        $cur_date = date('d', $currentdate);                                
                                         echo "<td>".$cur_date . "</td>";
+                                        $currentdate = strtotime('+1 day', $currentdate);
                                 }
                                 
                                 @endphp
@@ -69,23 +100,23 @@ textarea {
                         </tr>
                     </thead>
                         <tbody>
-                            @foreach($productDetail as $prodDetail)
+                            @foreach($reports as $report)
                             <tr>
-                                <td>{{$prodDetail->description}}</td>
-                                @foreach($stockAdjustmentValue as $stockAdjust)
+                                <td>{{$report->description}}</td>
+                                @foreach($report->stockAdjustmentValue as $stockAdjust)
                                 <td>{{$stockAdjust['day']}}</td>
                                 @endforeach
-                            <td>{{$prodDetail->stockInMonth}}</td>
-                            <td>{{$prodDetail->totalAdjustment}}</td>
+                            <td>{{$report->stockInMonth}}</td>
+                            <td>{{$report->totalAdjustment}}</td>
                             <td></td>
-                            <td>{{$prodDetail->stockBalance}}</td>
+                            <td>{{$report->stockBalance}}</td>
                             </tr>
                             @endforeach
                         </tbody>
 
 
                 </table>
-                        
+            </div>
 
                 </div>
 
@@ -94,4 +125,10 @@ textarea {
 </div>
 
  
+@endsection
+@section('script')
+<script>
+        $(document).ready(function() {
+            var t = $('.datatable').DataTable();
+        });
 @endsection
