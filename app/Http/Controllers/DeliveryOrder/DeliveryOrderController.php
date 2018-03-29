@@ -6,12 +6,15 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use DB;
+use Auth;
+use Carbon\Carbon;
 
 use App\order_hdr;
 use App\order_item;
 use App\do_hdr;
 use App\do_item;
 use App\courier;
+use App\global_nr;
 
 class DeliveryOrderController extends Controller
 {
@@ -82,7 +85,7 @@ class DeliveryOrderController extends Controller
                 $item_list.= "<td style='display:none;'>".$v['id']."</td>";
                 $item_list.= "<td>".$no."</td>";
                 $item_list.= "<td>".$v['code']."</td>";
-                $item_list.= "<td>".$v['description']."</td>";
+                $item_list.= "<td>".$v['name']."</td>";
                 $item_list.= "<td>".$v['product_qty']."</td>";
                 $item_list.= "<td>".$v['product_typ']."</td>";
                 // $item_list.= ($do_itemCount == $v['product_qty']) ? "<td><span class='label label-success'>Ready to pickup</span></td>" : "<td><span class='label label-warning'>New</span></td>";
@@ -107,7 +110,7 @@ class DeliveryOrderController extends Controller
         $courier = "";
         if(!$courierList['error']){
             foreach ($courierList['data'] as $k => $v) {
-                $courier.= "<option value='".$v['courier_code']."'>".$v['courier_name']."</option>";
+                $courier.= "<option value='".$v['id']."'>".$v['courier_name']."</option>";
             }
         }
 
@@ -159,24 +162,74 @@ class DeliveryOrderController extends Controller
         
         try{
 
-            return $request->all();
+            $dataReceive = $request->get('gt_dataToSend');
+            $dataItemToInsert = [];
+            $dataToUpdateSO_hdr = [];
+            $dataToUpdateSO_itm = [];
+            $do = "DO2018032900004";
+
+            // $do = $this->generate_orderno('DO')['data'];
+            // $dataReceive['do_hdr']['do_no'] = $do;
+            // do_hdr::insert($dataReceive['do_hdr']);
+            // order_hdr::where('order_no',$dataReceive['do_hdr']['order_no'])
+            //         ->update(['status' => $dataReceive['do_hdr']['delivery_status']]);
+
+            foreach ($dataReceive['do_item'] as $k => $v) {
+
+                $dataToUpdateSO_itm[] = [
+                    'do_no'          => $do,
+                    'product_status' => $v['status']
+                ];
+
+                if(!isset($v['serialno'])){
+                    $dataItemToInsert[] = [
+                        'do_no'         => $do,
+                        'product_id'    => $v['product_id'],
+                        'serial_no'     => "",
+                        'created_by'    => Auth::user()->id,
+                        'created_at'    => Carbon::now()
+                    ];
+                }
+                else{
+
+                    foreach ($v['serialno'] as $s) {
+                        $dataItemToInsert[] = [
+                            'do_no'         => $do,
+                            'product_id'    => $v['product_id'],
+                            'serial_no'     => $s,
+                            'created_by'    => Auth::user()->id,
+                            'created_at'    => Carbon::now()
+                        ];
+                    }
+                }
+                
+            }
+
+            // do_item::insertGetId($dataItemToInsert);
+
+
+            return compact('dataReceive', 'dataItemToInsert','dataToUpdateSO_itm');
+            // die();
 
             $return = [
                 'status'    => "01",
                 'error'     => false,
-                'message'   => "Successfully retrieve all courier data",
-                'data'      => $courier
+                'message'   => "Successfully create new DO ".$do
             ];
         }catch(\Exception $e){
             $return = [
                 'status'    => "02",
                 'error'     => true,
-                'message'   => "Failed to retrieve all courier data. Error: ".$e->getMessage(),
-                'data'      => ""
+                'message'   => "Failed to create new DO. Error: ".$e->getMessage()
             ];
         }
 
         return $return;
+    }
+
+    public function deliveryOrder_view($do){
+
+        return $do;
     }
 
     public function get_itemDetail(Request $request){
@@ -198,6 +251,50 @@ class DeliveryOrderController extends Controller
                 'status'    => "02",
                 'error'     => true,
                 'message'   => "Failed to retrieve all courier data. Error: ".$e->getMessage(),
+                'data'      => ""
+            ];
+        }
+
+        return $return;
+    }
+
+    private function generate_orderno($order_typ){
+
+        try{
+
+            // Generate new order no
+            $global_nr = global_nr::where('nrcode',$order_typ)->first();
+            $current_date = Carbon::now(new \DateTimeZone('Asia/Kuala_Lumpur'));
+
+            if($current_date->format('m') > substr($global_nr->current_date, 4, 2)){
+                $next_no = str_pad($global_nr->nrfrom + $global_nr->nritem, 5, '0', STR_PAD_LEFT);
+            }
+            else{
+                $next_no = str_pad($global_nr->nrcurrent + $global_nr->nritem, 5, '0', STR_PAD_LEFT);
+            }
+
+            $dataToReturn = $global_nr->nrcode.$current_date->format('Ymd').$next_no;
+
+            // Update global_nr table with new order no
+            global_nr::where('id',$global_nr->id)
+                    ->update([
+                        'current_date'  => $current_date->format('Ymd'),
+                        'nrcurrent'     => $next_no,
+                        'updated_by'    => Auth::user()->id,
+                        'updated_at'    => Carbon::now()
+                    ]);
+
+            $return = [
+                'status'    => "01",
+                'error'     => false,
+                'message'   => "Successfully generate new order no for ".$order_typ,
+                'data'      => $dataToReturn
+            ];
+        }catch(\Exception $e){
+            $return = [
+                'status'    => "02",
+                'error'     => true,
+                'message'   => "Failed to generate new order no for ".$order_typ.". Error: ".$e->getMessage(),
                 'data'      => ""
             ];
         }
