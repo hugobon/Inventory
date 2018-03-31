@@ -129,6 +129,11 @@
 							</li>
                         </ul>
 						<ul >
+                            <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("configuration/quantitytype")) ? "active" : "" ; ?>">
+								<a href="{{ url('configuration/quantitytype') }}"><span class="fa fa-book"></span> Quantity Type </a>
+							</li>
+                        </ul>
+						<ul >
                             <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("configuration/stockadjustment")) ? "active" : "" ; ?>">
 								<a href="{{ url('configuration/stockadjustment') }}"><span class="fa fa-book"></span> Stock Adjustment </a>
 							</li>

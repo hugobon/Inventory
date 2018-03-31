@@ -84,6 +84,10 @@ if(isset($id) && $id > 0){
 								<div class="col-md-8 control-label text-left">{{ isset($statusArr[$status]) ? $statusArr[$status] : '' }}</div>
 							</div>
 							<div class="form-group">
+								<label class="col-md-4 control-label"> Qty Type: </label>
+								<div class="col-md-8 control-label text-left">{{ isset($quantitytype['type']) > 0 ? $quantitytype['type'] : '' }}</div>
+							</div>
+							<div class="form-group">
 								<label class="col-md-4 control-label"> Year: </label>
 								<div class="col-md-8 control-label text-left">{{ isset($year) && $year > 1900 ? $year : '' }}</div>
 							</div>

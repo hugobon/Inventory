@@ -10,6 +10,7 @@ use App\inventory\product_m;
 use App\inventory\product_image_m;
 use App\inventory\product_package_m;
 use App\configuration\config_tax_m;
+use App\configuration\config_quantitytype_m;
 use App\inventory\product_promotion_m;
 use App\user_m;
 
@@ -101,6 +102,9 @@ class Product extends Controller{
     }
 	
 	public function form(){
+		# get Quantity Type
+		$configquantitytypedata = New config_quantitytype_m;
+		$dataquantitytype = $configquantitytypedata->orderBy('type', 'asc')->get();
 		# get Tax GST percentage
 		$taxgst = config_tax_m::where('code', 'gst')->first();
 		if($taxgst == false)
@@ -108,9 +112,13 @@ class Product extends Controller{
 		else
 			$gstpercentage = $taxgst['percent'];
 			
-		$data['gstpercentage'] = $gstpercentage;
-		$data['tabform'] = 'active';
-		$data['tabgallery'] = '';
+		$data = array(
+			'dataquantitytype' => $dataquantitytype,
+			'gstpercentage' => $gstpercentage,
+			'tabform' => 'active',
+			'tabgallery' => '',
+		);
+		
 		return view('Inventory/product_form',$data);
     }
 	
@@ -122,6 +130,9 @@ class Product extends Controller{
 			if($data['type'] == 2)
 				return redirect("product/package_edit/" . $id . ($gallery > 0 ? '/1' : ''));
 			
+			# get Quantity Type
+			$configquantitytypedata = New config_quantitytype_m;
+			$dataquantitytype = $configquantitytypedata->orderBy('type', 'asc')->get();
 			# get Tax GST percentage		
 			$taxgst = config_tax_m::where('code', 'gst')->first();
 			if($taxgst == false)
@@ -136,6 +147,7 @@ class Product extends Controller{
 				$tabgallery = 'active';
 			}
 				
+			$data['dataquantitytype'] = $dataquantitytype;
 			$data['gstpercentage'] = $gstpercentage;
 			$data['tabform'] = $tabform;
 			$data['tabgallery'] = $tabgallery;
@@ -156,6 +168,10 @@ class Product extends Controller{
 				return redirect("product/package_view/" . $id);
 				
 			$data['typestr'] =  array( '0' => '', '1' => 'Item','2' => 'Package','3' => 'Leaflet' );
+			
+			# get Quantity Type
+			$configquantitytypedata = New config_quantitytype_m;
+			$data['quantitytype'] = $configquantitytypedata->where('id', $data['qtytype_id'])->first();
 			
 			# get Tax GST percentage		
 			$taxgst = config_tax_m::where('code', 'gst')->first();
@@ -250,6 +266,7 @@ class Product extends Controller{
 			'code' => 'required',
 			'type' => 'required',
 			'name' => 'required',
+			'qtytype_id' => 'required',
 			'price_wm' => 'required',
 			'price_em' => 'required',
 			'price_staff' => 'required',
@@ -271,6 +288,7 @@ class Product extends Controller{
 			'type' => $postdata->input("type"),
 			'name' => $name, 
 			'description' => $postdata->input("description") != null ? $postdata->input("description") : '',
+			'qtytype_id' => $postdata->input("qtytype_id") != null ? $postdata->input("qtytype_id") : '1',
 			'weight' => $postdata->input("weight") != null ? $postdata->input("weight") : '0',
 			'point' => $postdata->input("point") != null ? $postdata->input("point") : '0',
 			'price_wm' => $postdata->input("price_wm"),
@@ -302,6 +320,7 @@ class Product extends Controller{
 			'code' => 'required',
 			'type' => 'required',
 			'name' => 'required',
+			'qtytype_id' => 'required',
 			'price_wm' => 'required',
 			'price_em' => 'required',
 			'price_staff' => 'required',
@@ -324,6 +343,7 @@ class Product extends Controller{
 			'type' => $postdata->input("type"),
 			'name' => $name,
 			'description' => $postdata->input("description") != null ? $postdata->input("description") : '',
+			'qtytype_id' => $postdata->input("qtytype_id") != null ? $postdata->input("qtytype_id") : '1',
 			'weight' => $postdata->input("weight") != null ? $postdata->input("weight") : '0',
 			'point' => $postdata->input("point") != null ? $postdata->input("point") : '0',
 			'price_wm' => $postdata->input("price_wm"),
@@ -344,6 +364,9 @@ class Product extends Controller{
     }
 	
 	public function package_form(){
+		# get Quantity Type
+		$configquantitytypedata = New config_quantitytype_m;
+		$dataquantitytype = $configquantitytypedata->orderBy('type', 'asc')->get();
 		# get Tax GST percentage
 		$taxgst = config_tax_m::where('code', 'gst')->first();
 		if($taxgst == false)
@@ -359,11 +382,14 @@ class Product extends Controller{
 			foreach($data2->all() as $key => $row)
 				$productArr[$row->id] = $row->code . ' (' . $row->name . ')';
 		}
-		$data['gstpercentage'] = $gstpercentage;
-		$data['tabform'] = 'active';
-		$data['tabgallery'] = '';
-		$productdata = New product_m;
-		$data['productArr'] = $productArr; # not package product
+		
+		$data = array(
+			'dataquantitytype' => $dataquantitytype,
+			'gstpercentage' => $gstpercentage,
+			'tabform' => 'active',
+			'tabgallery' => '',
+			'productArr' => $productArr, # not package product
+		);
 		return view('Inventory/product_package_form',$data);
     }
 	
@@ -373,7 +399,7 @@ class Product extends Controller{
 			$data = $productdata->where('id', $id)->where('type', 2)->first();
 			if($data == false)
 				return redirect("product/listing")->with("errorid"," Not Found ");
-			
+				
 			# get Tax GST percentage		
 			$taxgst = config_tax_m::where('code', 'gst')->first();
 			if($taxgst == false)
@@ -397,7 +423,9 @@ class Product extends Controller{
 				$tabgallery = 'active';
 			}
 			
+			$configquantitytypedata = New config_quantitytype_m;
 			$packagedata = New product_package_m;
+			$data['dataquantitytype'] = $configquantitytypedata->orderBy('type', 'asc')->get();
 			$data['product_list'] = $packagedata->where('package_id', $id)->get();
 			$data['gstpercentage'] = $gstpercentage;
 			$data['tabform'] = $tabform;
@@ -419,6 +447,10 @@ class Product extends Controller{
 				return redirect("product/view/" . $id);
 				
 			$data['typestr'] =  array( '0' => '', '1' => 'Item','2' => 'Package','3' => 'Leaflet' );
+			
+			# get Quantity Type
+			$configquantitytypedata = New config_quantitytype_m;
+			$data['quantitytype'] = $configquantitytypedata->where('id', $data['qtytype_id'])->first();
 			
 			# get Tax GST percentage		
 			$taxgst = config_tax_m::where('code', 'gst')->first();
@@ -470,6 +502,7 @@ class Product extends Controller{
 			'price_wm' => 'required',
 			'price_em' => 'required',
 			'price_staff' => 'required',
+			'qtytype_id' => 'required',
 		]);
 		
 		#uppercase & Replacing multiple spaces with a single space
@@ -488,13 +521,14 @@ class Product extends Controller{
 			'type' => 2,
 			'name' => $name,
 			'description' => $postdata->input("description") != null ? $postdata->input("description") : '',
+			'qtytype_id' => $postdata->input("qtytype_id") != null ? $postdata->input("qtytype_id") : '1',
 			'weight' => $postdata->input("weight") != null ? $postdata->input("weight") : '0',
 			'point' => $postdata->input("point") != null ? $postdata->input("point") : '0',
 			'price_wm' => $postdata->input("price_wm"),
 			'price_em' => $postdata->input("price_em"),
 			'price_staff' => $postdata->input("price_staff"),
-			'last_purchase' => $postdata->input("last_purchase") > 0 ? $postdata->input("last_purchase") : 0,
-			'quantity_min' => $postdata->input("quantity_min") > 0 ? $postdata->input("quantity_min") : 0,
+			//'last_purchase' => $postdata->input("last_purchase") > 0 ? $postdata->input("last_purchase") : 0,
+			//'quantity_min' => $postdata->input("quantity_min") > 0 ? $postdata->input("quantity_min") : 0,
 			'quantity' => 0,
 			'status' => $postdata->input("status") != null ? $postdata->input("status") : '1',
 			'year' => $postdata->input("year") > 1900 ? $postdata->input("year") : 1900,
@@ -545,6 +579,7 @@ class Product extends Controller{
 			'price_wm' => 'required',
 			'price_em' => 'required',
 			'price_staff' => 'required',
+			'qtytype_id' => 'required',
 		]);
 		
 		#uppercase & Replacing multiple spaces with a single space
@@ -563,13 +598,14 @@ class Product extends Controller{
 			'code' => $code,
 			'name' => $name,
 			'description' => $postdata->input("description") != null ? $postdata->input("description") : '',
+			'qtytype_id' => $postdata->input("qtytype_id") != null ? $postdata->input("qtytype_id") : '1',
 			'weight' => $postdata->input("weight") != null ? $postdata->input("weight") : '0',
 			'point' => $postdata->input("point") != null ? $postdata->input("point") : '0',
 			'price_wm' => $postdata->input("price_wm"),
 			'price_em' => $postdata->input("price_em"),
 			'price_staff' => $postdata->input("price_staff"),
-			'last_purchase' => $postdata->input("last_purchase") > 0 ? $postdata->input("last_purchase") : 0,
-			'quantity_min' => $postdata->input("quantity_min") > 0 ? $postdata->input("quantity_min") : 0,
+			//'last_purchase' => $postdata->input("last_purchase") > 0 ? $postdata->input("last_purchase") : 0,
+			//'quantity_min' => $postdata->input("quantity_min") > 0 ? $postdata->input("quantity_min") : 0,
 			'status' => $postdata->input("status") != null ? $postdata->input("status") : '1',
 			'year' => $postdata->input("year") > 1900 ? $postdata->input("year") : 1900,
 			'category' => $postdata->input("category") != null ? $postdata->input("category") : '',
@@ -1060,8 +1096,12 @@ class Product extends Controller{
 					$data['package_list'] = $package_list;
 					$data['typename'] = 'Package';
 				}
+				# get Quantity Type
+				$configquantitytypedata = New config_quantitytype_m;
+				$quantitytype = $configquantitytypedata->where('id', $datap['qtytype_id'])->first();
 				
 				$data['data'] = $datap;
+				$data['quantitytype'] = $quantitytype['type'];
 				$data['price_wm'] = number_format($price_wm, 2, '.', '');
 				$data['wm_gst'] = number_format($wm_gst, 2, '.', '');
 				$data['wm_aftergst'] = number_format($wm_aftergst, 2, '.', '');
