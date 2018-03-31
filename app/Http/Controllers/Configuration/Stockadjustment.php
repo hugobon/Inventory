@@ -141,7 +141,7 @@ class Stockadjustment extends Controller
 			
 			if($stockadjustmentdata->where('id', $selectid)->delete()){
 				if($search != '')
-					return redirect('configuration/stockadjustment/search/' . $search)->with("info","Stock stockadjustment " . $checkstockadjustment['adjustment'] . " Deleted Successfully!!");
+					return redirect('configuration/stockadjustment/search/' . $search)->with("info","Stock Adjustment " . $checkstockadjustment['adjustment'] . " Deleted Successfully!!");
 				else
 					return redirect('configuration/stockadjustment')->with("info","Stock stockadjustment " . $checkstockadjustment['adjustment'] . "  Deleted Successfully!!");
 				
