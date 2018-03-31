@@ -245,6 +245,18 @@
 }
 
 
+.address-content{
+
+	height: 300px;
+	overflow: auto;
+}
+
+.address-field{
+
+	padding: 5px;
+	min-height: 70px;
+}
+
 .address-field:hover{
 
 		box-shadow: 0px 2px 3px -1px #000;
@@ -252,12 +264,14 @@
 		-webkit-box-shadow: 0px 2px 3px -1px #000;
 		-webkit-border-radius: 0px;
 		-moz-border-radius: 0px;
-		/*border-radius: 10px;   */
+		border-radius: 10px;   
 		-webkit-transition: all 0.3s ease-in-out;
 		-moz-transition: all 0.3s ease-in-out;
 		-o-transition: all 0.3s ease-in-out;
 		-ms-transition: all 0.3s ease-in-out;
-		transition: all 0.3s ease-in-out;  
+		transition: all 0.3s ease-in-out;
+		cursor: pointer;
+		background-color: #f4f4f4;
 
 	}
 
