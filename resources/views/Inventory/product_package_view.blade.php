@@ -84,6 +84,10 @@ if(isset($id) && $id > 0){
 								<div class="col-md-8 control-label text-left">{{ isset($statusArr[$status]) ? $statusArr[$status] : '' }}</div>
 							</div>
 							<div class="form-group">
+								<label class="col-md-4 control-label"> Qty Type: </label>
+								<div class="col-md-8 control-label text-left">{{ isset($quantitytype['type']) > 0 ? $quantitytype['type'] : '' }}</div>
+							</div>
+							<div class="form-group">
 								<label class="col-md-4 control-label"> Year: </label>
 								<div class="col-md-8 control-label text-left">{{ isset($year) && $year > 1900 ? $year : '' }}</div>
 							</div>
@@ -144,7 +148,7 @@ if(isset($id) && $id > 0){
 					</div>
 					<br /> &nbsp;
 					<div class="row">
-						<div class="col-md-7">
+						<div class="col-md-12">
 							<h3> Sales Info </h3>
 							<hr />
 							<div class="panel-body">
@@ -182,6 +186,7 @@ if(isset($id) && $id > 0){
 								</div>
 							</div>	
 						</div>
+						<?php /*
 						<div class="col-md-5">
 							<div class="col-md-12">
 								<h3> Purchasing Info </h3>
@@ -205,6 +210,7 @@ if(isset($id) && $id > 0){
 								<div class="col-md-6 control-label text-left"> {{ isset($quantity) ? number_format($quantity) : '' }}</div>
 							</div>
 						</div>
+						*/ ?>
 					</div>
 					<div class="row">
 						<br /> &nbsp;

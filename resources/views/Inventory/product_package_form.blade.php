@@ -132,6 +132,20 @@ select{cursor:pointer;}
 										</div>
 									</div>
 									<div class="form-group">
+										<label class="col-md-4 control-label"> Qty Type <span class="required">*</span></label>
+										<div class="col-md-8">        
+											<select class="form-control product-qtytype" name="qtytype_id" >
+											<option value="" ></option>
+											@if(count($dataquantitytype) > 0)
+												@foreach($dataquantitytype->all() as $key => $row)
+													$quantitytypeArr[$row->id] = $row->type;
+													<option value="{{ $row->id }}" {{ isset($qtytype_id) && $qtytype_id == $row->id ? "selected" : "" }}>{{ $row->type }}</option>
+												@endforeach
+											@endif
+											</select>
+										</div>
+									</div>
+									<div class="form-group">
 										<label class="col-md-4 control-label"> Year </label>
 										<div class="col-md-8">        
 											<input type="text" class="form-control product-year mask_year" name="year" placeholder="2000" value="{{ isset($year) && $year > 1900 ? $year : '' }}" />								
@@ -240,7 +254,7 @@ select{cursor:pointer;}
 							</div>
 							<br /> &nbsp;
 							<div class="row">
-								<div class="col-md-7">
+								<div class="col-md-12">
 									<div class="col-md-12">
 										<h3> Sales Info </h3>
 										<hr />
@@ -328,6 +342,7 @@ select{cursor:pointer;}
 										</div>
 									</div>
 								</div>
+								<?php /*
 								<div class="col-md-5">
 									<div class="col-md-12">
 										<h3> Purchasing Info </h3>
@@ -367,6 +382,7 @@ select{cursor:pointer;}
 										</div>
 									</div>
 								</div>
+								*/ ?>
 							</div>
 						</div>
 						<div class="panel-footer">
@@ -474,6 +490,7 @@ rules: {
 		price_wm: { required: true,},
 		price_em: { required: true,},
 		price_staff: { required: true,},
+		qtytype_id: { required: true,},
 	}                                        
 });
 function setnumber_decimal(numberd){
@@ -503,6 +520,12 @@ function product_number(){
 }
 
 $(function() {
+	$('.product-code').inputmask({
+		"mask": "*",
+		"repeat": 30,
+		"greedy": false
+	});
+	
 	$(".mask_year").inputmask({
 		"mask": "9",
 		"repeat": 4,

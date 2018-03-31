@@ -4,11 +4,6 @@
 @section('title','Config')
 @section('content')
 
-<!-- <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css"> -->
-<!-- <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script> -->
-<!-- <script src="//code.jquery.com/jquery-1.11.1.min.js"></script> -->
-<!-- Include the above in your HEAD tag -->
-
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
     <li><a href="javascript:;">Home</a></li>                    
@@ -25,7 +20,6 @@
                     <div class="panel-heading">
                         <h3 class="panel-title"><strong>Cart List</strong> </h3>
                         <ul class="panel-controls">
-                            <!-- <a href=" {{ url('agent/get_order_stock/12221112/edit') }}" id="edit_button"><span class="fa fa-edit" style="font-size:20px"></span></a> -->
                         </ul>
                     </div>
                 </div>
@@ -40,16 +34,17 @@
                             <div class="row cart-row">
                                 <div class="col-sm-12 col-md-8">
                                     <table class="table table-actions table-cart-item" id="item-table">
-                                        <thead>
+                                        <thead class="">
                                             <tr>
-                                                <th>Product</th>
-                                                <th>Quantity</th>
-                                                <th class="text-center">Unit Price</th>
-                                                <th class="text-center">Total</th>
-                                                <th><input type="hidden" id="agent_id" value="{{ $returnData['agent_id'] }}"></th>
+                                                <th class="col-sm-8 col-md-4">Product</th>
+                                                <th class="col-sm-1 col-md-1">Quantity</th>
+                                                <th class="col-sm-1 col-md-1">Unit Price</th>
+                                                <th class="col-sm-1 col-md-1">Total</th>
+                                                <th class="col-sm-1 col-md-1"><input type="hidden" id="agent_id" value="{{ $returnData['agent_id'] }}"></th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody class="item-body">
+                                            @if(count($cartItems) > 0)
                                             @foreach($cartItems as $key => $value)
                                             <tr class="row-cart-item">
                                                 <td class="col-sm-8 col-md-4 column-cart-item">
@@ -65,8 +60,8 @@
                                                 <td class="col-sm-1 col-md-1 quantity-item" style="text-align: center">
                                                     <input type="text" class="form-control quantity" id="quantity" value="{{ $value->total_quantity }}">
                                                 </td>
-                                                <td class="col-sm-1 col-md-1 text-center"><strong>RM{{ $value->price }}</strong></td>
-                                                <td class="col-sm-1 col-md-1 text-center"><strong>RM{{ $value->total_price }}</strong></td>
+                                                <td class="col-sm-1 col-md-1"><strong>RM{{ $value->price }}</strong></td>
+                                                <td class="col-sm-1 col-md-1"><strong>RM{{ $value->total_price }}</strong></td>
                                                 <td class="col-sm-1 col-md-1">
                                                     <button type="button" class="btn btn-danger remove-item">
                                                         <i class="glyphicon glyphicon-trash"></i>Remove
@@ -74,6 +69,11 @@
                                                 </td>
                                             </tr>
                                             @endforeach
+                                            @else
+                                            <tr>
+                                                <td colspan="5" class="active" align="center">No Item</td>
+                                            </tr>
+                                            @endif
                                         </tbody>
                                     </table>
                                 </div>

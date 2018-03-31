@@ -120,6 +120,12 @@ Route::get('configuration/stockadjustment/search/{x?}', 'Configuration\Stockadju
 Route::post('configuration/stockadjustment/form_search', 'Configuration\Stockadjustment@form_search');
 Route::get('configuration/stockadjustment/delete/{x?}', 'Configuration\Stockadjustment@delete');
 Route::post('configuration/stockadjustment/save', 'Configuration\Stockadjustment@save');
+// Quantity Type
+Route::get('configuration/quantitytype', 'Configuration\Quantitytype@listing');
+Route::get('configuration/quantitytype/search/{x?}', 'Configuration\Quantitytype@search');
+Route::post('configuration/quantitytype/form_search', 'Configuration\Quantitytype@form_search');
+Route::get('configuration/quantitytype/delete/{x?}', 'Configuration\Quantitytype@delete');
+Route::post('configuration/quantitytype/save', 'Configuration\Quantitytype@save');
 
 //=========================
 // Stock In

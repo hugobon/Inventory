@@ -463,7 +463,8 @@ class AgentController extends Controller
                     'name'      => "Mohd Aminuddin",
                     'address' => $addressData->street1.",".$addressData->street1.",".$addressData->poscode.",".$addressData->city.",".$addressData->state.",".$addressData->country,
                     'btnstatus' => "",
-                    'code' => $addressData->id
+                    'id' => $addressData->id,
+                    'code' => $addressData->address_code
                 ];
 
             }
@@ -475,6 +476,7 @@ class AgentController extends Controller
                     'name'      => "",
                     'address' =>  "Self Pickup",
                     'btnstatus' => "hidden",
+                    'id' => "",
                     'code' => ""
                 ];
             }
@@ -708,13 +710,13 @@ class AgentController extends Controller
     public function fn_proceed_to_payment(Request $request){
 
             $agent_id = (!empty($request->get('agent_id')) ? $request->get('agent_id') : '');
-            $shipping_code = (!empty($request->get('shipping_code')) ? $request->get('shipping_code') : '');
-            $billing_code = (!empty($request->get('billing_code')) ? $request->get('billing_code') : '');
+            $shipping_id = (!empty($request->get('shipping_id')) ? $request->get('shipping_id') : '');
+            $billing_id = (!empty($request->get('billing_id')) ? $request->get('billing_id') : '');
             $total_price = (!empty($request->get('total_price')) ? $request->get('total_price') : '');
             $shipping_fee = (!empty($request->get('shipping_fee')) ? $request->get('shipping_fee') : '');
             $delivery_type = (!empty($request->get('delivery_type')) ? $request->get('delivery_type') : '');
 
-            // dd($request);
+            // dd($$request->get('billing_id'),$request->get('shipping_id'));
         try{
 
             $cartItems = agent_select_product::leftJoin('product','product.id','=','agent_select_product.product_id')
@@ -745,6 +747,8 @@ class AgentController extends Controller
                 $total_product_quantity = $total_product_quantity + $v->total_quantity;
             }
 
+            $total_price = str_replace(",", "", $total_price);
+
             $orderHdr = [
 
                 'order_no' => "",
@@ -757,8 +761,8 @@ class AgentController extends Controller
                 'delivery_type' => (int)$delivery_type,
                 'purchase_date' => $date->format('Y-m-d'),
                 'status' => "01",
-                'bill_address' => (int)$billing_code,
-                'ship_address' => (int)$shipping_code,
+                'bill_address' => (int)$billing_id,
+                'ship_address' => (int)$shipping_id,
                 'created_by' =>  Auth::user()->id,
                 'created_at' => \Carbon\Carbon::now()
 
@@ -814,6 +818,8 @@ class AgentController extends Controller
             
             $addressData = Array(
 
+                'id' => $value->id,
+                'address_code' => $value->address_code,
                 'name' => "Mohd Aminuddin",
                 'address' => $value->street1.",".$value->street1.",".$value->poscode.",".$value->city.",".$value->state.",".$value->country,
             );

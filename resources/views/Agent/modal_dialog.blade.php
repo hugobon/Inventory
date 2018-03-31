@@ -1,144 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>Bootstrap Example</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-</head>
-<body>
-
-<div class="container">
-  <h2>Activate Modal with JavaScript</h2>
-  <!-- Trigger the modal with a button -->
-  <button type="button" class="btn btn-info btn-lg" id="myBtn">Open Modal</button>
-
-  <!-- Modal -->
-  <div class="modal fade" id="myModal" role="dialog">
-    <div class="modal-dialog">
-    
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Modal Header</h4>
-        </div>
-        <div class="modal-body">
-          <p>Some text in the modal.</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-      
-    </div>
-  </div>
-  
-</div>
-
-<script>
-$(document).ready(function(){
-    $("#myBtn").click(function(){
-        $("#myModal").modal();
-    });
-});
-</script>
-
-</body>
-</html>
-
-
-<div class="page-content-wrap">
-     <!-- START RESPONSIVE TABLES -->
-    <div class="row">
-        <div class="col-md-12">
-            <div class="panel panel-default">
-                <!-- The Modal -->
-                <div id="myModal" class="modal">
-                    <!-- Modal content -->
-                    <div class="modal-content">
-                        <div class="modal-header">
-                          <span class="close">&times;</span>
-                          <h3>Modal Header</h3>
-                        </div>
-                        <div class="modal-body">
-                            <div class="col-md-6">
-                                <div class="col-md-12">
-                                    <p><span id="form-title"> </span> </p>
-                                </div>
-                                <div class="form-group" hidden="">
-                                    <label class="col-md-3 control-label"> Agent ID </label>
-                                    <div class="col-md-9" id="" hidden>        
-                                        <input type="text" class="form-control agent-id" name="agent_id" id="agent_id" value=""/>
-                                    </div>
-                                    <div class="col-md-9" id="">
-                                        <p class="control-label text-left" id="agent_id_disp">
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label"> Delivery Type </label>
-                                    <div class="col-md-9" id="">        
-                                        <select type="text" class="form-control delivery-type" name="delivery_type" id="delivery_type" onclick="fn_change_field()" value="">
-                                            <option value="" selected disabled hidden>Chose Value</option>
-                                            <option value="01">Same Address</option>
-                                            <option value="02">Different Address</option>
-                                            <option value="03">Self Collect</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label" id="address_label"> Stree1 </label>
-                                    <div class="col-md-9" id="" >        
-                                        <input type="text" class="form-control address" name="address" id="address" value=""/>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label" id="address_label"> Stree2 </label>
-                                    <div class="col-md-9" id="" >        
-                                        <input type="text" class="form-control address" name="address" id="address" value=""/>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label" id="poscode_label"> Poscode </label>
-                                    <div class="col-md-9" id="">        
-                                        <input type="text" class="form-control poscode" name="poscode" id="poscode" value=""/>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label" id="city_label"> City </label>
-                                    <div class="col-md-9" id="">        
-                                        <input type="text" class="form-control city" name="city" id="city" value=""/>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label" id="state_label"> State </label>
-                                    <div class="col-md-9" id="">        
-                                        <input type="text" class="form-control state" name="state" id="state" value="" />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label"> Country </label>
-                                    <div class="col-md-9" id="">        
-                                        <input type="text" type="text" class="form-control country" name="country" id="country" value=""/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer" style="padding:10px;">
-                              <div>
-                                <button class="btn btn-success">OK</button>
-                                <button class="btn btn-danger">Cancel</button>
-                              </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
 
@@ -218,3 +79,108 @@ body {font-family: Arial, Helvetica, sans-serif;}
     color: white;*/
 }
 </style>
+
+<content>
+<div class="page-content-wrap">
+     <!-- START RESPONSIVE TABLES -->
+    <div class="row">
+        <div class="col-md-12">
+            <!-- Modal -->
+            <div class="modal fade" id="CreateAddress" role="dialog">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">New Address</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="panel-body"> 
+                                <div class="row" id="form-field">
+                                    <div class="col-md-12">
+                                        <div class="form-group address-group" hidden="">
+                                            <label class="col-md-3 control-label"> Address Code </label>
+                                            <div class="col-md-9" id="" hidden>
+                                                <input type="hidden" class="form-control id" id="id" name="id" value=""/>
+                                                <input type="hidden" class="form-control address-code" name="address-code" id="address-code" value=""/>
+                                            </div>
+                                            <div class="col-md-9" id="">
+                                                <p class="control-label text-left" id="agent_id_disp">
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="form-group address-group">
+                                            <label class="col-md-3 control-label" id="address_label"> Name </label>
+                                            <div class="col-md-9" id="" >        
+                                                <input type="text" class="form-control street1" name="street1" id="street1" value=""/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group address-group">
+                                            <label class="col-md-3 control-label" id="address_label"> Street 1 </label>
+                                            <div class="col-md-9" id="" >        
+                                                <input type="text" class="form-control street1" name="street1" id="street1" value=""/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group address-group">
+                                            <label class="col-md-3 control-label" id="address_label"> Street 2 </label>
+                                            <div class="col-md-9" id="" >        
+                                                <input type="text" class="form-control street2" name="street2" id="street2" value=""/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group address-group">
+                                            <label class="col-md-3 control-label" id="poscode_label"> Poscode </label>
+                                            <div class="col-md-9" id="">        
+                                                <input type="text" class="form-control poscode" name="poscode" id="poscode" value=""/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group address-group">
+                                            <label class="col-md-3 control-label" id="city_label"> City </label>
+                                            <div class="col-md-9" id="">        
+                                                <input type="text" class="form-control city" name="city" id="city" value=""/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group address-group">
+                                            <label class="col-md-3 control-label" id="state_label"> State </label>
+                                            <div class="col-md-9" id="">        
+                                                <input type="text" class="form-control state" name="state" id="state" value=""/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group address-group">
+                                            <label class="col-md-3 control-label"> Country </label>
+                                            <div class="col-md-9" id="">        
+                                                <input type="text" class="form-control country" name="country" id="country" value=""/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer" style="position: relative;">
+                            <button type="button" class="btn btn-success save-address">OK</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</content>
+
+<script type="text/javascript">
+    
+    document.ready(function(){
+
+        console.log('x')
+        $('.save-address').click(function(){
+
+            console.log("X")
+        });
+
+    });
+    // $(document).on('click','.save-address', function(){
+
+    //     console.log("X")
+    // });
+
+</script>
