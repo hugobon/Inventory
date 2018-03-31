@@ -15,6 +15,9 @@ use App\do_hdr;
 use App\do_item;
 use App\courier;
 use App\global_nr;
+use App\inventory\product_m;
+use App\product_serial_number;
+use App\stock_in;
 
 class DeliveryOrderController extends Controller
 {
@@ -23,6 +26,7 @@ class DeliveryOrderController extends Controller
     }
 
     public function deliveryOrder_form(Request $request){
+
     	$so = $request->get('sales_order');
 
         // Get header information
@@ -105,22 +109,29 @@ class DeliveryOrderController extends Controller
         }
 
         // get value help related to field needed
-        $courierList = $this->getCourierListing();
+        $valueHelp = $this->getValueHelp();
 
         $courier = "";
-        if(!$courierList['error']){
-            foreach ($courierList['data'] as $k => $v) {
+        $product = "";
+        if(!$valueHelp['return']['error']){
+            foreach ($valueHelp['courier'] as $k => $v) {
                 $courier.= "<option value='".$v['id']."'>".$v['courier_name']."</option>";
+            }
+
+            foreach ($valueHelp['product'] as $k => $v) {
+                $product.= "<option value='".$v['id']."'>".$v['code']."</option>";
             }
         }
 
         $order_hdr->courier = $courier;
+        $order_hdr->product = $product;
 
         $outputData = [
             'order_hdr'     => $order_hdr,
             'order_item'    => $order_item,
             'item_list'     => $item_list,
             'totalitem'     => count($order_item),
+            'product'       => $valueHelp['product'],
             'do_hdr'        => [
                 "order_no"          => $order_hdr->order_no,
                 "tracking_no"       => "",
@@ -133,29 +144,27 @@ class DeliveryOrderController extends Controller
 		return view('DeliveryOrder.deliveryOrder_form', compact('outputData'));
     }
 
-    public function getCourierListing(){
+    public function getValueHelp(){
 
         try{
 
             $courier = courier::get();
-
+            $product = product_m::select('id','code','name')->get();
 
             $return = [
                 'status'    => "01",
                 'error'     => false,
-                'message'   => "Successfully retrieve all courier data",
-                'data'      => $courier
+                'message'   => "Successfully retrieve all value help"
             ];
         }catch(\Exception $e){
             $return = [
                 'status'    => "02",
                 'error'     => true,
-                'message'   => "Failed to retrieve all courier data. Error: ".$e->getMessage(),
-                'data'      => ""
+                'message'   => "Failed to retrieve all value help. Error: ".$e->getMessage()
             ];
         }
 
-        return $return;
+        return compact('return','courier', 'product');
     }
 
     public function deliveryOrder_create(Request $request){
@@ -300,5 +309,34 @@ class DeliveryOrderController extends Controller
         }
 
         return $return;
+    }
+
+    public function verify_serialno(Request $request){
+
+        try{
+
+            $serialno = $request->get('serial_no');
+            $product_id = $request->get('product_id');
+
+            $serialnoExist = product_serial_number::join('stock_in','stock_in.id','=','product_serial_number.stock_in_id')
+                                                ->where('stock_in.stock_product', $product_id)
+                                                ->where('product_serial_number.serial_number', $serialno)
+                                                ->where('product_serial_number.status','01')
+                                                ->first();
+
+            $return = [
+                'status'    => "01",
+                'error'     => false,
+                'message'   => "Successfully verify serial number:  ".$serialno
+            ];
+        }catch(\Exception $e){
+            $return = [
+                'status'    => "02",
+                'error'     => true,
+                'message'   => "Failed to verify serial number:  ".$serialno.". Error: ".$e->getMessage()
+            ];
+        }
+
+        return compact('return','serialnoExist');
     }
 }
