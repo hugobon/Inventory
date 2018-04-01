@@ -39,12 +39,13 @@ textarea {
     </div>
 
     <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-6">
                     <form id="submit_form" class="form-horizontal" method="POST" action="{{ url('stock/submit_adjustment') }}" enctype="multipart/form-data" >
                         {{ csrf_field() }}
                     <div class="panel panel-default">
                             <div class="panel-heading">
                                    <h3 class="panel-title">Stock Adjustment</h3>
+
                             </div>
                             <div class="panel-body"> 
 									<div class="form-group">
@@ -94,24 +95,24 @@ textarea {
 												</div>
                                         </div>
 										
-                                        <input type="text" name="barcode_scan_json" id="barcode_scan_hidden" hidden>
+                                        <input type="text" name="serial_number_scan_json" id="serial_number_scan_json" hidden>
 
                                     </form>
                             </div>
                     </div>
             </div>
-    </div>
 
-    <div class="row">
-        <div class="col-md-12">
+
+
+        <div class="col-md-6">
                 <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">Adjustment View</h3>
-                            <div class="actions pull-right hide">
-                                    <button type="button" class="btn btn-md  btn-default"  data-toggle="modal" data-target="#uploadModal"><i class="fa fa-upload"></i>Upload CSV</button>
-                                   <button type="button"  class="btn btn-md  btn-default"  data-toggle="modal" data-target="#scannerModal"><i class="fa fa-barcode"></i>Scanner</button>
-                                </div>
+                            <div class="actions pull-right">
+                                    <button type="button"  class="btn btn-md  btn-default"  id="scannerDialogBtn"><i class="fa fa-barcode"></i>Scanner</button>
+                                 </div>
                         </div>
+
                         <div class="panel-body panel-body-table">
                              <div class="panel-body">                              
                             <div class="table-responsive">
@@ -147,22 +148,43 @@ textarea {
                             </div>
                             </div>
                         </div>
+
+                        <div class="panel-body panel-body-table">
+                                <div class="panel-body">                              
+                               <div class="table-responsive">
+                                   <table class="table  " id="table_serial_number">
+                                       <thead>
+                                           <tr>
+                                               <th></th>
+                                               <th></th>
+                                               <th>Serial Number</th>
+                                                                  
+                                           </tr>
+                                       </thead>
+                                       <tbody>
+                                       </tbody>
+                                           
+                                       
+                                   </table>
+                               </div>
+                               </div>
+                           </div>
                         <div class="panel-footer">
                                 <input type="button" id="clearBtn" class="btn btn-default" value="Clear Form">
                                 <input type="button" id="submitBtn"class="btn btn-primary pull-right" value="Save">
                             </div>
                     </div>   
-        </div>
+
        
     </div>
-    
+</div>
 
 
 </div>
 
 <!-- Modal -->
-<div id="scannerModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">      
+<div id="scannerDialog" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-sm">      
           <!-- Modal content-->
           <div class="modal-content">
             <div class="modal-header">
@@ -170,14 +192,8 @@ textarea {
               <h4 class="modal-title">Scan</h4>
             </div>
             <div class="modal-body">
-            <form action="" id="barcode_list">
-                  <input type="text" class="input_barcode form-control">
-                  
-                    <img src="{{ asset('images/barcodescan.gif') }}" alt="scanner">
-                  
-                  
-            </form>
-          
+                  <input type="text" class="input_barcode form-control">                  
+                    <img src="{{ asset('images/barcodescan.gif') }}" alt="scanner">          
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-success" data-dismiss="modal" id="barcodeDoneBtn">Done</button>
@@ -192,13 +208,32 @@ textarea {
       <script type='text/javascript' src="{!! asset('joli/js/plugins/validationengine/jquery.validationEngine.js') !!}"></script>   
       <script>
             $(document).ready(function() {
+
+                $(document).on('click','#scannerDialogBtn',function(){
+                    var product_value = $('#product_input').val();
+                    if(product_value == ''){
+                        alert('Please select product first');
+                    }else{
+                        $("#scannerDialog").modal("show");
+                    }
+                })
 				
-            var t = $('.datatable').DataTable({
+            var t = $('#table_listing').DataTable({
                     "order": [[1, 'asc']],
                     "searching": false, 
                     "paging": false,
-			        "ordering": false,			
+			        "ordering": false,		
+                    "bInfo" : false	
 		            });
+            var s = $('#table_serial_number').DataTable({
+                "columnDefs": [
+            {
+                "targets": [ 0 ],
+                "visible": false,
+                "searchable": false
+            }
+        ]
+            });
 		$( t.table().footer() ).addClass( 'highlight' );
 
                 var counter = 1;
@@ -209,17 +244,25 @@ textarea {
                     if (event.keyCode === 13 || event.keyCode === 116) {
                         var input = $('.input_barcode').val();
                         if(input!=''){
-                            if(checkIfArrayIsUnique(input) == true){
-                                t.row.add( [
-                                    counter,
-                                    input,
-                                ] ).draw( false );
-                                counter++;
-                                arrayCol = getSerialNumber()
-                                $('#quantity').val(arrayCol.length)
-                            }else{
-                                alert('Duplicate Serial Number')
-                            }
+                            checkSerialNumber(input,function(result){
+                                if(result.status == false){
+                                    alert('Wrong Product Serial Number');                
+                                }else if(checkIfArrayIsUnique(input) == true){
+                                    s.row.add( [
+                                        result.id,
+                                        counter,
+                                        input,
+                                    ] ).draw( false );
+                                    counter++;
+                                    arrayCol = getSerialNumber()
+                                    $('#quantity_input').val(arrayCol.length)
+
+                                }else{
+                                    alert('Duplicate Serial Number')
+                                }
+                                
+                            });
+
                         }else{
                             alert('Input cannot be empty')
                         }
@@ -229,12 +272,9 @@ textarea {
                     
                 });
 
-	$('.datatable tbody').on( 'click', 'td', function () {
-    console.log( );
-		} );
 
            // Add event listener for opening and closing details
-   $('.datatable tbody').on('click', 'td.details-control', function () {
+   $('#table_listing tbody').on('click', 'td.details-control', function () {
         var tr = $(this).closest('tr');
         var row = table.row( tr );
  
@@ -249,21 +289,26 @@ textarea {
             tr.addClass('shown');
         }
     } );
+    
+
 
             })
 
-    $('#barcode_list').on('keyup keypress', function(e) {
-    var keyCode = e.keyCode || e.which;
-    if (keyCode === 13) { 
-        e.preventDefault();
-        return false;
-    }
-    });
+            function checkSerialNumber(serialNumber,callback){
+                var product_id  =$('#product_input').val();
+                $.ajax({
+                    url: "adjustment/check_serial_number/",
+                    data: {serialNumber: serialNumber,product_id:product_id},
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    }).done(function( data ) {
+                        callback(data.return)
+                    });
+            }
 
     function getSerialNumber(){
-        var t = $('.datatable').DataTable();
+        var t = $('#table_serial_number').DataTable();
         var data = t
-                        .columns( 1 )
+                        .columns( 0 )
                         .data()
                         .eq( 0 )      // Reduce the 2D array into a 1D array of data
                         .sort()       // Sort data alphabetically
@@ -277,7 +322,7 @@ textarea {
 
 		// barcode_arr = temp;
 		// delete temp; 
-		$('#barcode_scan_hidden').val(JSON.stringify(barcode_arr));		
+		$('#serial_number_scan_json').val(JSON.stringify(barcode_arr));		
 		return barcode_arr;
     }
 
@@ -293,9 +338,7 @@ textarea {
         var remarks_input = $('#remarks_input').val();
         var product_input = $('#product_input').val();
         var adjustment_select = $('#adjustment_select').val();
-        // var quantity = $('#quantity').val();
-        // var description = $('#stockNo').val();
-        var serial = $('#barcode_scan_hidden').val();
+        var serial = $('#serial_number_scan_json').val();
         
         if(quantity_input != '' && remarks_input != '' &&product_input != '' &&adjustment_select != '' ){
             $('#submit_form').submit();
@@ -305,21 +348,20 @@ textarea {
 	})
 
 	$('#adjust_btn').click(function(){
-		var t = $('.datatable').DataTable();
+		var t = $('#table_listing').DataTable();
 		var quantity_input = $('#quantity_input').val();
         var remarks_input = $('#remarks_input').val();
         var product_input = $('#product_input').val();
 		var adjustment_select = $('#adjustment_select').val();
 		
 		var data = {
-			_token: "{{ csrf_token() }}",
 			quantity: quantity_input,
 			remarks : remarks_input,
 			product : product_input,
 			adjustment : adjustment_select
 		};
 		$.ajax({
-		method:"POST",
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
 		data:data,	
 		url: "load_stock_adjust",
 		success: function(result){
@@ -345,9 +387,11 @@ textarea {
 	function calcBalance(ProdStockCount,quantity_input,AdjustmentOperator){
 		if(AdjustmentOperator == '-'){
 			return ProdStockCount - quantity_input;
-		}else{
+		}else if(AdjustmentOperator == '+') {
 			return ProdStockCount + quantity_input;
-		}
+		}else{
+            alert ('Operator not found');
+        }
 	}
 
     /* Formatting function for row details - modify as you need */
