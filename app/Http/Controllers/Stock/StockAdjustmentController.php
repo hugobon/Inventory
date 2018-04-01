@@ -33,7 +33,7 @@ class StockAdjustmentController extends Controller
 		$productArr = array();
 		if(count($data) > 0){
 			foreach($data->all() as $key => $row)
-				$productArr[$row->id] = $row->code . ' (' . $row->description . ')';
+				$productArr[$row->id] = $row->code . ' (' . $row->name . ')';
 		}
 		$stockadjustmentdata = New stockadjustment_m;
 		$data = array(
@@ -53,13 +53,10 @@ class StockAdjustmentController extends Controller
 		$quantity = $request->get('quantity');
 		$remarks = $request->get('remarks');
 
+		$product_m = new product_m;
 		$adjustmentConfig = config_stockadjustment_m::select('adjustment','remarks','operation')->where('id',$adjustment)->where('status','01')->first();
-
-		$stocks = stock_in::leftjoin('product','stock_in.stock_product','=','product.id')
-				->join('supplier','stock_in.supplier_id','=','supplier.id')
-				->join('product_serial_number','stock_in.id','=','product_serial_number.stock_in_id')
-				->selectRaw('product.description as product_description,product.code as product_code, count(product.id) as stocksCount')
-				->groupBy('product_description','product_code')
+		
+		$stocks = $product_m->TotalProductCount()
 				->where('product.id',$product)
 				->first();
 
@@ -73,11 +70,12 @@ class StockAdjustmentController extends Controller
 	}
 
 	public function submit(Request $postdata){
-		$stockIn = new stock_in;
+		$product_serial_number = new product_serial_number;
 		$this->validate($postdata,[
 			'product_id' => 'required',
 			'adjustment_id' => 'required',
 			'quantity' => 'required',
+			
 		]);
 		
 		$checkproduct = product_m::where('id', $postdata->input("product_id"))->first();
@@ -95,20 +93,42 @@ class StockAdjustmentController extends Controller
 			'quantity' => $postdata->input("quantity"),
 			'remarks' => $postdata->input("remarks"),
 			'created_by'	=> Auth::user()->id,
-			'created_at'	=> Carbon::now(new \DateTimeZone('Asia/Kuala_Lumpur'))
+			'created_at'	=> Carbon::now()
 		);
 		$stockadjustmentdata = New stockadjustment_m;
 		$stockadjustmentdata->insert($data);
 
 		//random update
-		$updateStock = $stockIn->take($postdata->input("quantity"));
+		// $updateStock = $stockIn->take($postdata->input("quantity"));
 
-		foreach($updateStock as $stockQty){
-			$stockIn->where('id',$stockQty->id)->update(['status'=>03]);
+		// foreach($updateStock as $stockQty){
+		// 	$stockIn->where('id',$stockQty->id)->update(['status'=>03]);
+		// }
+		$serialNumberIdBucket = $postdata->input('serial_number_scan_json');   
+		$serialNumberIdArray = json_decode($serialNumberIdBucket);
+				foreach($serialNumberIdArray as $stockQty){
+			$product_serial_number->where('id',$stockQty)->update(['status'=>'03','updated_by'=>Auth::user()->id,'updated_at'	=> Carbon::now()]);
 		}
 		
 		return redirect('stock/adjustment')
 		->with("message","Success Submit Product ".$checkproduct["code"]." (".$checkproduct["description"]."),
 			 Adjustment ".$checkadjustment['adjustment'].", Quantity ".$postdata->input("quantity")."");
-    }
+	}
+	
+	public function checkSerialNumber(Request $request){
+		$product_serial_number = new product_serial_number;
+
+		$serialNumber= $request->get('serialNumber');
+		$productId = $request->get('product_id');
+
+		$exist = $product_serial_number->where('serial_number',$serialNumber)->where('product_id',$productId)->first();
+
+		$return = [];
+		if($exist){
+			$return = ["status"=>true,"id"=>$exist->id];
+		}else{
+			$return = ["status"=>false,"id"=>''];
+		}
+		return compact('return');
+	}
 }

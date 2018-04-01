@@ -16,6 +16,8 @@ use App\global_nr;
 use Auth;
 use Carbon\Carbon;
 
+
+
 class StockInController extends Controller
 {
     protected $docNo;
@@ -43,29 +45,28 @@ class StockInController extends Controller
        return compact('DocNo');
     }
 
-    public function create(){
-        // $validatedData = $request->validate([
-        //     'in_stock_date' => 'required|date',
-        // ]);
+    public function create(Request $request){
+        $validatedData = $request->validate([
+            'in_stock_date' => 'required|date',
+        ]);
 
         
         $DocNo =  $this->generate_docno();
+        $inStockDate = $request->input('in_stock_date');
 
         $product =  product_m::get();
         $supplier = supplier::get();
 
-        $today = date('Y-m-d');
-
         $stockInId = stock_in::insertGetId([
             'supplier_id' => 0,
-            'in_stock_date' =>$today,
+            'in_stock_date' => Carbon::parse($inStockDate)->format('Y-m-d'),
             'stock_received_number' => $DocNo,
             'description' => '',
             'created_by'	=> Auth::user()->id,
-            'created_at'	=> Carbon::now(new \DateTimeZone('Asia/Kuala_Lumpur'))
+            'created_at'	=> Carbon::now()
         ]);     
         
-        return view('Stock.stockIn',compact('product','supplier','DocNo','today','stockInId'));
+        return view('Stock.stockIn',compact('product','supplier','DocNo','inStockDate','stockInId'));
     }
     
     public function storeStockIn(Request $request){
@@ -84,8 +85,8 @@ class StockInController extends Controller
      $productCode = $request->input('product_code');
      $serialNumberBucket = $request->input('serial_number_scan_json');    
 
-     $instockDate = $request->input('in_stock_date');
-     $stockReceive = $request->input('stock_receive');
+     $inStockDate = $request->input('in_stock_date');
+     $DocNo = $request->input('stock_receive');
      $description = $request->input('description');     
 
      $updateStockId = stock_in::where('id',$stockInId)->update([
@@ -94,10 +95,11 @@ class StockInController extends Controller
      ]);   
 
      if($updateStockId){
+        $product =  product_m::get();
+        $supplier = supplier::get();
         $this->insertSerialNumber($serialNumberBucket,$stockInId,$productCode);
          $message = "Successfully Inserted ";   
-        // return $message;
-         return back()->withInput();
+         return view('Stock.stockIn',compact('product','supplier','DocNo','inStockDate','stockInId'));
      }else{
         return 'failed';
      }    
@@ -116,7 +118,7 @@ class StockInController extends Controller
                 'product_id'=>$productCode,
                 'created_by'	=> Auth::user()->id,
                 'status' => '01',
-		        'created_at'	=> Carbon::now(new \DateTimeZone('Asia/Kuala_Lumpur'))
+		        'created_at'	=> Carbon::now()
             ];
         }
         
@@ -131,15 +133,13 @@ class StockInController extends Controller
     
     //GEnerate SR
     private function generate_docno(){
-        $LatestDocNo = stock_in::selectRaw('MAX(stock_received_number) as latest_sr')->first();
-
-        if($LatestDocNo){
+        $LatestDocNo = stock_in::selectRaw('MAX(stock_received_number) as latest_sr')->first();    
             $numberOnly = preg_replace("/[^0-9]/", '', $LatestDocNo);
+            if(!$numberOnly){
+                $numberOnly = "00000";
+            }
             $generatedNo =  str_pad($numberOnly+1, 5, '0', STR_PAD_LEFT);
             return "SR".($generatedNo);
-        }else{
-            return  "SR00001";
-        }
         
       
     }

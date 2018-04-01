@@ -79,7 +79,7 @@ textarea {
                                                         <select class="form-control" name="product_code" id="product">
                                                                 <option value=""></option>
                                                                 @foreach($product as $prod)
-                                                                    <option value="{{ $prod->id }}">{{$prod->description}}</option>
+                                                                    <option value="{{ $prod->id }}">{{$prod->code}}({{$prod->name}})</option>
                                                                 @endforeach
                                                         </select>
                                                 </div>
@@ -371,18 +371,12 @@ textarea {
 
     $(document).on('click','#saveAddProduct',function(){
         $('#submit_form').submit();
+        
     })
 
     $(document).on('click','#saveClose',function(){
-        $('#submit_form').submit();
-
+        $('#submit_form').submit();      
     })
-
-
-
-
     
-
-        
         </script>
 @endsection

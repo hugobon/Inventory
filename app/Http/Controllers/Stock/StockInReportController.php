@@ -23,7 +23,10 @@ class StockInReportController extends Controller
 
     public function index(){
 
-        return view('Stock.stockReceivedList');
+        $stock_in = new stock_in;
+        $dataToReturn = $stock_in->all();
+
+        return view('Stock.stockReceivedList',compact('dataToReturn'));
 
         
     }

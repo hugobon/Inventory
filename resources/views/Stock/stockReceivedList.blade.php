@@ -17,12 +17,12 @@
                 <form class="form-horizontal">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">Stock In Listing</h3>
+                        <h3 class="panel-title">Stock In Listing as {{date('d/m/Y')}}</h3>
                         </div>
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <div class="form-group">
+                                    {{--  <div class="form-group">
                                         <label class="col-md-3 control-label">Purchase Date</label>
                                         <div class="col-md-9">
                                             <input type="text" class="form-control" name="purchase_date">
@@ -81,7 +81,7 @@
                                         <div class="col-md-5">
                                             <input type="text" name="country" class="form-control" placeholder="Country">
                                         </div>
-                                    </div>
+                                    </div>  --}}
                                    <!--  <div class="form-group">
                                         <label class="col-md-3 control-label">Courier Service</label>
                                         <div class="col-md-9">
@@ -98,7 +98,6 @@
                             </div>
                         </div>
                         <div class="panel-body">
-                            DO List: 
                             <div class="table-responsive">
                                 <table class="table table-bordered">
                                     <thead>
@@ -110,6 +109,16 @@
                                             <th></th>
                                         <tr>
                                     </thead>
+                                    <tbody>
+                                        @foreach($dataToReturn as $stockIn)
+                                        <tr>
+                                        <td>{{$stockIn->in_stock_date}}</td>
+                                        <td>{{$stockIn->stock_received_number}}</td>
+                                        <td>{{$stockIn->description}}</td>
+                                        <td></td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
