@@ -39,26 +39,25 @@ textarea {
     </div>
 
     <div class="row">
-            <div class="col-md-12">
-                    <form id="submit_form" class="form-horizontal" method="POST" action="{{ url('stock/submit_stock-in') }}" enctype="multipart/form-data" >
+            <div class="col-md-6">
+                    <form id="submit_form" class="form-horizontal" method="POST" action="store_stock_in" enctype="multipart/form-data" >
                         {{ csrf_field() }}
+                       
                     <div class="panel panel-default">
                             <div class="panel-heading">
-                                   <h3 class="panel-title">Stock In Form</h3>
+                            <h3 class="panel-title">Stock In No: {{$DocNo}}</h3>
                             </div>
                             <div class="panel-body">   
                                         <div class="form-group">
-                                                <label class="col-md-3 col-xs-12 control-label">Stock Received No.</label>
-                                                <div class="col-md-6 col-xs-12">
-                                                    <input required type="text" name="stock_receive" class="form-control" id="stockNo" value="SR">
-                                                </div>
-                                        </div>
+
+                                                    <input required type="text" name="stock_receive" class="form-control hide" id="stockNo" value="{{$DocNo}}">
+
                                         <div class="form-group">
                                                 <label class="col-md-3 col-xs-12 control-label">In Stock Date</label>
                                                 <div class="col-md-6 col-xs-12">
                                                         <div class="input-group">
                                                             <span class="input-group-addon"><span class="fa fa-calendar"></span></span>
-                                                            <input type="date" class="form-control" name="instock_date" id="stockDate">                                            
+                                                            <input type="date" class="form-control" name="in_stock_date" id="stockDate" value="{{$inStockDate}}">                                            
                                                         </div>
                                                         
                                                     </div>
@@ -99,6 +98,8 @@ textarea {
                                                 
                                         </div>
                                         <input type="text" name="serial_number_scan_json" id="serial_number_scan_json" hidden>
+                                        <input type="text" name="stock_in_id" id="stock_in_id" hidden value="{{$stockInId}}">
+
 
                                     </form>
                             </div>
@@ -106,8 +107,7 @@ textarea {
             </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-6">
                 <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">Serial Number List</h3>
@@ -135,12 +135,11 @@ textarea {
                         </div>
                         <div class="panel-footer">
                                 <input type="button" id="clearBtn" class="btn btn-default" value="Clear Form">
-                                <input type="button" id="submitBtn"class="btn btn-primary pull-right" value="Submit">
+                                <input type="button" id="saveDialogBtn"class="btn btn-primary pull-right" value="Save">
                             </div>
                     </div>   
         </div>
        
-    </div>
     
 
 
@@ -148,7 +147,7 @@ textarea {
 
 <!-- Modal -->
 <div id="scannerModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">      
+        <div class="modal-dialog modal-sm">      
           <!-- Modal content-->
           <div class="modal-content">
             <div class="modal-header">
@@ -156,10 +155,8 @@ textarea {
               <h4 class="modal-title">Scan</h4>
             </div>
             <div class="modal-body">
-            <form action="" id="barcode_list">
                   <input type="text" class="input_barcode form-control">                  
-                    <img src="{{ asset('images/barcodescan.gif') }}" alt="scanner">                      
-            </form>
+                  <img src="{{ asset('images/barcodescan.gif') }}" alt="scanner">             
           
             </div>
             <div class="modal-footer">
@@ -172,7 +169,7 @@ textarea {
 <!-- Modal -->
 <div id="uploadModal" class="modal fade" role="dialog">
         <form action="" id="#" role="form" class="form-horizontal">
-    <div class="modal-dialog">      
+    <div class="modal-dialog modal-sm">      
       <!-- Modal content-->
       <div class="modal-content">
         <div class="modal-header">
@@ -207,6 +204,32 @@ textarea {
     </div>
 </form>
   </div>
+
+  <!--Save Dialog-->
+  <div id="saveDialog" class="modal fade" role="dialog">
+        <div class="modal-dialog ">
+      
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Save Option</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                <div class="col-md-6">
+               <button type="button" id="saveAddProduct" class="btn btn-danger btn-lg btn-block" >Save and add another product</button>
+                </div>
+                <div class="col-md-6">
+               <button type="button" id="saveClose" class="btn btn-primary btn-lg btn-block">Save and close</button>
+            </div>
+        </div>
+        </div>
+            </div>
+
+          </div>
+      
+        </div>
 @endsection
 
 @section('script')
@@ -269,6 +292,9 @@ textarea {
                         }
                     });
                 });
+
+
+
             })
 
 
@@ -294,13 +320,7 @@ textarea {
         $("#table_listing").html(table);
         }
 
-    $('#barcode_list').on('keyup keypress', function(e) {
-    var keyCode = e.keyCode || e.which;
-    if (keyCode === 13) { 
-        e.preventDefault();
-        return false;
-    }
-    });
+
 
     function getSerialNumber(){
         var t = $('.datatable').DataTable();
@@ -329,7 +349,7 @@ textarea {
     return myArray.length === new Set(myArray).size;
     }
 
-    $('#submitBtn').click(function(){
+    $('#saveDialogBtn').click(function(){
         //Validate
         var stockNo = $('#stockNo').val();
         var stockDate = $('#stockDate').val();
@@ -340,13 +360,26 @@ textarea {
         var serial = $('#serial_number_scan_json').val();
         
         if(stockNo != '' && stockDate != '' &&supplier != '' &&product != '' && quantity != '' && description != '' && serial != ''){
-            $('#submit_form').submit();
+            // open save dialog
+            $("#saveDialog").modal("show");
+            //$('#submit_form').submit();
+            
         }else{
             alert('Please fill the fields')
         }
+    })
 
-    
-})
+    $(document).on('click','#saveAddProduct',function(){
+        $('#submit_form').submit();
+    })
+
+    $(document).on('click','#saveClose',function(){
+        $('#submit_form').submit();
+
+    })
+
+
+
 
     
 

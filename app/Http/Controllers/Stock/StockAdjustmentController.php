@@ -56,7 +56,7 @@ class StockAdjustmentController extends Controller
 		$adjustmentConfig = config_stockadjustment_m::select('adjustment','remarks','operation')->where('id',$adjustment)->where('status','01')->first();
 
 		$stocks = stock_in::leftjoin('product','stock_in.stock_product','=','product.id')
-				->join('supplier','stock_in.stock_supplier','=','supplier.id')
+				->join('supplier','stock_in.supplier_id','=','supplier.id')
 				->join('product_serial_number','stock_in.id','=','product_serial_number.stock_in_id')
 				->selectRaw('product.description as product_description,product.code as product_code, count(product.id) as stocksCount')
 				->groupBy('product_description','product_code')

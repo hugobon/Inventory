@@ -128,8 +128,12 @@ Route::post('configuration/quantitytype/save', 'Configuration\Quantitytype@save'
 //=========================
 // Stock In
 //=========================
- Route::post('stock/submit_stock-in','Stock\StockInController@insertStockIn');
+ Route::post('stock/in/store_stock_in','Stock\StockInController@storeStockIn');
  Route::get('stock/in', 'Stock\StockInController@index');
+ Route::get('stock/in/new', function(){
+	return view('Stock.stockInCreate');
+ });
+ Route::post('stock/in/create', 'Stock\StockInController@create');
 
 
  
@@ -152,7 +156,6 @@ Route::get('stock/listing', 'Stock\StockController@index');
 // Stock Report
 //=========================
 Route::get('stock/report/balance', 'Stock\StockReportController@index');
-//=========================
-// Stock Report
-//=========================
-Route::get('stock/report/receive', 'Stock\StockReportController@index');
+Route::get('stock/report/receive', 'Stock\StockInReportController@index');
+
+
