@@ -120,7 +120,7 @@
 		                                <div class="form-group address-group">
 		                                    <label class="col-md-3 control-label" id="address_label"> Name </label>
 		                                    <div class="col-md-9" id="" >        
-		                                        <input type="text" class="form-control street1" name="street1" id="street1" value=""/>
+		                                        <input type="text" class="form-control name" name="name" id="name" value=""/>
 		                                    </div>
 		                                </div>
 		                                <div class="form-group address-group">
@@ -214,6 +214,7 @@ $(document).ready(function(){
     	console.log("yyyy")
     	$('#id').val('');
     	$('#address-code').val('');
+    	$('#name').val('');
     	$('agent_id').val('');
 		$('#street1').val('');
 		$('#street2').val('');
@@ -233,6 +234,7 @@ $(document).ready(function(){
 
     	$('#id').val(data[key]['id']);
     	$('#address-code').val(data[key]['address_code']);
+    	$('#name').val(data[key]['name']);
 		$('#street1').val(data[key]['street1']);
 		$('#street2').val(data[key]['street2']);
 		$('#poscode').val(data[key]['poscode']);
@@ -248,6 +250,7 @@ $('.save-address').click(function(){
 	
 	var id = $('#id').val();
 	var address_code = $('#address-code').val();
+	var name = $('#name').val();
 	var street1 = $('#street1').val();
 	var street2 = $('#street2').val();
 	var poscode = $('#poscode').val();
@@ -260,6 +263,7 @@ $('.save-address').click(function(){
 
 		id 			: id,
 		address_code: address_code,
+		name 		: name,
 		street1 	: street1,
 		street2 	: street2,
 		poscode 	: poscode,

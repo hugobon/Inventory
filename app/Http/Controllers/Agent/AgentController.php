@@ -16,10 +16,12 @@ use App\address;
 use App\delivery_type;
 use App\order_hdr;
 use App\order_item;
+use App\global_status;
 use Auth;
 use DB;
 
 use App\Http\Controllers\Inventory\Product;
+use App\Http\Controllers\DeliveryOrder\DeliveryOrderController;
 
 class AgentController extends Controller
 {
@@ -268,9 +270,8 @@ class AgentController extends Controller
         try{
 
             $cartItems = agent_select_product::leftJoin('product','product.id','=','agent_select_product.product_id')
-                                            ->leftJoin('agent_order_stock','agent_order_stock.agent_id','=','agent_select_product.agent_id')
                                             ->select('agent_select_product.id','product.id as product_id','product.name','product.description','product.price_wm','product.price_em','product.quantity_min'
-                                                ,'product.quantity as stock_quantity','agent_select_product.total_price','agent_select_product.quantity as total_quantity','agent_order_stock.state')
+                                                ,'product.quantity as stock_quantity','agent_select_product.total_price','agent_select_product.quantity as total_quantity')
                                             ->where('agent_select_product.agent_id','=',$agent_id)
                                             ->get();
 
@@ -278,12 +279,8 @@ class AgentController extends Controller
             $grandTotalPrice = 0.00;
             foreach ($cartItems as $key => $value) {
 
-                if($value->state == "Sabah" || $value->state == "Sarawak"){
-                    $cartItems[$key]['price'] = $this->fn_calc_gst_price(number_format(floatval($value->price_em),2));
-                }
-                else{
-                    $cartItems[$key]['price'] = $this->fn_calc_gst_price(number_format(floatval($value->price_wm),2));
-                }
+
+                $cartItems[$key]['price'] = $this->fn_calc_gst_price(number_format(floatval($value->price_wm),2));
 
                 $cartItems[$key]['total_price'] = number_format(floatval($value->total_price),2);
 
@@ -334,24 +331,14 @@ class AgentController extends Controller
                                 ->where('id',$data['product_id'])
                                 ->first();
 
-            $agent = agent_order_stock::select('country','delivery_type','poscode','city','state')
-                                ->where('agent_id',$data['agent_id'])
-                                ->first();
-
             $cartItem = agent_select_product::select('id','product_id','agent_id','quantity','total_price')
                                             ->where('product_id',$data['product_id'])
                                             ->where('agent_id',$data['agent_id'])
                                             ->first();
             if($cartItem == null){
 
-                if($agent->state == "Sabah" || $agent->state == "Sarawak"){
 
-                    $total_price = number_format(floatval($this->fn_calc_gst_price($product->price_em) * (int)$data['quantity']),2);
-                }
-                else{
-
-                    $total_price = number_format(floatval($this->fn_calc_gst_price($product->price_wm) * (int)$data['quantity']),2);
-                }
+                $total_price = number_format(floatval($this->fn_calc_gst_price($product->price_wm) * (int)$data['quantity']),2);
 
                 $total_price = str_replace(",", "", $total_price);
                 
@@ -419,9 +406,8 @@ class AgentController extends Controller
         try{
 
             $cartItems = agent_select_product::leftJoin('product','product.id','=','agent_select_product.product_id')
-                                            ->leftJoin('agent_order_stock','agent_order_stock.agent_id','=','agent_select_product.agent_id')
                                             ->select('agent_select_product.id','product.id as product_id','product.name','product.description','product.price_wm','product.price_em','product.quantity_min'
-                                                ,'product.quantity as stock_quantity','agent_select_product.total_price','agent_select_product.quantity as total_quantity','agent_order_stock.state')
+                                                ,'product.quantity as stock_quantity','agent_select_product.total_price','agent_select_product.quantity as total_quantity')
                                             ->where('agent_select_product.agent_id','=',$agent_id)
                                             ->get();
 
@@ -429,12 +415,7 @@ class AgentController extends Controller
             $grandTotalPrice = 0.00;
             foreach ($cartItems as $key => $value){
 
-                if($value->state == "Sabah" || $value->state == "Sarawak"){
-                    $cartItems[$key]['price'] = $this->fn_calc_gst_price(number_format(floatval($value->price_em),2));
-                }
-                else{
-                    $cartItems[$key]['price'] = $this->fn_calc_gst_price(number_format(floatval($value->price_wm),2));
-                }
+                $cartItems[$key]['price'] = $this->fn_calc_gst_price(number_format(floatval($value->price_wm),2));
 
                 $cartItems[$key]['total_price'] = number_format(floatval($value->total_price),2);
 
@@ -451,17 +432,16 @@ class AgentController extends Controller
 
             $grandTotalPrice = number_format(floatval($grandTotalPrice),2);
 
-
             if($deliveryType == "01"){
 
-                $addressData = address::select('id','address_code','street1','street2','poscode','city','state','country')
-                                    ->where('address_code','=',"1AGENT_01")
+                $addressData = address::select('id','name','address_code','street1','street2','poscode','city','state','country')
+                                    ->where('address_code','=',$agent_id."_AGENT")
                                     ->first();
 
                 $address = [
 
-                    'name'      => "Mohd Aminuddin",
-                    'address' => $addressData->street1.",".$addressData->street1.",".$addressData->poscode.",".$addressData->city.",".$addressData->state.",".$addressData->country,
+                    'name'      => $addressData->name,
+                    'address' => $addressData->street1.",".$addressData->street2.",".$addressData->poscode.",".$addressData->city.",".$addressData->state.",".$addressData->country,
                     'btnstatus' => "",
                     'id' => $addressData->id,
                     'code' => $addressData->address_code
@@ -502,7 +482,7 @@ class AgentController extends Controller
             $return['status'] = "02";
         }
 
-        // return $address;
+        // return $return;
         return view('Agent.agent_place_order',compact('cartItems','returnData','address','deliveryType'));
     }
 
@@ -544,19 +524,9 @@ class AgentController extends Controller
                                 ->where('id',$cartItem['product_id'])
                                 ->first();
 
-            $agent = agent_order_stock::select('country','delivery_type','poscode','city','state')
-                                ->where('agent_id',$cartItem['agent_id'])
-                                ->first();
 
 
-            if($agent->state == "Sabah" || $agent->state == "Sarawak"){
-
-                $total_price = number_format(floatval($this->fn_calc_gst_price($product->price_em) * (int)$quantity),2);
-            }
-            else{
-
-                $total_price = number_format(floatval($this->fn_calc_gst_price($product->price_wm) * (int)$quantity),2);
-            }
+            $total_price = number_format(floatval($this->fn_calc_gst_price($product->price_wm) * (int)$quantity),2);
 
                 $total_price = str_replace(",","", $total_price);
             // dd($total_price);
@@ -638,7 +608,7 @@ class AgentController extends Controller
             }
             else{
 
-                $newAddress['address_code'] = Auth::user()->id."AGENT_01";
+                $newAddress['address_code'] = Auth::user()->id."_AGENT";
                 $newAddress ['created_by'] =  Auth::user()->id;
                 $newAddress['created_at'] = \Carbon\Carbon::now();
 
@@ -648,8 +618,6 @@ class AgentController extends Controller
                 $return['message'] = "succssfuly saved";
                  $return['status'] = "01";
             }
-
-            
 
         }
         catch(\Exception $e){
@@ -666,8 +634,10 @@ class AgentController extends Controller
 
         try{
 
-            $data = address::select('id','address_code','street1','street2','poscode','city','state','country')
-                                ->where('address_code','=', "1AGENT_01")
+            $id = Auth::user()->id;
+
+            $data = address::select('id','name','address_code','street1','street2','poscode','city','state','country')
+                                ->where('address_code','=', $id."_AGENT")
                                 ->get();
 
             $return['message'] = "succssfuly retrived";
@@ -720,69 +690,86 @@ class AgentController extends Controller
         try{
 
             $cartItems = agent_select_product::leftJoin('product','product.id','=','agent_select_product.product_id')
-                                            ->leftJoin('agent_order_stock','agent_order_stock.agent_id','=','agent_select_product.agent_id')
-                                            ->select('agent_select_product.id','product.id as product_id','product.name','product.description','product.price_wm','product.price_em','product.quantity_min'
-                                                ,'product.quantity as stock_quantity','agent_select_product.total_price','agent_select_product.quantity as total_quantity','agent_order_stock.state')
+                                            ->select('agent_select_product.id','product.id as product_id','product.name','product.description'
+                                                ,'product.price_wm','product.price_em','product.quantity_min'
+                                                ,'product.quantity as stock_quantity','agent_select_product.total_price','agent_select_product.quantity as total_quantity')
                                             ->where('agent_select_product.agent_id','=',$agent_id)
                                             ->get();
-            $order_item = [];
-            $total_product_quantity = 0;
-            $date = new \DateTime();
-            foreach($cartItems as $k => $v){
 
-                $item = Array(
+            // dd($cartItems);
+            if(count($cartItems) > 0){
 
-                    'order_no' => "",
-                    'do_no' => "",
-                    'product_id' => $v->product_id,
-                    'product_qty' => $v->total_quantity,
-                    'product_typ' => "",
-                    'product_status' => "01",
+                $order_no = (new DeliveryOrderController)->generate_orderno("SO");
+                // dd($order_no);
+                $order_item = [];
+                $total_product_quantity = 0;
+                $date = new \DateTime();
+                foreach($cartItems as $k => $v){
+
+                    $item = Array(
+
+                        'order_no' => $order_no['data'],
+                        'do_no' => "",
+                        'product_id' => $v->product_id,
+                        'product_qty' => $v->total_quantity,
+                        'product_typ' => "",
+                        'product_status' => "01",
+                        'created_by' =>  Auth::user()->id,
+                        'created_at' => \Carbon\Carbon::now()
+                    );
+
+                    $order_item[] = $item;
+
+                    $total_product_quantity = $total_product_quantity + $v->total_quantity;
+                }
+
+                $total_price = str_replace(",", "", $total_price);
+
+                $orderHdr = [
+
+                    'order_no' => $order_no['data'],
+                    'agent_id' => $agent_id,
+                    'invoice_no' => "",
+                    'total_items' => $total_product_quantity,
+                    'gst' => 0,
+                    'shipping_fee' => $shipping_fee,
+                    'total_price' => $total_price,
+                    'delivery_type' => (int)$delivery_type,
+                    'purchase_date' => $date->format('Y-m-d'),
+                    'status' => "01",
+                    'bill_address' => (int)$billing_id,
+                    'ship_address' => (int)$shipping_id,
                     'created_by' =>  Auth::user()->id,
                     'created_at' => \Carbon\Carbon::now()
-                );
 
-                $order_item[] = $item;
+                ];
 
-                $total_product_quantity = $total_product_quantity + $v->total_quantity;
-            }
-
-            $total_price = str_replace(",", "", $total_price);
-
-            $orderHdr = [
-
-                'order_no' => "",
-                'agent_id' => $agent_id,
-                'invoice_no' => "",
-                'total_items' => $total_product_quantity,
-                'gst' => 0,
-                'shipping_fee' => $shipping_fee,
-                'total_price' => $total_price,
-                'delivery_type' => (int)$delivery_type,
-                'purchase_date' => $date->format('Y-m-d'),
-                'status' => "01",
-                'bill_address' => (int)$billing_id,
-                'ship_address' => (int)$shipping_id,
-                'created_by' =>  Auth::user()->id,
-                'created_at' => \Carbon\Carbon::now()
-
-            ];
-
-            $x = order_hdr::insert($orderHdr);
-            // dd($orderHdr,$order_item);
-            if($x){
-                foreach ($order_item as $key => $value){
-                    $y = order_item::insert($order_item[$key]);
+                $x = order_hdr::insert($orderHdr);
+                // dd($orderHdr,$order_item);
+                if($x){
+                    foreach ($order_item as $key => $value){
+                        $y = order_item::insert($order_item[$key]);
+                    }
                 }
-            }
 
-            if($x && $y){
-                agent_select_product::where('agent_id',$agent_id)
-                                ->delete();
-            }
+                if($x && $y){
+                    agent_select_product::where('agent_id',$agent_id)
+                                    ->delete();
+                }
 
-            $return['message'] = "succssfuly placed the order";
-            $return['status'] = "01";
+                $return['message'] = "Succssfuly placed the order";
+                $return['status'] = "01";
+            }
+            else{
+
+                $order_no = [
+
+                    'data' => ''
+                ];
+
+                $return['message'] = "No order placed ";
+                $return['status'] = "03";
+            }
         }
         catch(\Exception $e){
             
@@ -790,27 +777,50 @@ class AgentController extends Controller
             $return['status'] = "02";
         }
 
-        return compact('return');
+        return compact('return','order_no');
     }
 
-    public function fn_get_delivery_status(){
-
+    public function fn_get_delivery_status($order_no = null){
+        // echo $order_no;
         try{
+
+            $orderHdr = order_hdr::leftJoin('delivery_type','delivery_type.delivery_code','=','order_hdr.delivery_type')
+                            ->leftJoin('global_status','global_status.status','=','order_hdr.status')
+                            ->select('order_hdr.order_no','order_hdr.agent_id','order_hdr.agent_id','order_hdr.invoice_no','order_hdr.total_items','order_hdr.total_price','order_hdr.delivery_type','order_hdr.purchase_date','order_hdr.status','delivery_type.type_description','global_status.description')
+                            ->where('order_no','=',$order_no)
+                            ->first();
+
+
+            $date = new \DateTime($orderHdr->purchase_date);
+            $orderHdr->purchase_date = $date->format('d M Y');
+
+            $data = global_status::select('id','status','description')
+                                    ->where('table','order_hdr')
+                                    ->get();
+
+            $return['message'] = "succssfuly retrived";
+            $return['status'] = "01";
 
         }
         catch(\Exception $e){
 
+            $return['message'] = $e->getMessage();
+            $return['status'] = "02";
         }
 
-        return view('Agent.agent_delivery_status');
+        // dd($orderHdr,$return);
+        return view('Agent.agent_delivery_status',compact('return','data','orderHdr'));
     }
 
-    public function fn_get_address(){
+    public function fn_get_address(Request $request){
+
+        $agent_id = $request->get('agent_id');
+        // dd($agent_id);
 
         try{
 
-        $adds = address::select('id','address_code','street1','street2','poscode','city','state','country')
-                                    ->where('address_code','=',"1AGENT_01")
+        $adds = address::select('id','name','address_code','street1','street2','poscode','city','state','country')
+                                    ->where('address_code','=',$agent_id."_AGENT")
                                     ->get();
 
         $address = [];
@@ -820,8 +830,8 @@ class AgentController extends Controller
 
                 'id' => $value->id,
                 'address_code' => $value->address_code,
-                'name' => "Mohd Aminuddin",
-                'address' => $value->street1.",".$value->street1.",".$value->poscode.",".$value->city.",".$value->state.",".$value->country,
+                'name' => $value->name,
+                'address' => $value->street1.",".$value->street2.",".$value->poscode.",".$value->city.",".$value->state.",".$value->country,
             );
 
             $address[] = $addressData;
@@ -837,5 +847,32 @@ class AgentController extends Controller
         }
 
         return compact('return','address');
+    }
+
+    public function fn_get_order_list($agent_id = null){
+
+        try{
+            
+            $data = order_hdr::leftJoin('delivery_type','delivery_type.delivery_code','=','order_hdr.delivery_type')
+                                ->leftJoin('global_status','global_status.status','=','order_hdr.status')
+                                ->select('order_hdr.order_no','order_hdr.agent_id','order_hdr.agent_id','order_hdr.invoice_no','order_hdr.total_items','order_hdr.total_price','order_hdr.delivery_type','order_hdr.purchase_date','order_hdr.status','delivery_type.type_description','global_status.description')
+                                ->where('agent_id',$agent_id)
+                                ->get();
+
+            foreach ($data as $key => $value) {
+                $date = new \DateTime($value->purchase_date);
+                $value->purchase_date = $date->format('d M Y');;
+            }
+
+            $return['message'] = "succssfuly retrived";
+            $return['status'] = "01";
+        } 
+        catch(\Exception $e){
+            
+            $return['message'] = $e->getMessage();
+            $return['status'] = "02";
+        }
+
+        return view('Agent.agent_order_list',compact('data','order_hdr'));
     }
 }

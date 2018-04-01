@@ -258,7 +258,7 @@ class DeliveryOrderController extends Controller
         return $return;
     }
 
-    private function generate_orderno($order_typ){
+    public function generate_orderno($order_typ){
 
         try{
 
