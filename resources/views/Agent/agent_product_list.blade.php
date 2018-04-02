@@ -80,7 +80,7 @@
 												<div class="col-md-3 info" style="margin: 5px;">
 													<div class="form-group info-detail">
 										                <label class="control-label">Quantity</label>
-										                <input type="text" class="form-control quantity" name="quantity" id="quantity" min="1" max="5" step="1">
+										                <input type="text" class="form-control quantity" name="quantity" id="quantity" min="1" max="200" step="1" value="1">
 									                </div>
 												</div>
 												<button type="submit" class="btn btn-block btn-danger add-to-cart">Add to cart</button>
@@ -118,29 +118,50 @@
     </div>
 </div>
 
-<div class="shopee-product-info-body__info-content">
-	<div class="shopee-product-info-body__order-quantity">
-		<div class="shopee-input-quantity">
-			<button class="shopee-button-outline">
-				<svg class="shopee-svg-icon " enable-background="new 0 0 10 10" viewBox="0 0 10 10" x="0" y="0">
-					<polygon points="4.5 4.5 3.5 4.5 0 4.5 0 5.5 3.5 5.5 4.5 5.5 10 5.5 10 4.5"></polygon>
-				</svg>
-			</button>
-			<input type="text" class="shopee-button-outline shopee-button-outline-mid" value="1">
-			<button class="shopee-button-outline">
-				<svg class="shopee-svg-icon icon-plus-sign" enable-background="new 0 0 10 10" viewBox="0 0 10 10" x="0" y="0">
-					<polygon points="10 4.5 5.5 4.5 5.5 0 4.5 0 4.5 4.5 0 4.5 0 5.5 4.5 5.5 4.5 10 5.5 10 5.5 5.5 10 5.5"></polygon>
-				</svg>
-			</button>
-		</div>
-		<span class="shopee-product-info-body__order-quantity__stock-count">1 piece available</span>
-	</div>
-</div>
-
 <script type="text/javascript">
 
 
 	$(document).ready(function(){
+
+
+	 $(".btn-minus").on("click",function(){
+
+	 		var now = $(this).closest('div.x').find('.quantity').val();
+            // var now = $(".quantity").val();
+            if ($.isNumeric(now)){
+                if (parseInt(now) -1 > 0){ now--;}
+                $(this).closest('div.x').find('.quantity').val(now);
+            }else{
+                $(this).closest('div.x').find('.quantity').val("1");
+            }
+        })            
+        $(".btn-plus").on("click",function(){
+
+        	var now = $(this).closest('div.x').find('.quantity').val();
+        	var max = $(this).closest('div.x').find('.quantity').attr('max');
+        	// console.log(max)
+            // var now = $(".quantity").val();
+            if(now == max){
+            	 $(this).closest('div.x').find('.quantity').val(max);
+            }
+            else{
+	            if ($.isNumeric(now)){
+	                $(this).closest('div.x').find('.quantity').val(parseInt(now)+1);
+	            }else{
+	                $(this).closest('div.x').find('.quantity').val("1");
+	            }
+	        }
+        });
+
+
+        $('.quantity').on('change',function(){
+        	var val = $(this).val();
+        	var max = $(this).attr('max');
+        	// console.log(val,max)
+        	if(val > max){
+        		$(this).val(max);
+        	}
+        });
 
 		var count = '{!! $count !!}';
 		console.log(count);

@@ -46,7 +46,7 @@
                                             <li>
                                                 <a href="#step-2" class="" id="status-two" isdone="0" rel="2">
                                                     <span class="stepNumber">2</span>
-                                                    <span class="stepDesc">Shiped<br><small>Step 2 description</small></span>
+                                                    <span class="stepDesc">Shipping<br><small>Step 2 description</small></span>
                                                 </a>
                                             </li>
                                             <li>
