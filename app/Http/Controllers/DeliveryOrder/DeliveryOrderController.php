@@ -15,37 +15,169 @@ use App\do_hdr;
 use App\do_item;
 use App\courier;
 use App\global_nr;
+use App\product_serial_number;
+use App\stock_in;
+use App\delivery_type;
+use App\users;
+use App\inventory\product_m;
+use App\configuration\config_quantitytype_m;
 
 class DeliveryOrderController extends Controller
 {
     public function deliveryOrder_show_page(){
-    	return view('DeliveryOrder.deliveryOrder_listing');
+
+        $doListing = "";
+        $agentListing = "<option></option>";
+        $current_date = (Carbon::now(new \DateTimeZone('Asia/Kuala_Lumpur')))->format('Y-m-d');
+
+        $order_hdr = order_hdr::join('users','users.id','=','order_hdr.agent_id')
+                        ->select('order_hdr.order_no','order_hdr.delivery_type','order_hdr.invoice_no','order_hdr.status','users.code','users.name')
+                        ->whereBetween('order_hdr.purchase_date',[$current_date, $current_date])
+                        ->orderBy('order_hdr.order_no', 'desc')
+                        ->get();
+
+        $agent = users::select('id','code','name')->get();
+
+        $delityp = $this->getValueHelp()['delityp'];
+        
+
+        if(count($order_hdr) > 0){
+            foreach ($order_hdr as $k => $v) {
+
+                if($v['status'] == "01"){
+                    $status = "<td>New</td>";
+                }
+                else if($v['status'] == "02"){
+                    $status = "<td>Processing</td>";
+                }
+                else if($v['status'] == "03"){
+                    $status = "<td>Shipping</td>";
+                }
+                else if($v['status'] == "04"){
+                    $status = "<td>Delivered</td>";
+                }
+
+                $doListing.= "<tr>";
+                $doListing.= "<td>".$v['order_no']."</td>";
+
+                foreach ($delityp as $x => $y) {
+                    if($y['id'] == $v['delivery_type']){
+                        $doListing.= "<td>".$y['type_description']."</td>";
+                        break;
+                    }
+                }
+                $doListing.= "<td>".$v['invoice_no']."</td>";
+                $doListing.= "<td>".$v['name']." (".$v['code'].")</td>";
+                $doListing.= $status;
+                $doListing.= "</tr>";
+            }
+        }
+        else{
+            $doListing.= "<tr><td colspan='4'>No data found</td></tr>";
+        }
+
+        foreach ($agent as $k => $v) {
+            $agentListing.= "<option value=".$v['id'].">".$v['name']." (".$v['code'].")</option>";
+        }
+
+        $outputData = [
+            'doListing'     => $doListing,
+            'totalDO'       => count($order_hdr),
+            'agentListing'  => $agentListing
+        ];
+
+    	return view('DeliveryOrder.deliveryOrder_listing', compact('outputData'));
+    }
+
+    public function search_so(Request $request){
+
+        try{
+
+            
+
+            $return = [
+                'status'    => "01",
+                'error'     => false,
+                'message'   => "Successfully retrieve SO"
+            ];
+        }catch(\Exception $e){
+            $return = [
+                'status'    => "02",
+                'error'     => true,
+                'message'   => "Failed to retrieve SO. Error: ".$e->getMessage()
+            ];
+        }
+
+        return compact('return','courier', 'product','qtytype','delityp');
     }
 
     public function deliveryOrder_form(Request $request){
+
     	$so = $request->get('sales_order');
 
+        $orderDetail = $this->get_orderDetail($so);
+
+        // get value help related to field needed
+        $valueHelp = $this->getValueHelp();
+
+        $courier = "";
+        $product = "";
+        $qtytype = "";
+        if(!$valueHelp['return']['error']){
+            foreach ($valueHelp['courier'] as $k => $v) {
+                $courier.= "<option value='".$v['id']."'>".$v['courier_name']."</option>";
+            }
+
+            foreach ($valueHelp['product'] as $k => $v) {
+                $product.= "<option value='".$v['id']."'>".$v['code']."</option>";
+            }
+
+            foreach ($valueHelp['qtytype'] as $kk => $v) {
+                $qtytype.= "<option value='".$v['id']."'>".$v['type']."</option>";
+            }
+        }
+
+        $orderDetail['order_hdr']->courier = $courier;
+        $orderDetail['order_hdr']->product = $product;
+        $orderDetail['order_hdr']->qtytype = $qtytype;
+
+        $outputData = [
+            'order_hdr'     => $orderDetail['order_hdr'],
+            'order_item'    => $orderDetail['order_item'],
+            'item_list'     => $orderDetail['item_list'],
+            'totalitem'     => count($orderDetail['order_item']),
+            'product'       => $valueHelp['product'],
+            'qtytype'       => $valueHelp['qtytype']
+        ];
+        // return compact('outputData');
+		return view('DeliveryOrder.deliveryOrder_form', compact('outputData'));
+    }
+
+    private function get_orderDetail($order_no){
+
         // Get header information
-    	$order_hdr = order_hdr::join('address as bill', 'bill.id','=','order_hdr.bill_address')
-    					->join('address as ship', 'ship.id','=','order_hdr.ship_address')
-    					->select('order_hdr.*',
+        $order_hdr = order_hdr::join('address as bill', 'bill.id','=','order_hdr.bill_address')
+                        ->join('address as ship', 'ship.id','=','order_hdr.ship_address')
+                        ->join('delivery_type','delivery_type.id','=','order_hdr.delivery_type')
+                        ->join('users','users.id','=','order_hdr.created_by')
+                        ->select('order_hdr.*','delivery_type.type_description','users.code','users.name',
                             'bill.name as bill_name',
-    						'bill.street1 as bill_street1',
-    						'bill.street2 as bill_street2',
-    						'bill.poscode as bill_poscode',
-    						'bill.city as bill_city',
-    						'bill.state as bill_state',
-    						'bill.country as bill_country',
+                            'bill.street1 as bill_street1',
+                            'bill.street2 as bill_street2',
+                            'bill.poscode as bill_poscode',
+                            'bill.city as bill_city',
+                            'bill.state as bill_state',
+                            'bill.country as bill_country',
                             'ship.name as ship_name',
-    						'ship.street1 as ship_street1',
-    						'ship.street2 as ship_street2',
-    						'ship.poscode as ship_poscode',
-    						'ship.city as ship_city',
-    						'ship.state as ship_state',
-    						'ship.country as ship_country'
-    					)
-    					->where('order_hdr.order_no',$so)
-    					->first();
+                            'ship.street1 as ship_street1',
+                            'ship.street2 as ship_street2',
+                            'ship.poscode as ship_poscode',
+                            'ship.city as ship_city',
+                            'ship.state as ship_state',
+                            'ship.country as ship_country'
+                        )
+                        ->where('order_hdr.order_no',$order_no)
+                        ->first();
 
         $order_hdr->ship_address = $order_hdr->ship_name."<br>";
         $order_hdr->ship_address.= $order_hdr->ship_street1."<br>".$order_hdr->ship_street2."<br>";
@@ -58,17 +190,14 @@ class DeliveryOrderController extends Controller
         $order_hdr->bill_address.= $order_hdr->bill_poscode."<br>".$order_hdr->bill_country;
 
         // Get item information
-    	$order_item = order_item::join('product','product.id','=','order_item.product_id')
-                            ->where('order_item.order_no', $so)->get();
+        $order_item = order_item::join('product','product.id','=','order_item.product_id')
+                            ->select('order_item.*','product.id as productID','product.code','product.name')
+                            ->where('order_item.order_no', $order_no)->get();
+
+        $qtytype = $this->getValueHelp()['qtytype'];
 
         $item_list = "";
-        $do_item = [];
-    	foreach ($order_item as $k => $v) {
-
-            $do_itemCount = do_item::join('do_hdr', 'do_hdr.do_no','=','do_item.do_no')
-                                    ->where('product_id', $v['product_id'])
-                                    ->where('do_hdr.order_no', $so)
-                                    ->count();
+        foreach ($order_item as $k => $v) {
 
             if($v['product_status'] == "01"){
                 $itemStatus = '<td><a href="#" onclick="get_itemDetail(event)"><span class="label label-danger">Not Verify</span></a></td>';
@@ -83,79 +212,48 @@ class DeliveryOrderController extends Controller
             $no = $k + 1;
             $item_list.= "<tr>";
                 $item_list.= "<td style='display:none;'>".$v['id']."</td>";
+                $item_list.= "<td style='display:none;'>".$v['productID']."</td>";
+                $item_list.= "<td style='display:none;'>".$v['product_typ']."</td>";
                 $item_list.= "<td>".$no."</td>";
                 $item_list.= "<td>".$v['code']."</td>";
                 $item_list.= "<td>".$v['name']."</td>";
                 $item_list.= "<td>".$v['product_qty']."</td>";
-                $item_list.= "<td>".$v['product_typ']."</td>";
-                // $item_list.= ($do_itemCount == $v['product_qty']) ? "<td><span class='label label-success'>Ready to pickup</span></td>" : "<td><span class='label label-warning'>New</span></td>";
+                foreach ($qtytype as $x => $y) {
+                    if($y['id'] == $v['product_typ']){
+                        $item_list.= "<td>".$y['type']."</td>";
+                        break;
+                    }
+                }                
                 $item_list.= $itemStatus;
             $item_list.= "</tr>";
-
-            $do_item[] = [
-                "order_id"    => $v['id'],
-                "product_id"  => $v['product_id'],
-                "product_code"=> $v['code'],
-                "product_desc"=> $v['name'],
-                "product_qty" => $v['product_qty'],
-                "product_typ" => $v['product_typ'],
-                "status"      => $v['product_status'],
-                "serialno"    => []
-            ];
         }
 
-        // get value help related to field needed
-        $courierList = $this->getCourierListing();
-
-        $courier = "";
-        if(!$courierList['error']){
-            foreach ($courierList['data'] as $k => $v) {
-                $courier.= "<option value='".$v['id']."'>".$v['courier_name']."</option>";
-            }
-        }
-
-        $order_hdr->courier = $courier;
-
-        $outputData = [
-            'order_hdr'     => $order_hdr,
-            'order_item'    => $order_item,
-            'item_list'     => $item_list,
-            'totalitem'     => count($order_item),
-            'do_hdr'        => [
-                "order_no"          => $order_hdr->order_no,
-                "tracking_no"       => "",
-                "courier_id"        => "",
-                "delivery_status"   => ""
-            ],
-            'do_item'       => $do_item
-        ];
-        // return compact('outputData');
-		return view('DeliveryOrder.deliveryOrder_form', compact('outputData'));
+        return compact('order_hdr','order_item','item_list');
     }
 
-    public function getCourierListing(){
+    public function getValueHelp(){
 
         try{
 
             $courier = courier::get();
-
+            $product = product_m::select('id','code','name')->get();
+            $qtytype = config_quantitytype_m::get();
+            $delityp = delivery_type::get();
 
             $return = [
                 'status'    => "01",
                 'error'     => false,
-                'message'   => "Successfully retrieve all courier data",
-                'data'      => $courier
+                'message'   => "Successfully retrieve all value help"
             ];
         }catch(\Exception $e){
             $return = [
                 'status'    => "02",
                 'error'     => true,
-                'message'   => "Failed to retrieve all courier data. Error: ".$e->getMessage(),
-                'data'      => ""
+                'message'   => "Failed to retrieve all value help. Error: ".$e->getMessage()
             ];
         }
 
-        return $return;
+        return compact('return','courier', 'product','qtytype','delityp');
     }
 
     public function deliveryOrder_create(Request $request){
@@ -166,25 +264,50 @@ class DeliveryOrderController extends Controller
             $dataItemToInsert = [];
             $dataToUpdateSO_hdr = [];
             $dataToUpdateSO_itm = [];
-            $do = "DO2018032900004";
+            $dataToInsertSO_itm = [];
 
-            // $do = $this->generate_orderno('DO')['data'];
-            // $dataReceive['do_hdr']['do_no'] = $do;
-            // do_hdr::insert($dataReceive['do_hdr']);
-            // order_hdr::where('order_no',$dataReceive['do_hdr']['order_no'])
-            //         ->update(['status' => $dataReceive['do_hdr']['delivery_status']]);
+            $do = $this->generate_orderno('DO')['data'];
+            $dataReceive['do_hdr']['do_no'] = $do;
+            $dataReceive['do_hdr']['created_by'] = Auth::user()->id;
+            $dataReceive['do_hdr']['created_at'] = Carbon::now();
+            do_hdr::insert($dataReceive['do_hdr']);
+            order_hdr::where('order_no',$dataReceive['do_hdr']['order_no'])
+                    ->update([
+                        'status' => $dataReceive['do_hdr']['delivery_status'],
+                        'updated_by' => Auth::user()->id,
+                        'updated_at' => Carbon::now()
+                    ]);
 
             foreach ($dataReceive['do_item'] as $k => $v) {
 
-                $dataToUpdateSO_itm[] = [
-                    'do_no'          => $do,
-                    'product_status' => $v['status']
-                ];
+                $order_id = $v['order_id'];
+
+                if(strpos($v['order_id'], "_") !== false){
+
+                    $order_item = new order_item([
+                        'order_no'       => $dataReceive['do_hdr']['order_no'],
+                        'do_no'          => $do,
+                        'product_id'     => $v['product_id'],
+                        'product_qty'    => $v['product_qty'],
+                        'product_typ'    => $v['product_typ'],
+                        'product_status' => $v['status'],
+                        'created_by'     => Auth::user()->id,
+                        'created_at'     => Carbon::now()
+                    ]);
+
+                    $order_item->save();
+                    $order_id = $order_item->id;
+                }
+                else{
+
+                    order_item::where('id',$order_id)
+                            ->update(['do_no' => $do, 'product_status' => $v['status']]);
+                }
 
                 if(!isset($v['serialno'])){
                     $dataItemToInsert[] = [
                         'do_no'         => $do,
-                        'product_id'    => $v['product_id'],
+                        'order_item_id' => $order_id,
                         'serial_no'     => "",
                         'created_by'    => Auth::user()->id,
                         'created_at'    => Carbon::now()
@@ -195,7 +318,7 @@ class DeliveryOrderController extends Controller
                     foreach ($v['serialno'] as $s) {
                         $dataItemToInsert[] = [
                             'do_no'         => $do,
-                            'product_id'    => $v['product_id'],
+                            'order_item_id' => $order_id,
                             'serial_no'     => $s,
                             'created_by'    => Auth::user()->id,
                             'created_at'    => Carbon::now()
@@ -205,11 +328,9 @@ class DeliveryOrderController extends Controller
                 
             }
 
-            // do_item::insertGetId($dataItemToInsert);
+            do_item::insert($dataItemToInsert);
 
-
-            return compact('dataReceive', 'dataItemToInsert','dataToUpdateSO_itm');
-            // die();
+            $this->deliveryOrder_view($do);
 
             $return = [
                 'status'    => "01",
@@ -224,12 +345,56 @@ class DeliveryOrderController extends Controller
             ];
         }
 
-        return $return;
+        return compact('return','dataReceive', 'dataItemToInsert');
     }
 
     public function deliveryOrder_view($do){
 
-        return $do;
+        try{
+
+            $do_hdr = do_hdr::join('courier','courier.id','=','do_hdr.courier_id')
+                            ->join('global_status', function($join){
+                                $join->on('global_status.status','=','do_hdr.delivery_status')
+                                    ->where('global_status.table','=',"do_hdr");
+                            })
+                            ->select('do_hdr.do_no','do_hdr.order_no','do_hdr.tracking_no','courier.courier_name','global_status.description')
+                            ->where('do_no',$do)
+                            ->first();
+
+            $orderDetail = $this->get_orderDetail($do_hdr->order_no);
+
+            $outputData = [
+                'do_no'         => $do_hdr->do_no,
+                'description'   => $do_hdr->description,
+                'order_no'      => $do_hdr->order_no,
+                'user'          => $orderDetail['order_hdr']->name." (".$orderDetail['order_hdr']->code.")",
+                'purchase_date' => (new \DateTime($orderDetail['order_hdr']->purchase_date))->format('d F Y'),
+                'delivery_type' => $orderDetail['order_hdr']->type_description,
+                'courier'       => $do_hdr->courier_name,
+                'tracking_no'   => $do_hdr->tracking_no,
+                'ship_address'  => $orderDetail['order_hdr']->ship_address,
+                'bill_address'  => $orderDetail['order_hdr']->bill_address,
+                'item_list'     => $orderDetail['item_list'],
+                'totalitem'     => count($orderDetail['order_item']),
+            ];
+
+            return view('DeliveryOrder.deliveryOrder_view', compact('outputData'));
+            return compact('outputData','do_hdr','orderDetail');
+
+            $return = [
+                'status'    => "01",
+                'error'     => false,
+                'message'   => "Successfully retrieve DO ".$do
+            ];
+        }catch(\Exception $e){
+            $return = [
+                'status'    => "02",
+                'error'     => true,
+                'message'   => "Failed to retrieve DO. Error: ".$e->getMessage()
+            ];
+        }
+        return $return;
+        // return view('DeliveryOrder.deliveryOrder_view', compact('outputData'));
     }
 
     public function get_itemDetail(Request $request){
@@ -238,24 +403,30 @@ class DeliveryOrderController extends Controller
 
         try{
 
-            // $order_item
+            $do_item = do_item::select('serial_no')->where('order_item_id', $id)->get();
+
+            $serialnoList = [];
+            foreach ($do_item as $k => $v) {
+                if($v['serial_no'] != ""){
+                    $serialnoList[] = $v['serial_no'];
+                }
+            }
+            
 
             $return = [
                 'status'    => "01",
                 'error'     => false,
-                'message'   => "Successfully retrieve all courier data",
-                'data'      => $courier
+                'message'   => "Successfully retrieve item detail"
             ];
         }catch(\Exception $e){
             $return = [
                 'status'    => "02",
                 'error'     => true,
-                'message'   => "Failed to retrieve all courier data. Error: ".$e->getMessage(),
-                'data'      => ""
+                'message'   => "Failed to retrieve item detail. Error: ".$e->getMessage()
             ];
         }
 
-        return $return;
+        return compact('return','serialnoList');
     }
 
     public function generate_orderno($order_typ){
@@ -300,5 +471,34 @@ class DeliveryOrderController extends Controller
         }
 
         return $return;
+    }
+
+    public function verify_serialno(Request $request){
+
+        try{
+
+            $serialno = $request->get('serial_no');
+            $product_id = $request->get('product_id');
+
+            $serialnoExist = product_serial_number::join('stock_in','stock_in.id','=','product_serial_number.stock_in_id')
+                                                ->where('stock_in.stock_product', $product_id)
+                                                ->where('product_serial_number.serial_number', $serialno)
+                                                ->where('product_serial_number.status','01')
+                                                ->first();
+
+            $return = [
+                'status'    => "01",
+                'error'     => false,
+                'message'   => "Successfully verify serial number:  ".$serialno
+            ];
+        }catch(\Exception $e){
+            $return = [
+                'status'    => "02",
+                'error'     => true,
+                'message'   => "Failed to verify serial number:  ".$serialno.". Error: ".$e->getMessage()
+            ];
+        }
+
+        return compact('return','serialnoExist');
     }
 }

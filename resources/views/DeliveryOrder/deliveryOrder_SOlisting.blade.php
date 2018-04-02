@@ -4,50 +4,21 @@
 @section('content')
 
 <script type="text/javascript">
-
 $(function() {
-    $('#purchase_date').daterangepicker();
+    $('input[name="purchase_date"]').daterangepicker();
+    
 });
 
 function fn_clear(){
     console.log("clear!");
 }
-
-function fn_search(){
-
-    var lt_data = {
-        _token : {!! csrf_token() !!},
-        parameter : {
-            purchase_date   : $('#purchase_date').val(),
-            delivery_typ    : $('#delivery_typ').val(),
-            inv_no          : $('#inv_no').val(),
-            agent_code      : $('#agent_code').val(),
-
-        }
-    }
-
-    $.ajax({
-        url: "search_so",
-        type: "POST",
-        data: {_token: "{!! csrf_token() !!}",gt_dataToSend},
-        success: function(response){
-            console.log(response);
-        },
-        error: function(jqXHR, errorThrown, textStatus){
-            console.log(jqXHR);
-            console.log(errorThrown);
-            console.log(textStatus);
-        }
-    });
-}
-
 </script>
 
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
     <li><a href="{{ url('home') }}">Home</a></li>
     <li><a href="#">Delivery Order</a></li>
-    <li class="active">Create Delivery Order</li>
+    <li class="active">Sales Order Listing</li>
 </ul>
 <!-- END BREADCRUMB -->     
 
@@ -58,27 +29,21 @@ function fn_search(){
             <form class="form-horizontal">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Search Sales Order</h3>
+                        <h3 class="panel-title">Delivery Order</h3>
                     </div>
                     <div class="panel-body">
                         <div class="row">
-                            <div class="form-group">
-                                <div class="col-md-12">
-                                    <button type="button" class="btn btn-default pull-right" onclick="fn_search()"><i class="fa fa-search"></i>Search</button>
-                                </div>
-                            </div>
-                            <div class="form-group">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="col-md-3 control-label">Purchase Date</label>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" id="purchase_date">
+                                        <input type="text" class="form-control" name="purchase_date">
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="col-md-3 control-label">Delivery Type</label>
                                     <div class="col-md-9">
-                                        <select id="delivery_typ" class="form-control">
+                                        <select class="form-control">
                                             <option></option>
                                             <option>Self Collect</option>
                                             <option>Delivery</option>
@@ -88,21 +53,13 @@ function fn_search(){
                                 <div class="form-group">
                                     <label class="col-md-3 control-label">Invoice No.</label>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" id="inv_no">
+                                        <input type="text" class="form-control" name="inv_no">
                                     </div>
                                 </div>
-                                <!-- <div class="form-group">
+                                <div class="form-group">
                                     <label class="col-md-3 control-label">Agent Code</label>
                                     <div class="col-md-9">
                                         <input type="text" class="form-control" name="agent_code">
-                                    </div>
-                                </div> -->
-                                <div class="form-group">
-                                    <label class="col-md-3 control-label">Agent Code</label>
-                                    <div class="col-md-9">                                                                                
-                                        <select id="agent_code" class="form-control select" data-live-search="true">
-                                            {!! $outputData['agentListing'] !!}
-                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -110,10 +67,10 @@ function fn_search(){
                                 <div class="form-group">
                                     <label class="col-md-3 control-label">Delivery Address</label>
                                     <div class="col-md-9">
-                                        <select></select>
+                                        <input type="text" name="street1" class="form-control" placeholder="Street 1">
                                     </div>
                                 </div>
-                                <!-- <div class="form-group">
+                                <div class="form-group">
                                     <label class="col-md-3 control-label"></label>
                                     <div class="col-md-9">
                                         <input type="text" name="street2" class="form-control" placeholder="Street 2">
@@ -136,34 +93,42 @@ function fn_search(){
                                     <div class="col-md-5">
                                         <input type="text" name="country" class="form-control" placeholder="Country">
                                     </div>
+                                </div>
+                               <!--  <div class="form-group">
+                                    <label class="col-md-3 control-label">Courier Service</label>
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label">Tracking No</label>
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control">
+                                    </div>
                                 </div> -->
-                            </div>
                             </div>
                         </div>
                     </div>
                     <div class="panel-body">
-                        DO List: {!! $outputData['totalDO'] !!}
+                        DO List: 
                         <div class="table-responsive">
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th>SO No</th>
+                                        <th>DO No</th>
                                         <th>Delivery Type</th>
                                         <th>Invoice No</th>
                                         <th>Agent Code</th>
-                                        <th>Status</th>
+                                        <th></th>
                                     <tr>
                                 </thead>
-                                <tbody>
-                                    {!! $outputData['doListing'] !!}
-                                </tbody>
                             </table>
                         </div>
                     </div>
-                    <!-- <div class="panel-footer">
+                    <div class="panel-footer">
                         <button type="button" class="btn btn-default" onclick="fn_clear()">Clear Form</button>
                         <button class="btn btn-primary pull-right">Save</button>
-                    </div> -->
+                    </div>
                 </div>
             </form>
         </div>
