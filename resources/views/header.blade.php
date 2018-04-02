@@ -252,6 +252,7 @@
 
         <script type="text/javascript" src="{!! asset('joli/js/daterangepicker/moment.min.js') !!}" ></script> 
         <script type="text/javascript" src="{!! asset('joli/js/daterangepicker/daterangepicker.js') !!}" ></script>
+        <script type="text/javascript" src="{!! asset('joli/js/plugins/bootstrap/bootstrap-select.js') !!}"></script>
         <!-- END THIS PAGE PLUGINS-->
         @yield('script')    
         <!-- START TEMPLATE -->

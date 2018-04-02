@@ -15,8 +15,8 @@
     var dataReceive = JSON.parse(JSON.stringify({!! json_encode($outputData) !!}));
 
     var gt_dataToSend = {
-        do_hdr  : dataReceive.do_hdr,
-        do_item : dataReceive.do_item
+        do_hdr  : [],
+        do_item : []
     };
 
     var gt_idVerify = "";
@@ -26,29 +26,33 @@
         var headerTitle = "Item Detail";
         gt_idVerify = e;
 
-        var lv_order_id = "";
-        var lv_product_code = "";
-        var lv_product_desc = "";
-        var lv_product_qty = "";
-        var lv_product_typ = "";
-        var lv_product_id = "";
-        var lv_serialno_list = [];
+        var lt_data = {
+            headerTitle     : "Item Detail",
+            lv_order_id     : "",
+            lv_product_code : "",
+            lv_product_desc : "",
+            lv_product_qty  : "",
+            lv_product_typ  : "",
+            lv_product_id   : "",
+            lv_serialno_list: []
+        };
+
         $('#product_code').html(dataReceive.order_hdr.product);
         $('#serialNo_area').removeClass('has-success has-error');
         $('#verify_success').css('display','none');
         $('#verify_error').css('display','none');
         $('#verify_msg').css('display', 'none').html("");
         $('#inp_product_qty').val("");
-        $('#inp_product_typ').val("");
+        $('#inp_product_typ').html(dataReceive.order_hdr.qtytype);
 
         if(e.target.textContent == "Add New Item"){
 
-            headerTitle = e.target.textContent;
+            lt_data['headerTitle'] = e.target.textContent;
             var last_id = $('#tbody_item tr:last')[0].cells[0].textContent;
             console.log(last_id);
             if(last_id.indexOf('new') > -1){
-                lv_order_id = "new_"+(+last_id.split("_")[1]+1);
-            }else{ lv_order_id = "new_0";}
+                lt_data['lv_order_id'] = "new_"+(+last_id.split("_")[1]+1);
+            }else{ lt_data['lv_order_id'] = "new_0";}
 
             $('#serialno_switch').prop('checked', false);
             $('#serialNo_title').css('display', 'none');
@@ -57,60 +61,124 @@
 
             $('#qty_input').css('display', 'inherit');
             $('#qty_dsp').css('display', 'none');
+
+            show_modal(lt_data);
         }
         else{
 
-            for(var i=0; i<gt_dataToSend.do_item.length; i++){
-                if(gt_dataToSend.do_item[i].order_id == e.path['3'].cells['0'].textContent){
+            var noItem = true;
 
-                    lv_order_id     = gt_dataToSend.do_item[i].order_id;
-                    lv_product_id   = gt_dataToSend.do_item[i].product_id;
-                    lv_product_desc = gt_dataToSend.do_item[i].product_desc;
-                    lv_product_qty  = gt_dataToSend.do_item[i].product_qty;
-                    lv_product_typ  = gt_dataToSend.do_item[i].product_typ;
-                    lv_serialno_list= gt_dataToSend.do_item[i].serialno;
+            for(var i=0; i <gt_dataToSend.do_item.length; i++){
+
+                if(gt_dataToSend.do_item[i].order_id == e.path['3'].cells['0'].textContent){
+                    noItem = false;
+
+                    lt_data['lv_order_id']     = gt_dataToSend.do_item[i].order_id;
+                    lt_data['lv_product_id']   = gt_dataToSend.do_item[i].product_id;
+                    lt_data['lv_product_desc'] = gt_dataToSend.do_item[i].product_desc;
+                    lt_data['lv_product_qty']  = gt_dataToSend.do_item[i].product_qty;
+                    lt_data['lv_product_typ']  = gt_dataToSend.do_item[i].product_typ;
+                    lv_serialno_list           = gt_dataToSend.do_item[i].serialno;
+
+                    if(lv_serialno_list.length > 0){
+
+                        $('#serialno_switch').prop('checked', true);
+                        $('#serialNo_list').empty();
+
+                        $('#serialNo').css('display', 'inherit');
+                        $('#serialNo_list').css('display', 'inherit');
+                        $('#serialNo_input').css('display', 'inherit');
+                        $('#serialNo_title').css('display', 'inherit');
+
+                        for(var j=0; j<lv_serialno_list.length; j++){
+                            $('#serialNo_list').append('<div class="col-md-6" style="margin-bottom: 0.5%;"><p class="form-control-static">'+lv_serialno_list[j]+'</p></div>');
+                        }
+
+                        var total_serialno = $('#serialNo_list')['0'].children.length;
+                        $('#serialNo_title').html("Serial No. List ("+total_serialno+")");
+                    }
+                    else{
+
+                        $('#serialno_switch').prop('checked', false);
+                        $('#serialNo_title').css('display', 'none');
+                        $('#serialNo_list').css('display', 'none');
+                        $('#serialNo_input').css('display', 'none');
+                    }
+
+                    $('#qty_input').css('display', 'none');
+                    $('#qty_dsp').css('display', 'inherit');
+
+                    show_modal(lt_data);
                     break;
                 }
             }
 
-            if(lv_serialno_list.length > 0){
+            if(noItem){
+                $.ajax({
+                    url: "get_itemDetail",
+                    type: "POST",
+                    data: {_token: "{!! csrf_token() !!}",id: e.path['3'].cells['0'].textContent},
+                    success: function(response){
 
-                $('#serialno_switch').prop('checked', true);
-                $('#serialNo_list').empty();
+                        lt_data['lv_order_id']     = e.path['3'].cells['0'].textContent;
+                        lt_data['lv_product_id']   = e.path['3'].cells['1'].textContent;
+                        lt_data['lv_product_desc'] = e.path['3'].cells['5'].textContent;
+                        lt_data['lv_product_qty']  = e.path['3'].cells['6'].textContent;
+                        lt_data['lv_product_typ']  = e.path['3'].cells['2'].textContent;
+                        lv_serialno_list           = response.serialnoList;
 
-                $('#serialNo').css('display', 'inherit');
-                $('#serialNo_list').css('display', 'inherit');
-                $('#serialNo_input').css('display', 'inherit');
+                        if(lv_serialno_list.length > 0){
 
-                for(var j=0; j<lv_serialno_list.length; j++){
-                    $('#serialNo_list').append('<div class="col-md-6" style="margin-bottom: 0.5%;"><p class="form-control-static">'+lv_serialno_list[j]+'</p></div>');
-                }
+                            $('#serialno_switch').prop('checked', true);
+                            $('#serialNo_list').empty();
 
-                var total_serialno = $('#serialNo_list')['0'].children.length;
-                $('#serialNo_title').html("Serial No. List ("+total_serialno+")");
+                            $('#serialNo').css('display', 'inherit');
+                            $('#serialNo_list').css('display', 'inherit');
+                            $('#serialNo_input').css('display', 'inherit');
+                            $('#serialNo_title').css('display', 'inherit');
+
+                            for(var j=0; j<lv_serialno_list.length; j++){
+                                $('#serialNo_list').append('<div class="col-md-6" style="margin-bottom: 0.5%;"><p class="form-control-static">'+lv_serialno_list[j]+'</p></div>');
+                            }
+
+                            var total_serialno = $('#serialNo_list')['0'].children.length;
+                            $('#serialNo_title').html("Serial No. List ("+total_serialno+")");
+                        }
+                        else{
+
+                            $('#serialno_switch').prop('checked', false);
+                            $('#serialNo_title').css('display', 'none');
+                            $('#serialNo_list').css('display', 'none');
+                            $('#serialNo_input').css('display', 'none');
+                        }
+
+                        $('#qty_input').css('display', 'none');
+                        $('#qty_dsp').css('display', 'inherit');
+
+                        show_modal(lt_data);
+                    },
+                    error: function(jqXHR, errorThrown, textStatus){
+                        console.log(jqXHR);
+                        console.log(errorThrown);
+                        console.log(textStatus);
+                    }
+                });
             }
-            else{
+        }        
+    }
 
-                $('#serialno_switch').prop('checked', false);
-                $('#serialNo_title').css('display', 'none');
-                $('#serialNo_list').css('display', 'none');
-                $('#serialNo_input').css('display', 'none');
-            }
+    function show_modal(data){
 
-            $('#qty_input').css('display', 'none');
-            $('#qty_dsp').css('display', 'inherit');
-        }
-
-        $('#order_id').val(lv_order_id);
-        $('#product_code').val(lv_product_id);
-        $('#product_desc').html(lv_product_desc);
-        $('#product_qty').html(lv_product_qty);
-        $('#product_typ').html(lv_product_typ);
+        $('#order_id').val(data['lv_order_id']);
+        $('#product_code').val(data['lv_product_id']);
+        $('#product_desc').html(data['lv_product_desc']);
+        $('#product_qty').html(data['lv_product_qty']);
+        $('#product_typ').html(get_qtytyp(data['lv_product_typ']));
 
         var total_serialno = $('#serialNo_list')['0'].children.length;
         $('#serialNo_title').html("Serial No. List ("+total_serialno+")");
 
-        $('#largeModalHead').html(headerTitle);
+        $('#largeModalHead').html(data['headerTitle']);
 
         $("#add_delivery_order").modal("show");
     }
@@ -153,9 +221,8 @@
                 }
                 else{
 
-                    alert("There's an error with system. Please refresh the page. Thanks!");
+                    alert(response.return.message);
                 }
-                    
             },
             error: function(jqXHR, errorThrown, textStatus){
                 console.log(jqXHR);
@@ -194,53 +261,90 @@
     function fn_saveItemDetail(){
 
         var dataToStore = [];
-        var serialList = ($('#serialNo_list'))[0].children;
-
-        for(var i=0; i<serialList.length; i++){
-            dataToStore.push(serialList[i].children[0].textContent);
-        }
-
-        for(var x=0; x<gt_dataToSend.do_item.length; x++){
-            if(gt_dataToSend.do_item[x].order_id == $('#order_id').val()){
-                gt_dataToSend.do_item[x].product_code = $('#product_code').val();
-                gt_dataToSend.do_item[x].product_desc = $('#product_desc').html();
-                gt_dataToSend.do_item[x].product_qty  = $('#product_qty').html();
-                gt_dataToSend.do_item[x].product_typ  = $('#product_typ').html();
-                gt_dataToSend.do_item[x].status       = "02";
-                gt_dataToSend.do_item[x].serialno     = dataToStore;
-                break;
+        if($('#serialno_switch')[0].checked){
+            var serialList = ($('#serialNo_list'))[0].children;
+            for(var i=0; i<serialList.length; i++){
+                dataToStore.push(serialList[i].children[0].textContent);
             }
+        }
+        else{
+            dataToStore = [];
         }
 
         if(gt_idVerify.target.textContent == "Add New Item"){
 
+            for(var p=0; p<dataReceive.qtytype.length; p++){
+                if(dataReceive.qtytype[p].id == $('#inp_product_typ').val()){
+                    var qtytype = dataReceive.qtytype[p].type;
+                    break;
+                }
+            }
+
+            for(var k=0; k<dataReceive.product.length; k++){
+                if(dataReceive.product[k].id == $('#product_code').val()){
+                    var product = dataReceive.product[k].code;
+                    break;
+                }
+            }
+
             gt_dataToSend.do_item.push({
                 order_id        : $('#order_id').val(),
-                product_code    : $('#product_code').val(),
+                product_id      : $('#product_code').val(),
                 product_desc    : $('#product_desc').html(),
-                product_qty     : $('#product_qty').html(),
-                product_typ     : $('#product_typ').html(),
+                product_qty     : $('#inp_product_qty').val(),
+                product_typ     : $('#inp_product_typ').val(),
+                status          : "02",
                 serialno        : dataToStore
             });
 
             lv_row = "<tr>";
             lv_row+= "<td style='display:none;'>"+$('#order_id').val()+"</td>";
-            lv_row+= "<td>"+(+$('#tbody_item tr:last')[0].cells[1].textContent + 1)+"</td>";
-            lv_row+= "<td>"+$('#product_code').val()+"</td>";
+            lv_row+= "<td style='display:none;'>"+$('#product_code').val()+"</td>";
+            lv_row+= "<td style='display:none;'>"+$('#inp_product_typ').val()+"</td>";
+            lv_row+= "<td>"+(+$('#tbody_item tr:last')[0].cells[3].textContent + 1)+"</td>";
+            lv_row+= "<td>"+product+"</td>";
             lv_row+= "<td>"+$('#product_desc').html()+"</td>";
-            lv_row+= "<td>"+$('#product_qty').html()+"</td>";
-            lv_row+= "<td>"+$('#product_typ').html()+"</td>";
+            lv_row+= "<td>"+$('#inp_product_qty').val()+"</td>";
+            lv_row+= "<td>"+qtytype+"</td>";
             lv_row+= '<td><a href="#" onclick="get_itemDetail(event)"><span class="label label-warning">Draft</span></a></td>';
             lv_row+= "</tr>";
 
             $('#tbody_item').append(lv_row);
         }
         else{
+            var itemExist = false;
+            for(var x=0; x<gt_dataToSend.do_item.length; x++){
+                if(gt_dataToSend.do_item[x].order_id == $('#order_id').val()){
+                    gt_dataToSend.do_item[x].product_id = $('#product_code').val();
+                    gt_dataToSend.do_item[x].product_desc = $('#product_desc').html();
+                    gt_dataToSend.do_item[x].product_qty  = $('#product_qty').html();
+                    gt_dataToSend.do_item[x].product_typ  = $('#product_typ').html();
+                    gt_dataToSend.do_item[x].status       = "02";
+                    gt_dataToSend.do_item[x].serialno     = dataToStore;
+
+                    itemExist = true;
+                    break;
+                }
+            }
+
+            if(!itemExist){
+
+                gt_dataToSend.do_item.push({
+                    order_id        : $('#order_id').val(),
+                    product_id      : $('#product_code').val(),
+                    product_desc    : $('#product_desc').html(),
+                    product_qty     : $('#product_qty').html(),
+                    product_typ     : $('#product_typ').html(),
+                    status          : "02",
+                    serialno        : dataToStore
+                });
+            }
 
             $(gt_idVerify.target).removeClass();
             $(gt_idVerify.target).addClass('label label-warning').html('Draft');
         }            
 
+        console.log(gt_dataToSend);
         $("#add_delivery_order").modal("hide");
     }
 
@@ -263,6 +367,9 @@
             }
             else{error = true; msg = "Serial no list not match with quantity";}
         }
+        else{
+            dataToStore = [];
+        }
 
         if(error){
             console.log(msg);
@@ -273,22 +380,34 @@
 
             if(gt_idVerify.target.textContent == "Add New Item"){
 
+                // lol
+                qtytype = get_qtytyp($('#inp_product_typ').val());
+
+                for(var k=0; k<dataReceive.product.length; k++){
+                    if(dataReceive.product[k].id == $('#product_code').val()){
+                        var product = dataReceive.product[k].code;
+                    }
+                }
+
                 gt_dataToSend.do_item.push({
                     order_id        : $('#order_id').val(),
-                    product_code    : $('#product_code').val(),
+                    product_id      : $('#product_code').val(),
                     product_desc    : $('#product_desc').html(),
-                    product_qty     : $('#product_qty').html(),
-                    product_typ     : $('#product_typ').html(),
+                    product_qty     : $('#inp_product_qty').val(),
+                    product_typ     : $('#inp_product_typ').val(),
+                    status          : "03",
                     serialno        : dataToStore
                 });
 
                 lv_row = "<tr>";
                 lv_row+= "<td style='display:none;'>"+$('#order_id').val()+"</td>";
-                lv_row+= "<td>"+(+$('#tbody_item tr:last')[0].cells[1].textContent + 1)+"</td>";
-                lv_row+= "<td>"+$('#product_code').val()+"</td>";
+                lv_row+= "<td style='display:none;'>"+$('#product_code').val()+"</td>";
+                lv_row+= "<td style='display:none;'>"+$('#inp_product_typ').val()+"</td>";
+                lv_row+= "<td>"+(+$('#tbody_item tr:last')[0].cells[3].textContent + 1)+"</td>";
+                lv_row+= "<td>"+product+"</td>";
                 lv_row+= "<td>"+$('#product_desc').html()+"</td>";
-                lv_row+= "<td>"+$('#product_qty').html()+"</td>";
-                lv_row+= "<td>"+$('#product_typ').html()+"</td>";
+                lv_row+= "<td>"+$('#inp_product_qty').val()+"</td>";
+                lv_row+= "<td>"+qtytype+"</td>";
                 lv_row+= '<td><a href="#" onclick="get_itemDetail(event)"><span class="label label-success">Verified</span></a></td>';
                 lv_row+= "</tr>";
 
@@ -297,16 +416,32 @@
             }
             else{
 
+                var itemExist = false;
                 for(var x=0; x<gt_dataToSend.do_item.length; x++){
                     if(gt_dataToSend.do_item[x].order_id == $('#order_id').val()){
-                        gt_dataToSend.do_item[x].product_code = $('#product_code').val();
+                        gt_dataToSend.do_item[x].product_id = $('#product_code').val();
                         gt_dataToSend.do_item[x].product_desc = $('#product_desc').html();
                         gt_dataToSend.do_item[x].product_qty  = $('#product_qty').html();
                         gt_dataToSend.do_item[x].product_typ  = $('#product_typ').html();
                         gt_dataToSend.do_item[x].status       = "03";
                         gt_dataToSend.do_item[x].serialno     = dataToStore;
+
+                        itemExist = true;
                         break;
                     }
+                }
+
+                if(!itemExist){
+
+                    gt_dataToSend.do_item.push({
+                        order_id        : $('#order_id').val(),
+                        product_id      : $('#product_code').val(),
+                        product_desc    : $('#product_desc').html(),
+                        product_qty     : $('#product_qty').html(),
+                        product_typ     : $('#product_typ').html(),
+                        status          : "03",
+                        serialno        : dataToStore
+                    });
                 }
 
                 $(gt_idVerify.target).removeClass();
@@ -315,13 +450,18 @@
 
             $("#add_delivery_order").modal("hide");
         }
+
+        console.log(gt_dataToSend);
     }
 
     function fn_saveDO(){
 
-        gt_dataToSend.do_hdr.delivery_status = "01";
-        gt_dataToSend.do_hdr.courier_id = $('#courier_id').val();
-        gt_dataToSend.do_hdr.tracking_no = $('#tracking_no').val();
+        gt_dataToSend.do_hdr = {
+            delivery_status : "01",
+            order_no : dataReceive.order_hdr.order_no,
+            courier_id : $('#courier_id').val(),
+            tracking_no : $('#tracking_no').val()
+        }
         ajax_send();
     }
 
@@ -333,7 +473,7 @@
 
         if($('#tracking_no').val() != ""){
             for(var i=0; i<tbody.length; i++){
-                if(tbody[i].cells[6].textContent != "Verified"){
+                if(tbody[i].cells[8].textContent != "Verified"){
                     error = true;
                     msg = "Please verify all item before proceed to pickup";
                     break;
@@ -342,7 +482,7 @@
         }
         else{
             error = true;
-            msg = "Please insert tracking no / consigment note";
+            msg = "Please insert tracking no.";
         }
 
         if(error){
@@ -351,9 +491,14 @@
         }
         else{
             console.log("DO ready to pickup!");
-            gt_dataToSend.do_hdr.delivery_status = "02";
-            gt_dataToSend.do_hdr.courier_id = $('#courier_id').val();
-            gt_dataToSend.do_hdr.tracking_no = $('#tracking_no').val();
+
+            gt_dataToSend.do_hdr = {
+                delivery_status : "02",
+                order_no : dataReceive.order_hdr.order_no,
+                courier_id : $('#courier_id').val(),
+                tracking_no : $('#tracking_no').val()
+            }
+
             ajax_send();
         }
     }
@@ -387,13 +532,22 @@
         }
     }
 
+    function get_qtytyp(id){
+
+        for(var x=0; x<dataReceive.qtytype.length; x++){
+            if(dataReceive.qtytype[x].id == id){
+                return dataReceive.qtytype[x].type;
+            }
+        }
+    }
+
 </script>
 
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
     <li><a href="{{ url('home') }}">Home</a></li>
-    <li><a href="#">Supplier</a></li>
-    <li class="active">Delivery Order</li>
+    <li><a href="#">Delivery Order</a></li>
+    <li class="active">Create Delivery Order</li>
 </ul>
 <!-- END BREADCRUMB -->     
 
@@ -401,12 +555,12 @@
 <div class="page-content-wrap">
     <div class="row">
         <div class="col-md-12">
-            <form class="form-horizontal" action="{!! url('delivery_order/create') !!}" method="POST" onsubmit="return false;">
+            <form class="form-horizontal" onsubmit="return false;">
                 {{ csrf_field() }}
                 <div class="panel panel-default">
                     <div class="panel-heading" style="padding-bottom: 0px;">
                          <div class="row">
-                            <h2 class="panel-title">New DO#</h2>
+                            <h2 id="do_title" class="panel-title">New DO#</h2>
                         </div>
                         <div class="row col-md-4">
                             <p>Ship To: Zulhilmi (A001)</p>
@@ -509,6 +663,8 @@
                                             <thead>
                                                 <tr>
                                                     <th style="display: none;">ID</th>
+                                                    <th style="display: none;">Product ID</th>
+                                                    <th style="display: none;">Product Typ</th>
                                                     <th width="20">No</th>
                                                     <th width="200">Item Code</th>
                                                     <th>Description</th>

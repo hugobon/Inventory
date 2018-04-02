@@ -66,6 +66,7 @@ Route::get('delivery_order/view/{do_no}', 'DeliveryOrder\DeliveryOrderController
 Route::post('delivery_order/get_itemDetail', 'DeliveryOrder\DeliveryOrderController@get_itemDetail');
 Route::post('delivery_order/verify_serialno', 'DeliveryOrder\DeliveryOrderController@verify_serialno');
 Route::get('delivery_order/get_product/{id}', 'DeliveryOrder\DeliveryOrderController@get_product');
+Route::post('delivery_order/search_so', 'DeliveryOrder\DeliveryOrderController@search_so');
 
 //=========================
 // Inventory :: Aqi
