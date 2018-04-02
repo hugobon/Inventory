@@ -110,7 +110,7 @@ textarea {
                         <tbody>
                             @foreach($reports as $report)
                             <tr>
-                                <td>{{$report->description}}</td>
+                                <td>{{$report->name}}</td>
                                 @foreach($report->stockAdjustmentValue as $stockAdjust)
                                 <td>{{$stockAdjust['day']}}</td>
                                 @endforeach

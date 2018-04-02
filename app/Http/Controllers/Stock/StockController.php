@@ -62,7 +62,7 @@ class StockController extends Controller
                         
                     }
                     $data[] = [
-                        'product_description' => $value->product_description,
+                        'product_name' => $value->product_name,
                         'product_code' => $value->product_code,
                         'stocksCount' => $totalserial_number,
                     ];

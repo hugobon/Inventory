@@ -80,7 +80,7 @@
 												<div class="col-md-3 info" style="margin: 5px;">
 													<div class="form-group info-detail">
 										                <label class="control-label">Quantity</label>
-										                <input type="text" class="form-control quantity" name="quantity" id="quantity">
+										                <input type="text" class="form-control quantity" name="quantity" id="quantity" min="1" max="200" step="1" value="1">
 									                </div>
 												</div>
 												<button type="submit" class="btn btn-block btn-danger add-to-cart">Add to cart</button>
@@ -122,6 +122,46 @@
 
 
 	$(document).ready(function(){
+
+
+	 $(".btn-minus").on("click",function(){
+
+	 		var now = $(this).closest('div.x').find('.quantity').val();
+            // var now = $(".quantity").val();
+            if ($.isNumeric(now)){
+                if (parseInt(now) -1 > 0){ now--;}
+                $(this).closest('div.x').find('.quantity').val(now);
+            }else{
+                $(this).closest('div.x').find('.quantity').val("1");
+            }
+        })            
+        $(".btn-plus").on("click",function(){
+
+        	var now = $(this).closest('div.x').find('.quantity').val();
+        	var max = $(this).closest('div.x').find('.quantity').attr('max');
+        	// console.log(max)
+            // var now = $(".quantity").val();
+            if(now == max){
+            	 $(this).closest('div.x').find('.quantity').val(max);
+            }
+            else{
+	            if ($.isNumeric(now)){
+	                $(this).closest('div.x').find('.quantity').val(parseInt(now)+1);
+	            }else{
+	                $(this).closest('div.x').find('.quantity').val("1");
+	            }
+	        }
+        });
+
+
+        $('.quantity').on('change',function(){
+        	var val = $(this).val();
+        	var max = $(this).attr('max');
+        	// console.log(val,max)
+        	if(val > max){
+        		$(this).val(max);
+        	}
+        });
 
 		var count = '{!! $count !!}';
 		console.log(count);

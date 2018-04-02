@@ -42,8 +42,9 @@ Route::post('agent/save_address', 'Agent\AgentController@fn_save_address');
 Route::get('agent/delete_address/{id?}', 'Agent\AgentController@fn_delete_address');
 Route::get('agent/get_place_order_items/{agent_id?}/{deliveryType?}', 'Agent\AgentController@fn_get_place_order_items');
 Route::post('agent/procced_to_payment', 'Agent\AgentController@fn_proceed_to_payment');
-Route::get('agent/get_delivery_status', 'Agent\AgentController@fn_get_delivery_status');
+Route::get('agent/get_delivery_status/{order_no?}', 'Agent\AgentController@fn_get_delivery_status');
 Route::get('agent/get_address','Agent\AgentController@fn_get_address');
+Route::get('agent/get_order_list/{agent_id?}', 'Agent\AgentController@fn_get_order_list');
 
 //=========================
 // Supplier :: Zul
@@ -131,8 +132,18 @@ Route::post('configuration/quantitytype/save', 'Configuration\Quantitytype@save'
 //=========================
 // Stock In
 //=========================
- Route::post('stock/submit_stock-in','Stock\StockInController@insertStockIn');
+ Route::post('stock/in/store_stock_in','Stock\StockInController@storeStockIn');
+ Route::get('stock/in/store_stock_in', function(){
+	return view('Stock.stockInNew');
+ });
  Route::get('stock/in', 'Stock\StockInController@index');
+ Route::get('stock/in/new', function(){
+	return view('Stock.stockInNew');
+ });
+ Route::post('stock/in/create', 'Stock\StockInController@create');
+ Route::get('stock/in/create', function(){
+	return view('Stock.stockInNew');
+ });
 
 
  
@@ -141,7 +152,9 @@ Route::post('configuration/quantitytype/save', 'Configuration\Quantitytype@save'
 //=========================
 Route::get('stock/adjustment', 'Stock\StockAdjustmentController@index');
 Route::post('stock/submit_adjustment', 'Stock\StockAdjustmentController@submit');
-Route::post('stock/load_stock_adjust', 'Stock\StockAdjustmentController@loadStockAdjust');
+Route::get('stock/load_stock_adjust', 'Stock\StockAdjustmentController@loadStockAdjust');
+Route::get('stock/adjustment/check_serial_number', 'Stock\StockAdjustmentController@checkSerialNumber');
+
 // Route::get('stock/adjustment/listing', 'Inventory\Stockadjustment@listing');
 // Route::get('stock/adjustment/search/{x?}', 'Inventory\Stockadjustment@search');
 // Route::post('stock/adjustment/form_search', 'Inventory\Stockadjustment@form_search');
@@ -155,7 +168,6 @@ Route::get('stock/listing', 'Stock\StockController@index');
 // Stock Report
 //=========================
 Route::get('stock/report/balance', 'Stock\StockReportController@index');
-//=========================
-// Stock Report
-//=========================
-Route::get('stock/report/receive', 'Stock\StockReportController@index');
+Route::get('stock/report/receive', 'Stock\StockInReportController@index');
+
+

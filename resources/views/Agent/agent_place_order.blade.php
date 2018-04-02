@@ -185,6 +185,7 @@
 
     var gv_address = [];
     var gv_type = "";
+    var agent_id = "{{ $returnData['agent_id'] }}";
 
     $(document).ready(function(){
 
@@ -200,6 +201,9 @@
     });
 
     $(".editbutton").click(function(){
+
+        // var agent_id = "{{ $returnData['agent_id'] }}";
+
         gv_type = "";
         gv_type = $(this).data('code');
 
@@ -210,44 +214,46 @@
             $('.billings-same').show();
         }
 
-        var data = { 
-            _token : "{!! csrf_token() !!}"
-        };
+        fn_get_address(agent_id);
+        // var data = {
+        //     _token : "{!! csrf_token() !!}",
+        //     agent_id : agent_id
+        // };
 
-        $.ajax({
+        // $.ajax({
 
-            url : "/agent/get_address",
-            dataType : "json",
-            type : "GET",
-            data: JSON.stringify(data),
-            contentType : "application/json"
+        //     url : "/agent/get_address",
+        //     dataType : "json",
+        //     type : "GET",
+        //     data: data,
+        //     contentType : "application/json"
 
-        }).done(function(response){
-            // console.log(response)
-            gv_address = response.address;
-            if(response.return.status == "01"){
-                var tag = "";
-                for(var i=0;i<response.address.length;i++){
+        // }).done(function(response,jqXHR, textStatus){
+        //     // console.log(response)
+        //     gv_address = response.address;
+        //     if(response.return.status == "01"){
+        //         var tag = "";
+        //         for(var i=0;i<response.address.length;i++){
 
-                    tag += "<div class='address-field'>";
-                    tag += "<p>"+(i+1)+"#</p>";
-                    tag += "<input type='hidden' class='address-id' value="+ response.address[i].id +">";
-                    tag += "<input type='hidden' class='address-code' value="+ response.address[i].address_code +">";
-                    tag += "<p class='name'>"+response.address[i].name+"</p>";
-                    tag += "<p class='address'>"+response.address[i].address+"</p>";
-                    tag += "</diV>";
+        //             tag += "<div class='address-field'>";
+        //             tag += "<p>"+(i+1)+"#</p>";
+        //             tag += "<input type='hidden' class='address-id' value="+ response.address[i].id +">";
+        //             tag += "<input type='hidden' class='address-code' value="+ response.address[i].address_code +">";
+        //             tag += "<p class='name'>"+response.address[i].name+"</p>";
+        //             tag += "<p class='address'>"+response.address[i].address+"</p>";
+        //             tag += "</diV>";
                    
-                }
-                 $('div.address-row').html(tag);
-            }
+        //         }
+        //          $('div.address-row').html(tag);
+        //     }
 
-        }).fail(function(){
+        // }).fail(function(){
 
-        });
+        // });
 
         setTimeout(function(){
             $("#ModalAddress").modal();
-        },500)
+        },500);
         
     });
 });
@@ -286,7 +292,7 @@
             console.log(response)
             if(response.return.status == "01"){
                 // document.location.reload();
-                window.location.href = "{{ url('agent/get_delivery_status') }}";
+                window.location.href = "{{ url('agent/get_delivery_status') }}"+"/"+response.order_no['data'];
 
             }
 
@@ -352,6 +358,7 @@
     
         var id = $('#id').val();
         var address_code = $('#address-code').val();
+        var name = $('#name').val();
         var street1 = $('#street1').val();
         var street2 = $('#street2').val();
         var poscode = $('#poscode').val();
@@ -359,11 +366,11 @@
         var state = $('#state').val();
         var country = $('#country').val();
 
-
         var item = {
 
             id          : id,
             address_code: address_code,
+            name        : name,
             street1     : street1,
             street2     : street2,
             poscode     : poscode,
@@ -391,6 +398,7 @@
 
             if(response.return.status == "01"){
 
+                fn_get_address(agent_id);
                 // window.location.reload();
             }
 
@@ -401,7 +409,7 @@
         $('#CreateAddress .close').click();
         setTimeout(function(){
             $("#ModalAddress").modal();
-        },1000);
+        },1500);
         
         
     });
@@ -427,6 +435,46 @@
 
          $('#ModalAddress .close').click();
     });
+
+
+    function fn_get_address(agent_id){
+
+        var data = {
+            _token : "{!! csrf_token() !!}",
+            agent_id : agent_id
+        };
+
+        $.ajax({
+
+            url : "/agent/get_address",
+            dataType : "json",
+            type : "GET",
+            data: data,
+            contentType : "application/json"
+
+        }).done(function(response,jqXHR, textStatus){
+            // console.log(response)
+            gv_address = response.address;
+            if(response.return.status == "01"){
+                var tag = "";
+                for(var i=0;i<response.address.length;i++){
+
+                    tag += "<div class='address-field'>";
+                    tag += "<p>"+(i+1)+"#</p>";
+                    tag += "<input type='hidden' class='address-id' value="+ response.address[i].id +">";
+                    tag += "<input type='hidden' class='address-code' value="+ response.address[i].address_code +">";
+                    tag += "<p class='name'>"+response.address[i].name+"</p>";
+                    tag += "<p class='address'>"+response.address[i].address+"</p>";
+                    tag += "</diV>";
+                   
+                }
+                 $('div.address-row').html(tag);
+            }
+
+        }).fail(function(){
+
+        });
+    }
 
 </script>
 

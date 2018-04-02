@@ -72,15 +72,15 @@
                 </ul>                                     -->
             </div>                                
             <div class="panel-body  list-group list-group-contacts">
-              <a href="agent/get_product_list/all" class="list-group-item">                
+            <a href="agent/get_product_list/all" class="list-group-item">                
                 <i class="fa fa-circle pull-left fa-lg"></i>
                 <span class="contacts-title">Product List</span>
             </a>
-                          <a href="agent/get_delivery_status" class="list-group-item"> 
+            <a href="agent/get_order_list/{{ Auth::user()->id }}" class="list-group-item"> 
                 <i class="fa fa-circle pull-left fa-lg"></i>
                 <span class="contacts-title">Order List</span>
             </a>      
-                          <a href="agent/get_address/display" class="list-group-item"> 
+            <a href="agent/get_address/display" class="list-group-item"> 
                 <i class="fa fa-circle pull-left fa-lg"></i>
                 <span class="contacts-title">Address Configuration</span>
             </a>            

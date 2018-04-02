@@ -112,7 +112,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
                                         <div class="form-group address-group">
                                             <label class="col-md-3 control-label" id="address_label"> Name </label>
                                             <div class="col-md-9" id="" >        
-                                                <input type="text" class="form-control street1" name="street1" id="street1" value=""/>
+                                                <input type="text" class="form-control name" name="name" id="name" value=""/>
                                             </div>
                                         </div>
                                         <div class="form-group address-group">
@@ -168,19 +168,6 @@ body {font-family: Arial, Helvetica, sans-serif;}
 </content>
 
 <script type="text/javascript">
-    
-    document.ready(function(){
 
-        console.log('x')
-        $('.save-address').click(function(){
-
-            console.log("X")
-        });
-
-    });
-    // $(document).on('click','.save-address', function(){
-
-    //     console.log("X")
-    // });
 
 </script>

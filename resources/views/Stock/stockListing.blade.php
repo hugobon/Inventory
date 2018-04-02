@@ -136,7 +136,7 @@ textarea {
                                                         <tr>
                                                             <td><?php echo $i++; ?></td>
                                                             <td>{{ $stock['product_code'] }} </td>
-                                                            <td>{{ $stock['product_description'] }} </td>
+                                                            <td>{{ $stock['product_name'] }} </td>
                                                             <td>{{ $stock['stocksCount']}} </td>
                                                             <td>
                                                                 <a href="#" class="btn btn-info btn-rounded "><span class="fa fa-eye"></span></a>
