@@ -26,13 +26,6 @@
         var headerTitle = "Item Detail";
         gt_idVerify = e;
 
-        // var lv_order_id = "";
-        // var lv_product_code = "";
-        // var lv_product_desc = "";
-        // var lv_product_qty = "";
-        // var lv_product_typ = "";
-        // var lv_product_id = "";
-        // var lv_serialno_list = [];
         var lt_data = {
             headerTitle     : "Item Detail",
             lv_order_id     : "",
@@ -461,7 +454,7 @@
 <ul class="breadcrumb">
     <li><a href="{{ url('home') }}">Home</a></li>
     <li><a href="#">Delivery Order</a></li>
-    <li class="active">Create Delivery Order</li>
+    <li class="active">View Delivery Order</li>
 </ul>
 <!-- END BREADCRUMB -->     
 
@@ -473,16 +466,22 @@
                 {{ csrf_field() }}
                 <div class="panel panel-default">
                     <div class="panel-heading" style="padding-bottom: 0px;">
-                         <div class="row">
-                            <h2 id="do_title" class="panel-title">New DO#</h2>
+                         <div class="row" style="padding-bottom: 1%;">
+                            <div class="panel-title form-group">
+                                <h2 style="display: inline;">{!! $outputData['do_no'] !!}</h2>
+                                <h4 style="display: inline;">({!! $outputData['description'] !!})</h4>
+                                <button type="button" class="btn btn-success pull-right">Collected</button>
+                            </div>
                         </div>
-                        <div class="row col-md-4">
-                            <p>Ship To: Zulhilmi (A001)</p>
-                            <p>Sales Order Date: 01 Mar 2018</p>
-                        </div>
-                        <div class="row col-md-4">
-                            <p>Contact No: 013-5151861</p>
-                            <p>Referral: Nick SKG</p>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p>Ship To: {!! $outputData['user'] !!}</p>
+                                <p>Sales Order Date: {!! $outputData['purchase_date'] !!}</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p>Contact No: 013-5151861</p>
+                                <p>Referral: Nick SKG</p>
+                            </div>
                         </div>
                         <div class="tabs" style="padding-top: 15px;">
                             <ul class="nav nav-tabs" role="tablist">
@@ -499,7 +498,7 @@
                                         <div class="form-group">
                                             <label class="col-md-3 control-label">Sales Order No</label>
                                             <div class="col-md-9">
-                                                <p class="form-control-static">{!! $outputData['order_hdr']->order_no !!}</p>
+                                                <p class="form-control-static">{!! $outputData['order_no'] !!}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -507,7 +506,7 @@
                                         <div class="form-group">
                                             <label class="col-md-3 control-label">Purchase Date</label>
                                             <div class="col-md-9">
-                                                <p class="form-control-static">{!! $outputData['order_hdr']->purchase_date !!}</p>
+                                                <p class="form-control-static">{!! $outputData['purchase_date'] !!}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -515,27 +514,23 @@
                                         <div class="form-group">
                                             <label class="col-md-3 control-label">Delivery Type</label>
                                             <div class="col-md-9">
-                                                <p class="form-control-static">{!! $outputData['order_hdr']->delivery_type !!}</p>
+                                                <p class="form-control-static">{!! $outputData['delivery_type'] !!}</p>
                                             </div>
                                         </div>
                                     </div>
-                                        <!-- <div class="form-group">
-                                            <label class="col-md-3 control-label">Invoice No</label>
-                                            <div class="col-md-9">
-                                                <input type="text" class="form-control" value="{!! $outputData['order_hdr']->invoice_no !!}" readonly>
-                                            </div>
-                                        </div> -->
-                                    <div class="row" style="margin-top: 2%;">
+                                    <div class="row">
                                         <div class="form-group">
                                             <label class="col-md-3 control-label">Courier Service</label>
                                             <div class="col-md-9">
-                                                <select class="form-control" id="courier_id">{!! $outputData['order_hdr']->courier !!}</select>
+                                                <p class="form-control-static">{!! $outputData['courier'] !!}</p>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="row">
                                         <div class="form-group">
                                             <label class="col-md-3 control-label">Tracking No</label>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control" id="tracking_no">
+                                                <p class="form-control-static">{!! $outputData['tracking_no'] !!}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -545,7 +540,7 @@
                                         <div class="form-group">
                                             <label class="col-md-3 control-label">Shipping Address</label>
                                             <div class="col-md-9">
-                                                <p class="form-control-static">{!! $outputData['order_hdr']->ship_address !!}</p>
+                                                <p class="form-control-static">{!! $outputData['ship_address'] !!}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -553,7 +548,7 @@
                                         <div class="form-group">
                                             <label class="col-md-3 control-label">Billing Address</label>
                                             <div class="col-md-9">
-                                                <p class="form-control-static">{!! $outputData['order_hdr']->bill_address !!}</p>
+                                                <p class="form-control-static">{!! $outputData['bill_address'] !!}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -561,17 +556,7 @@
                             </div>
                             <div class="tab-pane" id="tab-item">
                                 <div class="form-group">
-                                    <div class="col-md-4">
-                                        <p class="form-control-static">Item List: {!! $outputData['totalitem'] !!}</p>
-                                    </div>
-                                    <!-- <div class="col-md-8"> -->
-                                        <!-- <ul class="panel-controls">
-                                            <li><a href="#" onclick="get_itemDetail(event)"><span class="fa fa-plus"></span></a></li>
-                                        </ul> -->
-                                        <button type="button" class="btn btn-default pull-right" onclick="get_itemDetail(event)"><i class="fa fa-plus"></i>Add New Item</button>
-                                    <!-- </div> -->
-                                </div>
-                                <div class="form-group">
+                                    <p class="form-control-static">Item List: {!! $outputData['totalitem'] !!}</p>
                                     <div class="table-responsive">
                                         <table class="table table-bordered">
                                             <thead>
@@ -596,9 +581,9 @@
                         </div>
                     </div>
                     <div class="panel-footer">
-                        <button type="button" class="btn btn-default">Cancel</button>
+                        <!-- <button type="button" class="btn btn-default">Cancel</button>
                         <button type="button" class="btn btn-success pull-right" onclick="fn_verifyDO()">Ready to Pickup</button>
-                        <button type="button" class="btn btn-primary pull-right" onclick="fn_saveDO()" style="margin-right: 0.3%;">Save</button>
+                        <button type="button" class="btn btn-primary pull-right" onclick="fn_saveDO()" style="margin-right: 0.3%;">Save</button> -->
                     </div>
                 </div>
             </form>

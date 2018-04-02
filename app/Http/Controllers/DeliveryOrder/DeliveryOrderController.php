@@ -147,14 +147,7 @@ class DeliveryOrderController extends Controller
             'item_list'     => $orderDetail['item_list'],
             'totalitem'     => count($orderDetail['order_item']),
             'product'       => $valueHelp['product'],
-            'qtytype'       => $valueHelp['qtytype'],
-            'do_hdr'        => [
-                "order_no"          => $orderDetail['order_hdr']->order_no,
-                "tracking_no"       => "",
-                "courier_id"        => "",
-                "delivery_status"   => ""
-            ],
-            'do_item'       => $orderDetail['do_item']
+            'qtytype'       => $valueHelp['qtytype']
         ];
         // return compact('outputData');
 		return view('DeliveryOrder.deliveryOrder_form', compact('outputData'));
@@ -165,7 +158,9 @@ class DeliveryOrderController extends Controller
         // Get header information
         $order_hdr = order_hdr::join('address as bill', 'bill.id','=','order_hdr.bill_address')
                         ->join('address as ship', 'ship.id','=','order_hdr.ship_address')
-                        ->select('order_hdr.*',
+                        ->join('delivery_type','delivery_type.id','=','order_hdr.delivery_type')
+                        ->join('users','users.id','=','order_hdr.created_by')
+                        ->select('order_hdr.*','delivery_type.type_description','users.code','users.name',
                             'bill.name as bill_name',
                             'bill.street1 as bill_street1',
                             'bill.street2 as bill_street2',
@@ -201,10 +196,7 @@ class DeliveryOrderController extends Controller
 
         $qtytype = $this->getValueHelp()['qtytype'];
 
-        // $do_item = do_item::where()
-
         $item_list = "";
-        $do_item = [];
         foreach ($order_item as $k => $v) {
 
             if($v['product_status'] == "01"){
@@ -234,20 +226,9 @@ class DeliveryOrderController extends Controller
                 }                
                 $item_list.= $itemStatus;
             $item_list.= "</tr>";
-
-            $do_item[] = [
-                "order_id"    => $v['id'],
-                "product_id"  => $v['product_id'],
-                "product_code"=> $v['code'],
-                "product_desc"=> $v['name'],
-                "product_qty" => $v['product_qty'],
-                "product_typ" => $v['product_typ'],
-                "status"      => $v['product_status'],
-                "serialno"    => []
-            ];
         }
 
-        return compact('order_hdr','order_item','item_list','do_item');
+        return compact('order_hdr','order_item','item_list');
     }
 
     public function getValueHelp(){
@@ -371,8 +352,34 @@ class DeliveryOrderController extends Controller
 
         try{
 
-            $do_hdr = do_hdr::where('do_no',$do)->first();
+            $do_hdr = do_hdr::join('courier','courier.id','=','do_hdr.courier_id')
+                            ->join('global_status', function($join){
+                                $join->on('global_status.status','=','do_hdr.delivery_status')
+                                    ->where('global_status.table','=',"do_hdr");
+                            })
+                            ->select('do_hdr.do_no','do_hdr.order_no','do_hdr.tracking_no','courier.courier_name','global_status.description')
+                            ->where('do_no',$do)
+                            ->first();
+
             $orderDetail = $this->get_orderDetail($do_hdr->order_no);
+
+            $outputData = [
+                'do_no'         => $do_hdr->do_no,
+                'description'   => $do_hdr->description,
+                'order_no'      => $do_hdr->order_no,
+                'user'          => $orderDetail['order_hdr']->name." (".$orderDetail['order_hdr']->code.")",
+                'purchase_date' => (new \DateTime($orderDetail['order_hdr']->purchase_date))->format('d F Y'),
+                'delivery_type' => $orderDetail['order_hdr']->type_description,
+                'courier'       => $do_hdr->courier_name,
+                'tracking_no'   => $do_hdr->tracking_no,
+                'ship_address'  => $orderDetail['order_hdr']->ship_address,
+                'bill_address'  => $orderDetail['order_hdr']->bill_address,
+                'item_list'     => $orderDetail['item_list'],
+                'totalitem'     => count($orderDetail['order_item']),
+            ];
+
+            return view('DeliveryOrder.deliveryOrder_view', compact('outputData'));
+            return compact('outputData','do_hdr','orderDetail');
 
             $return = [
                 'status'    => "01",
@@ -386,8 +393,8 @@ class DeliveryOrderController extends Controller
                 'message'   => "Failed to retrieve DO. Error: ".$e->getMessage()
             ];
         }
-
-        return compact('return','do_hdr','orderDetail');
+        return $return;
+        // return view('DeliveryOrder.deliveryOrder_view', compact('outputData'));
     }
 
     public function get_itemDetail(Request $request){
