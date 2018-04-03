@@ -87,10 +87,10 @@
                                 
                                 </ul>
                             </li>
-                            <li><a href="javascript:;"><span class="fa fa-book"></span> Audit Trail </a></li>
+                            <li><a href="javascript:;"><span class="fa fa-road"></span> Audit Trail </a></li>
 
                     <li class="xn-openable <?php echo in_array(request()->path(), array()) ? "active" : "" ; ?>">
-                        <a href="javascript:;"><span class="fa fa-truck"></span> <span class="xn-text">Agent </span></a>
+                        <a href="javascript:;"><span class="fa fa-user"></span> <span class="xn-text">Agent </span></a>
                         <ul>
                             <li>
                                 <a href="{{ url('agent/register') }}"><span class="fa fa-puzzle-piece"></span> Register Agent </a>
@@ -131,17 +131,17 @@
                         <a href="javascript:;"><span class="fa fa-cogs"></span> <span class="xn-text"> configuration </span></a>
                         <ul>
                             <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("configuration/gst")) ? "active" : "" ; ?>">
-								<a href="{{ url('configuration/gst') }}"><span class="fa fa-book"></span> Tax GST </a>
+								<a href="{{ url('configuration/gst') }}"><span class="fa fa-gear"></span> Tax GST </a>
 							</li>
                         </ul>
 						<ul >
                             <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("configuration/quantitytype")) ? "active" : "" ; ?>">
-								<a href="{{ url('configuration/quantitytype') }}"><span class="fa fa-book"></span> Quantity Type </a>
+								<a href="{{ url('configuration/quantitytype') }}"><span class="fa fa-gear"></span> Quantity Type </a>
 							</li>
                         </ul>
 						<ul >
                             <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("configuration/stockadjustment")) ? "active" : "" ; ?>">
-								<a href="{{ url('configuration/stockadjustment') }}"><span class="fa fa-book"></span> Stock Adjustment </a>
+								<a href="{{ url('configuration/stockadjustment') }}"><span class="fa fa-gear"></span> Stock Adjustment </a>
 							</li>
                         </ul>
                     </li>
