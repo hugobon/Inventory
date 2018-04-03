@@ -37,10 +37,10 @@ select{cursor:pointer;}
 			<div class="panel panel-default">
 
 				<div class="panel-heading">
-					<h3 class="panel-title">Configuration - Stock Adjustment Listing</h3>
+					<h3 class="panel-title">Configuration - Stock Adjustment Type</h3>
 					<div class="actions pull-right">
 						<a href="javascript:;" class="btn btn-default  btn-sm btn-circle addnewadjustment" title="Add New Stock Adjustment" >
-					<i class="fa fa-plus"></i> New Stock Adjustment </a>
+					<i class="fa fa-plus"></i> New Stock Adjustment Type</a>
 					</div>
 				</div>
 				<div class="panel-body panel-body-table">
@@ -79,18 +79,17 @@ select{cursor:pointer;}
 						</div>
 					</form>
 					<div class="panel-body">
-					&nbsp; Total Stock Adjustment: <b>{{ $countadjustment }}</b>
+					&nbsp; Total Stock Adjustment type: <b>{{ $countadjustment }}</b>
 					<div class="table-responsive">
-						<table class="table table-bordered table-striped table-actions">
+						<table class="table table-bordered table-striped table-actions table-condensed">
 							<thead>
 								<tr>
 									<th ></th>
-									<th >Id</th>
 									<th class="col-md-3">Adjustment</th>
 									<th class="col-md-4">Remarks</th>
 									<th class="col-md-2">Status</th>
 									<th class="col-md-2">Operator</th>
-									<th class="col-md-2">Create at</th>
+									<th class="col-md-2">Created at</th>
 									<th ></th>
 									<th ></th>
 								</tr>
@@ -105,7 +104,6 @@ select{cursor:pointer;}
 									?>
 									<tr>
 										<td>{{ $key + $adjustmentArr->firstItem() }}</td>
-										<td>{{ $row->id }}</td>
 										<td>{{ $row->adjustment }}</td>
 										<td>{{ $row->remarks }}</td>										
 										<td>{{ isset($status[$row->status]) ? $status[$row->status] : 'Active' }}</td>
@@ -159,7 +157,7 @@ select{cursor:pointer;}
 								<input type="hidden" class="form-control base64" name="base64" value="" />
 								<div class="col-md-12">
 									<div class="form-group">
-										<label class="col-md-3 control-label"> Adjustment <span class="required">*</span></label>
+										<label class="col-md-3 control-label"> Adjustment type<span class="required">*</span></label>
 										<div class="col-md-9">								
 											<input type="text" class="form-control adjustment" name="adjustment" value="" />
 										</div>
@@ -203,17 +201,18 @@ select{cursor:pointer;}
 									<div class="form-group">
 										<label class="col-md-3 control-label"></label>
 										<div class="col-md-9">        
-											<button type="submit" class="btn btn-primary submit-button">Submit</button>
+											
 										</div>
 									</div>
 								</div>
-							</form>
+							
 						</div>
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<bu<button type="submit" class="btn btn-primary submit-button btn-block">Save</button>
 				</div>
+			</form>
 			</div>
 		</div>
 	</div>

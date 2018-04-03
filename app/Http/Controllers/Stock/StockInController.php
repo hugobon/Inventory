@@ -28,21 +28,17 @@ class StockInController extends Controller
 
     public function index(){
 
-        // $product =  product_m::get();
-        // $supplier = supplier::get();
-        // $docNo = $this->docNo;
-        // $StockIndate = $this->StockIndate;
+        $product_serial_number = new product_serial_number;
+        $currentMonth = '04';
 
-       // return view('Stock.stockIn',compact('product','supplier','generateDocNo'));
-       $LatestDocNo = stock_in::selectRaw('MAX(stock_received_number) as latest_sr')->first();
-       if($LatestDocNo){
-        $DocNo =  $this->generate_docno($LatestDocNo->latest_sr);
-       }else{
-        $DocNo = "SR00001";
-       }
+ 
+        $stockDays = $product_serial_number->leftjoin('stock_in','stock_in.id','=','product_serial_number.stock_in_id')
+        ->select('product_serial_number.stock_in_id','stock_in.created_at')
+        ->whereRaw('MONTH(stock_in.created_at) = '.$currentMonth)
+        ->tosql();
        
 
-       return compact('DocNo');
+       return json_encode($stockDays);
     }
 
     public function create(Request $request){

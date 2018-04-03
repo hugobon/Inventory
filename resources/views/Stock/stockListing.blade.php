@@ -45,7 +45,7 @@ textarea {
                             <div class="panel-heading">
                                     <h3 class="panel-title">Current Stock Listing</h3>
                                     <div class="actions pull-right">
-                                            <a href="{{ url('stock/in') }}" class="btn btn-default  btn-sm btn-circle" title="Stock In" >
+                                            <a href="{{ url('stock/in/new') }}" class="btn btn-default  btn-sm btn-circle" title="Stock In" >
                                                 <i class="fa fa-plus"></i> Stock In </a>
                                     </div>
                                     <div class="actions pull-right">
@@ -139,7 +139,7 @@ textarea {
                                                             <td>{{ $stock['product_name'] }} </td>
                                                             <td>{{ $stock['stocksCount']}} </td>
                                                             <td>
-                                                                <a href="#" class="btn btn-info btn-rounded "><span class="fa fa-eye"></span></a>
+                                                                <a href="{{url('product/view/'.$stock['product_id'])}}" class="btn btn-info btn-rounded "><span class="fa fa-eye"></span></a>
                                                             </td>
                                                         </tr>
                                                     @endforeach
