@@ -65,6 +65,7 @@ class StockController extends Controller
                         'product_name' => $value->product_name,
                         'product_code' => $value->product_code,
                         'stocksCount' => $totalserial_number,
+                        'product_id' => $value->product_id,
                     ];
                 }             
 

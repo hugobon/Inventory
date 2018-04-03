@@ -165,6 +165,7 @@ Route::get('stock/listing', 'Stock\StockController@index');
 // Stock Report
 //=========================
 Route::get('stock/report/balance', 'Stock\StockReportController@index');
+Route::post('stock/report/balance', 'Stock\StockReportController@index');
 Route::get('stock/report/receive', 'Stock\StockInReportController@index');
 
 
