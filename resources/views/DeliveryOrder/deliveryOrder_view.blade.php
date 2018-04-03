@@ -470,8 +470,11 @@
                             <div class="panel-title form-group">
                                 <h2 style="display: inline;">{!! $outputData['do_no'] !!}</h2>
                                 <h4 style="display: inline;">({!! $outputData['description'] !!})</h4>
-                                <button type="button" class="btn btn-success pull-right">Collected</button>
+                                
                             </div>
+                            <ul class="panel-controls">
+                                <li><button type="button" class="btn btn-success pull-right">Collected</button></li>
+                            </ul>
                         </div>
                         <div class="row">
                             <div class="col-md-4">
