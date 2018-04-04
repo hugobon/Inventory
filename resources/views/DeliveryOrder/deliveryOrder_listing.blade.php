@@ -6,7 +6,11 @@
 <script type="text/javascript">
 
 $(function() {
-    $('#purchase_date').daterangepicker();
+    $('#purchase_date').daterangepicker({
+        locale: {
+          format: 'DD/MM/YYYY'
+        },
+    });
 });
 
 function fn_clear(){
@@ -16,7 +20,7 @@ function fn_clear(){
 function fn_search(){
 
     var lt_data = {
-        _token : {!! csrf_token() !!},
+        _token : "{!! csrf_token() !!}",
         parameter : {
             purchase_date   : $('#purchase_date').val(),
             delivery_typ    : $('#delivery_typ').val(),
@@ -27,9 +31,9 @@ function fn_search(){
     }
 
     $.ajax({
-        url: "search_so",
+        url: "listing",
         type: "POST",
-        data: {_token: "{!! csrf_token() !!}",gt_dataToSend},
+        data: lt_data,
         success: function(response){
             console.log(response);
         },
@@ -142,7 +146,7 @@ function fn_search(){
                         </div>
                     </div>
                     <div class="panel-body">
-                        DO List: {!! $outputData['totalDO'] !!}
+                        SO List: {!! $outputData['totalDO'] !!}
                         <div class="table-responsive">
                             <table class="table table-bordered">
                                 <thead>

@@ -24,17 +24,45 @@ use App\configuration\config_quantitytype_m;
 
 class DeliveryOrderController extends Controller
 {
-    public function deliveryOrder_show_page(){
+    public function deliveryOrder_show_page(Request $request){
+
+        $parameter = $request->get('parameter');
 
         $doListing = "";
         $agentListing = "<option></option>";
-        $current_date = (Carbon::now(new \DateTimeZone('Asia/Kuala_Lumpur')))->format('Y-m-d');
+        
 
-        $order_hdr = order_hdr::join('users','users.id','=','order_hdr.agent_id')
+        $orderTable = order_hdr::join('users','users.id','=','order_hdr.agent_id')
                         ->select('order_hdr.order_no','order_hdr.delivery_type','order_hdr.invoice_no','order_hdr.status','users.code','users.name')
-                        ->whereBetween('order_hdr.purchase_date',[$current_date, $current_date])
-                        ->orderBy('order_hdr.order_no', 'desc')
-                        ->get();
+                        ->orderBy('order_hdr.order_no', 'desc');
+                        
+        if(is_null($parameter)){
+            $current_date = (Carbon::now(new \DateTimeZone('Asia/Kuala_Lumpur')))->format('Y-m-d');
+            $order_hdr = $orderTable->whereBetween('order_hdr.purchase_date',[$current_date, $current_date])
+                                ->get();
+        }
+        else{
+
+            list($x, $y) = explode(" - ", $parameter['purchase_date']);
+
+            $dateFrom = (new \DateTime($x))->format('Y-m-d');
+            $dateTo   = (new \DateTime($y))->format('Y-m-d'); 
+
+            if(!is_null($parameter['agent_code'])){
+                
+            }
+
+            if(!is_null($parameter['delivery_typ'])){
+
+            }
+
+            if(!is_null($parameter['inv_no'])){
+
+            }
+
+
+            $order_hdr = $orderTable->
+        }
 
         $agent = users::select('id','code','name')->get();
 
@@ -93,7 +121,9 @@ class DeliveryOrderController extends Controller
 
         try{
 
-            
+            $dataReceive = $request->get('parameter');
+            list($dateFrom, $dateTo) = explode(" - ", $dataReceive['purchase_date']);
+
 
             $return = [
                 'status'    => "01",
@@ -109,6 +139,15 @@ class DeliveryOrderController extends Controller
         }
 
         return compact('return','courier', 'product','qtytype','delityp');
+    }
+
+    private function get_soListing($dateFrom, $dateTo){
+
+        return order_hdr::join('users','users.id','=','order_hdr.agent_id')
+                        ->select('order_hdr.order_no','order_hdr.delivery_type','order_hdr.invoice_no','order_hdr.status','users.code','users.name')
+                        ->whereBetween('order_hdr.purchase_date',[$dateFrom, $dateTo])
+                        ->orderBy('order_hdr.order_no', 'desc')
+                        ->get();
     }
 
     public function deliveryOrder_form(Request $request){
