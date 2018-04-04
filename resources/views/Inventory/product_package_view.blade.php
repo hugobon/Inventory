@@ -23,6 +23,11 @@ if(isset($id) && $id > 0){
 }
 ?>
 @section('content')
+<style>
+	.panel-heading{ background-color: #e6e6ff !important; }
+	.btn-default{ background-color: #ccccff !important; }
+	.btn-default:hover{ background-color: #b3b3ff !important; }
+</style>
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
 	<li><a href="{{ url('home') }}">Home</a></li>                    
@@ -44,7 +49,7 @@ if(isset($id) && $id > 0){
 		<div class="col-md-12">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title"><strong>Product</strong> view </h3>
+					<h3 class="panel-title"><strong>Product Package</strong> view </h3>
 					<ul class="panel-controls">
 					</ul>
 					<div class="actions pull-right">
@@ -57,7 +62,7 @@ if(isset($id) && $id > 0){
 				<div class="panel-body form-horizontal">
 					<div class="row">
 						<div class="col-md-12">
-							<h3> Product </h3>
+							<h3> Product Package</h3>
 							<hr />
 						</div>
 						<div class="col-md-6">
@@ -70,8 +75,8 @@ if(isset($id) && $id > 0){
 								<div class="col-md-8 control-label text-left">{{ isset($name) ? $name : '' }}</div>
 							</div>
 							<div class="form-group">
-								<label class="col-md-4 control-label"> Type: </label>
-								<div class="col-md-8 control-label text-left">{{ isset($typestr[$type]) ? $typestr[$type] : '' }}</div>
+								<label class="col-md-4 control-label"> Category: </label>
+								<div class="col-md-8 control-label text-left">{{ isset($productcategory['category']) > 0 ? $productcategory['category'] : '' }}</div>
 							</div>
 							<div class="form-group">
 								<label class="col-md-4 control-label"> Weight (g): </label>
@@ -90,10 +95,6 @@ if(isset($id) && $id > 0){
 							<div class="form-group">
 								<label class="col-md-4 control-label"> Year: </label>
 								<div class="col-md-8 control-label text-left">{{ isset($year) && $year > 1900 ? $year : '' }}</div>
-							</div>
-							<div class="form-group">
-								<label class="col-md-4 control-label"> Category: </label>
-								<div class="col-md-8 control-label text-left">{{ isset($category) ? $category : '' }}</div>
 							</div>
 							<div class="form-group">
 								<label class="col-md-4 control-label"> Point: </label>

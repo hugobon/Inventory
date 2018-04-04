@@ -128,6 +128,12 @@ Route::get('configuration/quantitytype/search/{x?}', 'Configuration\Quantitytype
 Route::post('configuration/quantitytype/form_search', 'Configuration\Quantitytype@form_search');
 Route::get('configuration/quantitytype/delete/{x?}', 'Configuration\Quantitytype@delete');
 Route::post('configuration/quantitytype/save', 'Configuration\Quantitytype@save');
+// Product Category
+Route::get('configuration/productcategory', 'Configuration\Productcategory@listing');
+Route::get('configuration/productcategory/search/{x?}', 'Configuration\Productcategory@search');
+Route::post('configuration/productcategory/form_search', 'Configuration\Productcategory@form_search');
+Route::get('configuration/productcategory/delete/{x?}', 'Configuration\Productcategory@delete');
+Route::post('configuration/productcategory/save', 'Configuration\Productcategory@save');
 
 //=========================
 // Stock In
