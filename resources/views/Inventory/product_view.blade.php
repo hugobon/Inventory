@@ -23,6 +23,11 @@ if(isset($id) && $id > 0){
 }
 ?>
 @section('content')
+<style>
+	.panel-heading{ background-color: #fff5e6 !important; }
+	.btn-default{ background-color: #ffe0b3 !important; }
+	.btn-default:hover{ background-color: #ffd699 !important; }
+</style>
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
 	<li><a href="{{ url('home') }}">Home</a></li>                    
@@ -70,8 +75,8 @@ if(isset($id) && $id > 0){
 								<div class="col-md-8 control-label text-left">{{ isset($name) ? $name : '' }}</div>
 							</div>
 							<div class="form-group">
-								<label class="col-md-4 control-label"> Type: </label>
-								<div class="col-md-8 control-label text-left">{{ isset($typestr[$type]) ? $typestr[$type] : '' }}</div>
+								<label class="col-md-4 control-label"> Category: </label>
+								<div class="col-md-8 control-label text-left">{{ isset($productcategory['category']) > 0 ? $productcategory['category'] : '' }}</div>
 							</div>
 							<div class="form-group">
 								<label class="col-md-4 control-label"> Weight (g): </label>
@@ -90,10 +95,6 @@ if(isset($id) && $id > 0){
 							<div class="form-group">
 								<label class="col-md-4 control-label"> Year: </label>
 								<div class="col-md-8 control-label text-left">{{ isset($year) && $year > 1900 ? $year : '' }}</div>
-							</div>
-							<div class="form-group">
-								<label class="col-md-4 control-label"> Category: </label>
-								<div class="col-md-8 control-label text-left">{{ isset($category) ? $category : '' }}</div>
 							</div>
 							<div class="form-group">
 								<label class="col-md-4 control-label"> Point: </label>

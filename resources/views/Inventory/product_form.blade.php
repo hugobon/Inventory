@@ -108,12 +108,15 @@ select{cursor:pointer;}
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-md-4 control-label"> Type <span class="required">*</span></label>
+										<label class="col-md-4 control-label"> Category </label>
 										<div class="col-md-8">        
-											<select class="form-control product-type" name="type" >
-												<option value=""></option>
-												<option value="1" {{ isset($type) && $type == 1 ? "selected" : "" }}> Item </option>
-												<option value="3" {{ isset($type) && $type == 3 ? "selected" : "" }}> Leaflet </option>
+											<select class="form-control product-category" name="category" >
+											<option value="" ></option>
+											@if(count($dataproductcategory) > 0)
+												@foreach($dataproductcategory->all() as $key => $row)
+													<option value="{{ $row->id }}" {{ isset($category) && $category == $row->id ? "selected" : "" }}>{{ $row->category }}</option>
+												@endforeach
+											@endif
 											</select>
 										</div>
 									</div>
@@ -141,7 +144,6 @@ select{cursor:pointer;}
 											<option value="" ></option>
 											@if(count($dataquantitytype) > 0)
 												@foreach($dataquantitytype->all() as $key => $row)
-													$quantitytypeArr[$row->id] = $row->type;
 													<option value="{{ $row->id }}" {{ isset($qtytype_id) && $qtytype_id == $row->id ? "selected" : "" }}>{{ $row->type }}</option>
 												@endforeach
 											@endif
@@ -152,12 +154,6 @@ select{cursor:pointer;}
 										<label class="col-md-4 control-label"> Year </label>
 										<div class="col-md-8">        
 											<input type="text" class="form-control product-year mask_year" name="year" placeholder="2000" value="{{ isset($year) && $year > 1900 ? $year : '' }}" />								
-										</div>
-									</div>
-									<div class="form-group">
-										<label class="col-md-4 control-label"> Category </label>
-										<div class="col-md-8">
-											<input type="text" class="form-control product-category" name="category" value="{{ isset($category) ? $category : '' }}" />   
 										</div>
 									</div>
 									<div class="form-group">
@@ -411,8 +407,8 @@ errorPlacement: function(error,element) { return true;},
 ignore: [],
 rules: {                                            
 		code: { required: true, minlength: 3,},
-		type: { required: true,},
 		name: { required: true,},
+		category: { required: true,},
 		price_wm: { required: true,},
 		price_em: { required: true,},
 		price_staff: { required: true,},

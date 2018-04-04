@@ -21,6 +21,11 @@ if(isset($id) && $id > 0){
 @extends('header')
 @section('title','Promotion: ' . $description)
 @section('content')
+<style>
+	.panel-heading{ background-color: #ccffe6 !important; }
+	.btn-default{ background-color: #99ffcc !important; }
+	.btn-default:hover{ background-color: #80ffbf !important; }
+</style>
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
 	<li><a href="{{ url('home') }}">Home</a></li>                    
