@@ -11,6 +11,7 @@ use App\inventory\product_image_m;
 use App\inventory\product_package_m;
 use App\configuration\config_tax_m;
 use App\configuration\config_quantitytype_m;
+use App\configuration\config_productcategory_m;
 use App\inventory\product_promotion_m;
 use App\user_m;
 
@@ -30,7 +31,7 @@ class Product extends Controller{
 		$data = array(
 			'countproduct' => $productdata->count(),
 			'productArr' => $productdata->orderBy('id', 'desc')->paginate(10),
-			'typeArr' => array( '0' => '', '1' => 'Item','2' => 'Package ','3' => 'Leaflet' ),
+			'typeArr' => array( '0' => '', '1' => 'Item','2' => 'Package '),
 			'statusArr' => array( '0' => 'Inactive', '1' => 'Active'),
 		);
         return view('Inventory/product_listing',$data);
@@ -76,7 +77,7 @@ class Product extends Controller{
 		$data = array(
 			'countproduct' => $countproduct,
 			'productArr' => $productArr,
-			'typeArr' => array( '0' => '', '1' => 'Item','2' => 'Package','3' => 'Leaflet' ),
+			'typeArr' => array( '0' => '', '1' => 'Item','2' => 'Package'),
 			'statusArr' => array( '0' => 'Inactive', '1' => 'Active'),
 			'search' => $search,
 			'type' => $type,
@@ -105,6 +106,9 @@ class Product extends Controller{
 		# get Quantity Type
 		$configquantitytypedata = New config_quantitytype_m;
 		$dataquantitytype = $configquantitytypedata->orderBy('type', 'asc')->get();
+		# get Product Category
+		$configproductcategorydata = New config_productcategory_m;
+		$dataproductcategory = $configproductcategorydata->orderBy('category', 'asc')->get();
 		# get Tax GST percentage
 		$taxgst = config_tax_m::where('code', 'gst')->first();
 		if($taxgst == false)
@@ -114,6 +118,7 @@ class Product extends Controller{
 			
 		$data = array(
 			'dataquantitytype' => $dataquantitytype,
+			'dataproductcategory' => $dataproductcategory,
 			'gstpercentage' => $gstpercentage,
 			'tabform' => 'active',
 			'tabgallery' => '',
@@ -133,6 +138,9 @@ class Product extends Controller{
 			# get Quantity Type
 			$configquantitytypedata = New config_quantitytype_m;
 			$dataquantitytype = $configquantitytypedata->orderBy('type', 'asc')->get();
+			# get Product Category
+			$configproductcategorydata = New config_productcategory_m;
+			$dataproductcategory = $configproductcategorydata->orderBy('category', 'asc')->get();
 			# get Tax GST percentage		
 			$taxgst = config_tax_m::where('code', 'gst')->first();
 			if($taxgst == false)
@@ -148,6 +156,7 @@ class Product extends Controller{
 			}
 				
 			$data['dataquantitytype'] = $dataquantitytype;
+			$data['dataproductcategory'] = $dataproductcategory;
 			$data['gstpercentage'] = $gstpercentage;
 			$data['tabform'] = $tabform;
 			$data['tabgallery'] = $tabgallery;
@@ -167,11 +176,14 @@ class Product extends Controller{
 			if($data['type'] == 2)
 				return redirect("product/package_view/" . $id);
 				
-			$data['typestr'] =  array( '0' => '', '1' => 'Item','2' => 'Package','3' => 'Leaflet' );
+			$data['typestr'] =  array( '0' => '', '1' => 'Item','2' => 'Package');
 			
 			# get Quantity Type
 			$configquantitytypedata = New config_quantitytype_m;
 			$data['quantitytype'] = $configquantitytypedata->where('id', $data['qtytype_id'])->first();
+			# get Product Category
+			$configproductcategorydata = New config_productcategory_m;
+			$data['productcategory'] = $configproductcategorydata->where('id', $data['category'])->first();
 			
 			# get Tax GST percentage		
 			$taxgst = config_tax_m::where('code', 'gst')->first();
@@ -264,8 +276,8 @@ class Product extends Controller{
 	public function insert(Request $postdata){
 		$this->validate($postdata,[
 			'code' => 'required',
-			'type' => 'required',
 			'name' => 'required',
+			'category' => 'required',
 			'qtytype_id' => 'required',
 			'price_wm' => 'required',
 			'price_em' => 'required',
@@ -285,7 +297,7 @@ class Product extends Controller{
 		
 		$data = array(
 			'code' => $code,
-			'type' => $postdata->input("type"),
+			'type' => 1, # item
 			'name' => $name, 
 			'description' => $postdata->input("description") != null ? $postdata->input("description") : '',
 			'qtytype_id' => $postdata->input("qtytype_id") != null ? $postdata->input("qtytype_id") : '1',
@@ -299,7 +311,7 @@ class Product extends Controller{
 			'quantity' => 0,
 			'status' => $postdata->input("status") != null ? $postdata->input("status") : '1',
 			'year' => $postdata->input("year") > 1900 ? $postdata->input("year") : 1900,
-			'category' => $postdata->input("category") != null ? $postdata->input("category") : '',
+			'category' => $postdata->input("category") > 0 ? $postdata->input("category") : '0',
 			'created_by' => Auth::user()->id,
 			'created_at' => date('Y-m-d H:i:s'),
 			'updated_by' => Auth::user()->id,
@@ -318,8 +330,8 @@ class Product extends Controller{
 			
 		$this->validate($postdata,[
 			'code' => 'required',
-			'type' => 'required',
 			'name' => 'required',
+			'category' => 'required',
 			'qtytype_id' => 'required',
 			'price_wm' => 'required',
 			'price_em' => 'required',
@@ -340,7 +352,6 @@ class Product extends Controller{
 		
 		$data = array(
 			'code' => $code,
-			'type' => $postdata->input("type"),
 			'name' => $name,
 			'description' => $postdata->input("description") != null ? $postdata->input("description") : '',
 			'qtytype_id' => $postdata->input("qtytype_id") != null ? $postdata->input("qtytype_id") : '1',
@@ -353,7 +364,7 @@ class Product extends Controller{
 			'quantity_min' => $postdata->input("quantity_min") > 0 ? $postdata->input("quantity_min") : 0,
 			'status' => $postdata->input("status") != null ? $postdata->input("status") : '1',
 			'year' => $postdata->input("year") > 1900 ? $postdata->input("year") : 1900,
-			'category' => $postdata->input("category") != null ? $postdata->input("category") : '',
+			'category' => $postdata->input("category") > 0 ? $postdata->input("category") : '0',
 			'updated_by' => Auth::user()->id,
 			'updated_at' => date('Y-m-d H:i:s'),
 		);
@@ -367,6 +378,9 @@ class Product extends Controller{
 		# get Quantity Type
 		$configquantitytypedata = New config_quantitytype_m;
 		$dataquantitytype = $configquantitytypedata->orderBy('type', 'asc')->get();
+		# get Product Category
+		$configproductcategorydata = New config_productcategory_m;
+		$dataproductcategory = $configproductcategorydata->orderBy('category', 'asc')->get();
 		# get Tax GST percentage
 		$taxgst = config_tax_m::where('code', 'gst')->first();
 		if($taxgst == false)
@@ -385,6 +399,7 @@ class Product extends Controller{
 		
 		$data = array(
 			'dataquantitytype' => $dataquantitytype,
+			'dataproductcategory' => $dataproductcategory,
 			'gstpercentage' => $gstpercentage,
 			'tabform' => 'active',
 			'tabgallery' => '',
@@ -424,8 +439,10 @@ class Product extends Controller{
 			}
 			
 			$configquantitytypedata = New config_quantitytype_m;
+			$configproductcategorydata = New config_productcategory_m;
 			$packagedata = New product_package_m;
 			$data['dataquantitytype'] = $configquantitytypedata->orderBy('type', 'asc')->get();
+			$data['dataproductcategory'] = $configproductcategorydata->orderBy('category', 'asc')->get();
 			$data['product_list'] = $packagedata->where('package_id', $id)->get();
 			$data['gstpercentage'] = $gstpercentage;
 			$data['tabform'] = $tabform;
@@ -446,11 +463,14 @@ class Product extends Controller{
 			if($data['type'] != 2)
 				return redirect("product/view/" . $id);
 				
-			$data['typestr'] =  array( '0' => '', '1' => 'Item','2' => 'Package','3' => 'Leaflet' );
+			$data['typestr'] =  array( '0' => '', '1' => 'Item','2' => 'Package');
 			
 			# get Quantity Type
 			$configquantitytypedata = New config_quantitytype_m;
 			$data['quantitytype'] = $configquantitytypedata->where('id', $data['qtytype_id'])->first();
+			# get Product Category
+			$configproductcategorydata = New config_productcategory_m;
+			$data['productcategory'] = $configproductcategorydata->where('id', $data['category'])->first();
 			
 			# get Tax GST percentage		
 			$taxgst = config_tax_m::where('code', 'gst')->first();
@@ -499,6 +519,7 @@ class Product extends Controller{
 		$this->validate($postdata,[
 			'code' => 'required',
 			'name' => 'required',
+			'category' => 'required',
 			'price_wm' => 'required',
 			'price_em' => 'required',
 			'price_staff' => 'required',
@@ -532,7 +553,7 @@ class Product extends Controller{
 			'quantity' => 0,
 			'status' => $postdata->input("status") != null ? $postdata->input("status") : '1',
 			'year' => $postdata->input("year") > 1900 ? $postdata->input("year") : 1900,
-			'category' => $postdata->input("category") != null ? $postdata->input("category") : '',
+			'category' => $postdata->input("category") > 0 ? $postdata->input("category") : '0',
 			'created_by' => Auth::user()->id,
 			'created_at' => date('Y-m-d H:i:s'),
 			'updated_by' => Auth::user()->id,
@@ -608,7 +629,7 @@ class Product extends Controller{
 			//'quantity_min' => $postdata->input("quantity_min") > 0 ? $postdata->input("quantity_min") : 0,
 			'status' => $postdata->input("status") != null ? $postdata->input("status") : '1',
 			'year' => $postdata->input("year") > 1900 ? $postdata->input("year") : 1900,
-			'category' => $postdata->input("category") != null ? $postdata->input("category") : '',
+			'category' => $postdata->input("category") > 0 ? $postdata->input("category") : '0',
 			'updated_by' => Auth::user()->id,
 			'updated_at' => date('Y-m-d H:i:s'),
 		);
@@ -984,6 +1005,7 @@ class Product extends Controller{
 	
 	public function single_data_product($id = 0){
 		$data = array();
+		$productArr = array();
 		if($id > 0){
 			$productdata = New product_m;
 			$datap = $productdata->where('id', $id)->first();
@@ -1015,7 +1037,6 @@ class Product extends Controller{
 				if($datap['type'] == 2){
 					#get product name
 					$product_list = $packagedata->where('package_id', $id)->get();
-					$productArr = array();
 					if(count($product_list) > 0){
 						foreach($product_list->all() as $key => $row){
 							$package_item = $productdata->where('id', $row->product_id)->where('type','<>', 2)->first();
@@ -1055,7 +1076,6 @@ class Product extends Controller{
 				}
 				else{
 					#get package name
-					$packageArr = array();
 					$package_list = $packagedata->where('product_id',$id)->orderBy('id', 'desc')->get();
 					if(count($package_list) > 0){
 						foreach($package_list->all() as $key => $row){
@@ -1094,7 +1114,7 @@ class Product extends Controller{
 							
 					$data['productArr'] = $productArr;
 					$data['package_list'] = $package_list;
-					$data['typename'] = 'Package';
+					$data['typename'] = 'Product';
 				}
 				# get Quantity Type
 				$configquantitytypedata = New config_quantitytype_m;

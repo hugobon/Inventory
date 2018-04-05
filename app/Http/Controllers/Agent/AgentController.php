@@ -17,6 +17,7 @@ use App\delivery_type;
 use App\order_hdr;
 use App\order_item;
 use App\global_status;
+use App\config_tax;
 use Auth;
 use DB;
 
@@ -271,18 +272,23 @@ class AgentController extends Controller
 
             $cartItems = agent_select_product::leftJoin('product','product.id','=','agent_select_product.product_id')
                                             ->select('agent_select_product.id','product.id as product_id','product.name','product.description','product.price_wm','product.price_em','product.quantity_min'
-                                                ,'product.quantity as stock_quantity','agent_select_product.total_price','agent_select_product.quantity as total_quantity')
+                                                ,'product.quantity as stock_quantity','agent_select_product.quantity as total_quantity')
                                             ->where('agent_select_product.agent_id','=',$agent_id)
                                             ->get();
 
             // var_dump($cartItems);die();
-            $grandTotalPrice = 0.00;
-            foreach ($cartItems as $key => $value) {
+            $grandTotalPrice_wm = 0.00;
+            $grandTotalPrice_em = 0.00;
+            foreach ($cartItems as $key => $value){
 
+                $cartItems[$key]['price_wm'] = $this->fn_calc_gst_price(number_format(floatval($value->price_wm),2));
+                $cartItems[$key]['price_em'] = $this->fn_calc_gst_price(number_format(floatval($value->price_em),2));
 
-                $cartItems[$key]['price'] = $this->fn_calc_gst_price(number_format(floatval($value->price_wm),2));
+                $total_price_wm = $this->fn_calc_total_price($value->total_quantity,$cartItems[$key]['price_wm']);
+                $total_price_em = $this->fn_calc_total_price($value->total_quantity,$cartItems[$key]['price_em']);
 
-                $cartItems[$key]['total_price'] = number_format(floatval($value->total_price),2);
+                $cartItems[$key]['total_price_wm'] = $total_price_wm;
+                $cartItems[$key]['total_price_em'] = $total_price_em;
 
                 $image = product_image_m::select('type','description','file_name','path')
                                         ->where('product_id',$value->product_id)
@@ -291,17 +297,30 @@ class AgentController extends Controller
 
                 $cartItems[$key]['image'] = ($image['path'] == null ? '' : $image['path']);
 
-                $grandTotalPrice = $grandTotalPrice + str_replace(",","",$value->total_price);
+                $grandTotalPrice_wm = $grandTotalPrice_wm + str_replace(",","",$cartItems[$key]['total_price_wm']);
+                $grandTotalPrice_em = $grandTotalPrice_em + str_replace(",","",$cartItems[$key]['total_price_em']);
 
             }
 
-            $grandTotalPrice = number_format(floatval($grandTotalPrice),2);
+            // dd($grandTotalPrice_wm,$grandTotalPrice_em);
+            if($grandTotalPrice_wm < "300.00" || $grandTotalPrice_em < "300.00"){
+
+                $shipping_fee = number_format(floatval("10.00"),2);
+            }
+            else{
+
+                $shipping_fee = number_format(floatval("0.00"),2);
+            }
+
+            $grandTotalPrice_wm = number_format(floatval($grandTotalPrice_wm),2);
+            $grandTotalPrice_em = number_format(floatval($grandTotalPrice_em),2);
 
             $returnData = [
 
                 'agent_id'        => $agent_id,
-                'grandTotalPrice' => $grandTotalPrice,
-                'shippingPrice'  => "0.00"
+                'grandTotalPrice_wm' => $grandTotalPrice_wm,
+                'grandTotalPrice_em' => $grandTotalPrice_em,
+                'shippingPrice'  => $shipping_fee
             ];
 
             $deliveryType = delivery_type::select('id','delivery_code as code','type_description as description')
@@ -316,8 +335,8 @@ class AgentController extends Controller
             $return['message'] = $e->getMessage();
             $return['status'] = "02";
         }
-        // dd($grandTotal);
-        // return $return;
+        
+        // dd($return);
         return view('Agent.agent_checkout',compact('cartItems','returnData','deliveryType'));
     }
 
@@ -331,23 +350,22 @@ class AgentController extends Controller
                                 ->where('id',$data['product_id'])
                                 ->first();
 
-            $cartItem = agent_select_product::select('id','product_id','agent_id','quantity','total_price')
+            $cartItem = agent_select_product::select('id','product_id','agent_id','quantity')
                                             ->where('product_id',$data['product_id'])
                                             ->where('agent_id',$data['agent_id'])
                                             ->first();
             if($cartItem == null){
 
 
-                $total_price = number_format(floatval($this->fn_calc_gst_price($product->price_wm) * (int)$data['quantity']),2);
+                // $total_price = number_format(floatval($this->fn_calc_gst_price($product->price_wm) * (int)$data['quantity']),2);
 
-                $total_price = str_replace(",", "", $total_price);
+                // $total_price = str_replace(",", "", $total_price);
                 
                 $addToCart = Array(
 
                     'agent_id' => $data['agent_id'],
                     'product_id' => $data['product_id'],
                     'quantity' => $data['quantity'], 
-                    'total_price' => $total_price,
                     'created_by' => Auth::user()->id,
                     'created_at' => \Carbon\Carbon::now(new \DateTimeZone('Asia/Kuala_Lumpur'))
                 );
@@ -356,26 +374,17 @@ class AgentController extends Controller
             }
             else{
 
-                if($agent->state == "Sabah" || $agent->state == "Sarawak"){
-
-                    $total_price = number_format(floatval($this->fn_calc_gst_price($product->price_em) * (int)$data['quantity']),2);
-                }
-                else{
-
-                    $total_price = number_format(floatval($this->fn_calc_gst_price($product->price_wm) * (int)$data['quantity']),2);
-                }
+                // $total_price = number_format(floatval($this->fn_calc_gst_price($product->price_wm) * (int)$data['quantity']),2);
 
                 // dd(str_replace(",","",$total_price));
 
-                $updateQuantity = $data['quantity'] + $cartItem->quantity;
-                $updateTotalPrice = number_format(floatval($total_price + $cartItem->total_price),2);
-                $updateTotalPrice = str_replace(",","",$updateTotalPrice);
+                // $updateQuantity = $data['quantity'] + $cartItem->quantity;
+                // $updateTotalPrice = number_format(floatval($total_price + $cartItem->total_price),2);
+                // $updateTotalPrice = str_replace(",","",$updateTotalPrice);
                 agent_select_product::where('product_id',$data['product_id'])
                                         ->where('agent_id',$data['agent_id'])
                                         ->update([
-
                                             'quantity' => $updateQuantity,
-                                            'total_price' => $updateTotalPrice,
                                             'updated_by' =>  Auth::user()->id,
                                             'updated_at' => \Carbon\Carbon::now()
 
@@ -394,6 +403,7 @@ class AgentController extends Controller
             $return['status'] = "02";
         }
 
+        // dd($return);
         return compact('data','return','product','agent','count');
     }
 
@@ -405,9 +415,13 @@ class AgentController extends Controller
         // dd($delivery_type);
         try{
 
+            $addressData = address::select('id','name','address_code','street1','street2','poscode','city','state','country')
+                                    ->where('address_code','=',$agent_id."_AGENT")
+                                    ->first();
+
             $cartItems = agent_select_product::leftJoin('product','product.id','=','agent_select_product.product_id')
                                             ->select('agent_select_product.id','product.id as product_id','product.name','product.description','product.price_wm','product.price_em','product.quantity_min'
-                                                ,'product.quantity as stock_quantity','agent_select_product.total_price','agent_select_product.quantity as total_quantity')
+                                                ,'product.quantity as stock_quantity','agent_select_product.quantity as total_quantity')
                                             ->where('agent_select_product.agent_id','=',$agent_id)
                                             ->get();
 
@@ -415,9 +429,19 @@ class AgentController extends Controller
             $grandTotalPrice = 0.00;
             foreach ($cartItems as $key => $value){
 
-                $cartItems[$key]['price'] = $this->fn_calc_gst_price(number_format(floatval($value->price_wm),2));
+                if(strtolower($addressData->state) == strtolower("Sabah") || strtolower($addressData->state) ==  strtolower("Sarawak")){
 
-                $cartItems[$key]['total_price'] = number_format(floatval($value->total_price),2);
+                    $cartItems[$key]['price'] = $this->fn_calc_gst_price(number_format(floatval($value->price_em),2));
+                    $total_price = $this->fn_calc_total_price($value->total_quantity,$cartItems[$key]['price']);
+                    $cartItems[$key]['total_price'] = $total_price;
+                }
+                else{
+                    $cartItems[$key]['price'] = $this->fn_calc_gst_price(number_format(floatval($value->price_wm),2));
+                    $total_price = $this->fn_calc_total_price($value->total_quantity,$cartItems[$key]['price']);
+                    $cartItems[$key]['total_price'] = $total_price;
+                }
+                
+                // dd($cartItems);
 
                 $image = product_image_m::select('type','description','file_name','path')
                                         ->where('product_id',$value->product_id)
@@ -430,13 +454,20 @@ class AgentController extends Controller
 
             }
 
+            //shipping fee
+            if($grandTotalPrice < "300.00"){
+
+                $shipping_fee = number_format(floatval("10.00"),2);
+            }
+            else{
+
+                $shipping_fee = number_format(floatval("0.00"),2);
+            }
+
+            //gandtotal price
             $grandTotalPrice = number_format(floatval($grandTotalPrice),2);
 
             if($deliveryType == "01"){
-
-                $addressData = address::select('id','name','address_code','street1','street2','poscode','city','state','country')
-                                    ->where('address_code','=',$agent_id."_AGENT")
-                                    ->first();
 
                 $address = [
 
@@ -465,7 +496,7 @@ class AgentController extends Controller
 
                 'agent_id'        => $agent_id,
                 'grandTotalPrice' => $grandTotalPrice,
-                'shippingPrice'  => "0.00",
+                'shippingPrice'  => $shipping_fee,
                 'address' => $address,
                 'deliveryType' =>$deliveryType
             ];
@@ -516,7 +547,7 @@ class AgentController extends Controller
 
         try {
 
-            $cartItem = agent_select_product::select('id','product_id','agent_id','quantity','total_price')
+            $cartItem = agent_select_product::select('id','product_id','agent_id','quantity')
                                             ->where('id',$id)
                                             ->first();
 
@@ -539,7 +570,6 @@ class AgentController extends Controller
                                     ->update([
 
                                         'quantity' => $quantity,
-                                        'total_price' => $total_price,
                                         'updated_by' =>  Auth::user()->id,
                                         'updated_at' => \Carbon\Carbon::now()
 
@@ -563,24 +593,53 @@ class AgentController extends Controller
 
         try {
             
+            $data = (new Product)->single_data_product($product_id);
+
+            // dd($data);
+
+            $return['message'] = "succssfuly retrived";
+            $return['status'] = "01";
         }
         catch(\Exception $e){
             
+            $return['message'] = $e->getMessage();
+            $return['status'] = "02";
         }
 
+        // dd($return);
         return view('Agent.agent_product_detail');
+    }
+
+    private function fn_calc_total_price($quantity,$price){
+
+        $total_price = ($quantity * $price);
+        $total_price = number_format(floatval($total_price),2);
+
+        return $total_price;
     }
 
     private function fn_calc_gst_price($price){
 
         try{
 
-            $AfterGst = $price * 1.06;
+            $gstRate = config_tax::select('percent')
+                                ->where('code',"gst")
+                                ->first();
+
+
+            $gst = 1 + ($gstRate->percent/100);
+
+            $AfterGst = $price * $gst;
             $AfterGst = number_format(floatval($AfterGst),2);
+
+            $return['message'] = "succssfuly calculate";
+            $return['status'] = "01";
 
         }
         catch(\Exception $e){
 
+            $return['message'] = $e->getMessage();
+            $return['status'] = "02";
         }
         // dd($AfterGst);
         return $AfterGst;
@@ -692,7 +751,7 @@ class AgentController extends Controller
             $cartItems = agent_select_product::leftJoin('product','product.id','=','agent_select_product.product_id')
                                             ->select('agent_select_product.id','product.id as product_id','product.name','product.description'
                                                 ,'product.price_wm','product.price_em','product.quantity_min'
-                                                ,'product.quantity as stock_quantity','agent_select_product.total_price','agent_select_product.quantity as total_quantity')
+                                                ,'product.quantity as stock_quantity','agent_select_product.quantity as total_quantity')
                                             ->where('agent_select_product.agent_id','=',$agent_id)
                                             ->get();
 
