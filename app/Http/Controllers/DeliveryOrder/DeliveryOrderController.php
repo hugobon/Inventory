@@ -26,47 +26,51 @@ class DeliveryOrderController extends Controller
 {
     public function deliveryOrder_show_page(Request $request){
 
-        $parameter = $request->get('parameter');
+        $purchase_date = $request->get('purchase_date');
+        $agent_code = $request->get('agent_code');
+        $delivery_typ = $request->get('delivery_typ');
 
         $doListing = "";
         $agentListing = "<option></option>";
-        
 
         $orderTable = order_hdr::join('users','users.id','=','order_hdr.agent_id')
                         ->select('order_hdr.order_no','order_hdr.delivery_type','order_hdr.invoice_no','order_hdr.status','users.code','users.name')
                         ->orderBy('order_hdr.order_no', 'desc');
                         
-        if(is_null($parameter)){
-            $current_date = (Carbon::now(new \DateTimeZone('Asia/Kuala_Lumpur')))->format('Y-m-d');
-            $order_hdr = $orderTable->whereBetween('order_hdr.purchase_date',[$current_date, $current_date])
-                                ->get();
+        if(is_null($purchase_date)){
+            $startDate = Carbon::now(new \DateTimeZone('Asia/Kuala_Lumpur'));
+            $endDate = Carbon::now(new \DateTimeZone('Asia/Kuala_Lumpur'));
         }
         else{
 
-            list($x, $y) = explode(" - ", $parameter['purchase_date']);
+            list($x, $y) = explode(" - ", $purchase_date);
 
-            $dateFrom = (new \DateTime($x))->format('Y-m-d');
-            $dateTo   = (new \DateTime($y))->format('Y-m-d'); 
+            list($xd, $xm, $xY) = explode("/", $x);
+            list($yd, $ym, $yY) = explode("/", $y);
 
-            if(!is_null($parameter['agent_code'])){
+            $startDate = new \DateTime($xY."-".$xm."-".$xd);
+            $endDate   = new \DateTime($yY."-".$ym."-".$yd);
+
+            if(!is_null($agent_code)){
                 
             }
 
-            if(!is_null($parameter['delivery_typ'])){
-
+            if(!is_null($delivery_typ)){
+            	dd($delivery_typ);
             }
-
-            if(!is_null($parameter['inv_no'])){
-
-            }
-
-
-            $order_hdr = $orderTable->
         }
+
+        $order_hdr = $orderTable->whereBetween('order_hdr.purchase_date',[$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+            						->get();
 
         $agent = users::select('id','code','name')->get();
 
         $delityp = $this->getValueHelp()['delityp'];
+
+        $delitypOption = "";
+        foreach ($delityp as $k => $v) {
+        	$delitypOption.= "<option value='".$v['delivery_type']."'>".$v['type_description']."</option>";
+        }
         
 
         if(count($order_hdr) > 0){
@@ -101,7 +105,7 @@ class DeliveryOrderController extends Controller
             }
         }
         else{
-            $doListing.= "<tr><td colspan='4'>No data found</td></tr>";
+            $doListing.= "<tr><td colspan='5' align='center'>No data found</td></tr>";
         }
 
         foreach ($agent as $k => $v) {
@@ -111,7 +115,10 @@ class DeliveryOrderController extends Controller
         $outputData = [
             'doListing'     => $doListing,
             'totalDO'       => count($order_hdr),
-            'agentListing'  => $agentListing
+            'agentListing'  => $agentListing,
+            'startDate'		=> $startDate->format('d/m/Y'),
+            'endDate'		=> $endDate->format('d/m/Y'),
+            'delitypOption' => $delitypOption
         ];
 
     	return view('DeliveryOrder.deliveryOrder_listing', compact('outputData'));

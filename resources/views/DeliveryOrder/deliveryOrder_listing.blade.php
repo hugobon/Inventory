@@ -6,10 +6,14 @@
 <script type="text/javascript">
 
 $(function() {
-    $('#purchase_date').daterangepicker({
+    // $('#purchase_date')
+    
+    $('input[name="purchase_date"]').daterangepicker({
         locale: {
           format: 'DD/MM/YYYY'
         },
+        startDate: "{!! $outputData['startDate'] !!}",
+        endDate: "{!! $outputData['endDate'] !!}"
     });
 });
 
@@ -35,7 +39,9 @@ function fn_search(){
         type: "POST",
         data: lt_data,
         success: function(response){
-            console.log(response);
+            console.log("{!! $outputData['doListing'] !!}");
+            $('#soListing').html("{!! $outputData['doListing'] !!}")
+            // console.log({!! $outputData['doListing'] !!});  onclick="fn_search()"
         },
         error: function(jqXHR, errorThrown, textStatus){
             console.log(jqXHR);
@@ -59,7 +65,8 @@ function fn_search(){
 <div class="page-content-wrap">
     <div class="row">
         <div class="col-md-12">
-            <form class="form-horizontal">
+            <form class="form-horizontal" action="listing" method="POST">
+                {{ csrf_field() }}
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">Search Sales Order</h3>
@@ -68,7 +75,7 @@ function fn_search(){
                         <div class="row">
                             <div class="form-group">
                                 <div class="col-md-12">
-                                    <button type="button" class="btn btn-default pull-right" onclick="fn_search()"><i class="fa fa-search"></i>Search</button>
+                                    <button class="btn btn-default pull-right"><i class="fa fa-search"></i>Search</button>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -76,25 +83,23 @@ function fn_search(){
                                 <div class="form-group">
                                     <label class="col-md-3 control-label">Purchase Date</label>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" id="purchase_date">
+                                        <input type="text" class="form-control" name="purchase_date">
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="col-md-3 control-label">Delivery Type</label>
                                     <div class="col-md-9">
-                                        <select id="delivery_typ" class="form-control">
-                                            <option></option>
-                                            <option>Self Collect</option>
-                                            <option>Delivery</option>
+                                        <select name="delivery_typ" class="form-control select">
+                                            {!! $outputData['delitypOption'] !!}
                                         </select>
                                     </div>
                                 </div>
-                                <div class="form-group">
+                                <!-- <div class="form-group">
                                     <label class="col-md-3 control-label">Invoice No.</label>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" id="inv_no">
+                                        <input type="text" class="form-control" name="inv_no">
                                     </div>
-                                </div>
+                                </div> -->
                                 <!-- <div class="form-group">
                                     <label class="col-md-3 control-label">Agent Code</label>
                                     <div class="col-md-9">
@@ -104,7 +109,7 @@ function fn_search(){
                                 <div class="form-group">
                                     <label class="col-md-3 control-label">Agent Code</label>
                                     <div class="col-md-9">                                                                                
-                                        <select id="agent_code" class="form-control select" data-live-search="true">
+                                        <select name="agent_code" class="form-control select" data-live-search="true">
                                             {!! $outputData['agentListing'] !!}
                                         </select>
                                     </div>
@@ -158,7 +163,7 @@ function fn_search(){
                                         <th>Status</th>
                                     <tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="soListing">
                                     {!! $outputData['doListing'] !!}
                                 </tbody>
                             </table>
