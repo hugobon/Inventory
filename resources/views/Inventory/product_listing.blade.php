@@ -66,7 +66,6 @@
 												<option value=""> All </option>
 												<option value="1" {{ isset($type) && $type == 1 ? "selected" : "" }}> Item </option>
 												<option value="2" {{ isset($type) && $type == 2 ? "selected" : "" }}> Package </option>
-												<option value="3" {{ isset($type) && $type == 3 ? "selected" : "" }}> Leaflet </option>
 											</select>
 										</div>
 									</div>
