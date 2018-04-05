@@ -1005,6 +1005,7 @@ class Product extends Controller{
 	
 	public function single_data_product($id = 0){
 		$data = array();
+		$productArr = array();
 		if($id > 0){
 			$productdata = New product_m;
 			$datap = $productdata->where('id', $id)->first();
@@ -1036,7 +1037,6 @@ class Product extends Controller{
 				if($datap['type'] == 2){
 					#get product name
 					$product_list = $packagedata->where('package_id', $id)->get();
-					$productArr = array();
 					if(count($product_list) > 0){
 						foreach($product_list->all() as $key => $row){
 							$package_item = $productdata->where('id', $row->product_id)->where('type','<>', 2)->first();
@@ -1076,7 +1076,6 @@ class Product extends Controller{
 				}
 				else{
 					#get package name
-					$packageArr = array();
 					$package_list = $packagedata->where('product_id',$id)->orderBy('id', 'desc')->get();
 					if(count($package_list) > 0){
 						foreach($package_list->all() as $key => $row){
@@ -1115,7 +1114,7 @@ class Product extends Controller{
 							
 					$data['productArr'] = $productArr;
 					$data['package_list'] = $package_list;
-					$data['typename'] = 'Package';
+					$data['typename'] = 'Product';
 				}
 				# get Quantity Type
 				$configquantitytypedata = New config_quantitytype_m;
