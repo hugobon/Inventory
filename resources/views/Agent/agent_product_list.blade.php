@@ -20,7 +20,7 @@
 					<div class="panel-heading">
 						<h3 class="panel-title"><strong>Shopping Cart</strong></h3>
 						<ul class="panel-controls pull-right">
-							<a href="{{ url('agent/get_checkout_items') }}/{{ Auth::user()->id }}" style="font-size: 30px;">
+							<a href="{{ url('agent/get_checkout_items') }}/{{ Auth::user()->id }}" style="font-size: 30px;" title="Cart List">
 								<i class="glyphicon glyphicon-shopping-cart cart"></i>
 							</a>
 							<span class="informer informer-danger" id="itemCount"></span>
@@ -29,7 +29,7 @@
 				</div>
 				<div class="panel-body form-horizontal">
 					<div class="row">
-						<div class="col-md-11">
+						<div class="col-md-12">
 							<div class="col-md-2 col-md-offset-5">
 								<p><span id="form-title"> </span></p>
 							</div>
@@ -49,18 +49,18 @@
 						<div class="container" style="margin-top:50px; width: 100%;">
 							<div class='row'>
 								@foreach($data['productArr']['Product'] as $key => $value)
-								<div class="col-md-3 item-detail">
+								<div class="col-md-3" style="width: 250px; min-width:260px;">
 									<div class="panel panel-default item-content">
 								        <div class="panel-heading">
 								            <div class="media clearfix" style="height: 20px; word-wrap: break-word;">
 								                <h3 class="font-bold" style="font-size: 15px;">{{ $value['name'] }}</h3>
 								            </div>
 								        </div>
-								        <div class="panel-image">
-								            <img class="img-responsive" src="{{ isset($value['image_path']) ? asset('storage/'.$value['image_path']) : asset('invalid-image.png') }}" style="width:100%; height: 180px;" alt="">
+								        <div class="panel-image detail">
+								            <img class="img-responsive" src="{{ isset($value['image_path']) ? asset('storage/'.$value['image_path']) : asset('invalid-image.png') }}" style="width:100%; height: 200px;" alt="">
 								        </div>
-								        <div class="panel-body">
-								       		<table>
+								        <div class="panel-body detail">
+								       		<!-- <table>
 								       			<tr>
 								       				<td><h4 class="font-bold price-text-color">WM </h4></td>
 								    				<td><h4 class="font-bold price-text-color">: RM{{ $value['wm_aftergst'] }}</h4></td>
@@ -69,22 +69,33 @@
 							       					<td><h4 class="font-bold price-text-color">EM</h4></td>
 							       					<td><h4 class="font-bold price-text-color">: RM{{ $value['em_aftergst'] }}</h4></td>
 								       			</tr>
-								       		</table>
-										</div>			
+								       		</table> -->
+										</div>		
 								        <div class="panel-footer">
-							                <form action="javascript:;" class="save-item">
-												<input type="hidden" name="itemType" value="product">
-												<input type="hidden" id="agent_id" value="{{ Auth::user()->id }}">
-												<input type="hidden" name="id" id="id" value="{{ $value['id'] }}">
-												<input type="hidden" name="_token" id="_token" value="{!! csrf_token() !!}">
-												<div class="col-md-3 info" style="margin: 5px;">
-													<div class="form-group info-detail">
-										                <label class="control-label">Quantity</label>
-										                <input type="text" class="form-control quantity" name="quantity" id="quantity" min="1" max="200" step="1" value="1">
-									                </div>
-												</div>
-												<button type="submit" class="btn btn-block btn-danger add-to-cart">Add to cart</button>
-											</form>
+								        	<div class="col-md-12">
+								                <form action="javascript:;" class="save-item">
+													<input type="hidden" name="id" id="id" value="{{ $value['id'] }}">
+													<div class="col-md-3 info" style="margin: 5px;">
+														<div class="form-group info-detail">
+											                <label class="control-label">Quantity</label>
+											                <input type="text" class="form-control quantity" name="quantity" id="quantity" min="1" max="200" step="1" value="1">
+										                </div>
+													</div>
+													<div class="col-md-8">
+										                <table style="margin-top: 20px; margin-left:5px; ">
+											       			<tr>
+											       				<td><h4 class="font-bold price-text-color">WM </h4></td>
+											    				<td><h4 class="font-bold price-text-color">: RM{{ $value['wm_aftergst'] }}</h4></td>
+											       			</tr>
+											       			<tr>
+										       					<td><h4 class="font-bold price-text-color">EM</h4></td>
+										       					<td><h4 class="font-bold price-text-color">: RM{{ $value['em_aftergst'] }}</h4></td>
+											       			</tr>
+											       		</table>
+											       	</div>
+													<button type="submit" class="btn btn-block btn-danger add-to-cart">Add to cart</button>
+												</form>
+											</div>
 								        </div>
 								    </div>
 							    </div>
@@ -104,7 +115,7 @@
 <button type="button" class="btn btn-default mb-control" data-box="#message-box-default">Default</button>
 
 
-<div class="message-box animated fadeIn open promo-advs" id="message-box-default">
+<div class="message-box animated fadeIn open promo-advs" id="message-box-default" hidden>
     <div class="mb-container">
     	<div class="mb-header"><i class="fa fa-times-circle-o pull-right mb-control-close" style="font-size: 30px;"></i></div>
         <div class="mb-middle">
@@ -122,7 +133,6 @@
 
 
 	$(document).ready(function(){
-
 
 	 $(".btn-minus").on("click",function(){
 
@@ -178,12 +188,12 @@
 
 	});
 
-	// $('div.item-detail').click(function(){
+	$(document).on('click','div.detail', function(){
 
-	// 	var product_id = $(this).find('input#id').val();
-	// 	// console.log(product_id)
-	// 	window.location.href = "agent/get_product_details/"+product_id;
-	// });
+		var product_id = $(this).closest('.item-content').find('input#id').val();
+		console.log(product_id)
+		window.location.href = "{{ url('agent/get_product_details') }}"+"/"+product_id;
+	});
 	
 	// var itemCount = 0;
 
@@ -194,8 +204,10 @@
 		// console.log($(this).closest('form.save-item').children('.info').children('.info-detail').find('select#quantity').val())
 		var product_id = $(this).closest('form.save-item').find('input#id').val();
 		var quantity = $(this).closest('form.save-item').children('.info').children('.info-detail').find('input#quantity').val();
-		var agent_id = $(this).closest('form.save-item').find('input#agent_id').val();
-		var _token = $(this).closest('form.save-item').find('input#_token').val();
+		// var agent_id = $(this).closest('form.save-item').find('input#agent_id').val();
+		// var _token = $(this).closest('form.save-item').find('input#_token').val();
+		var agent_id = "{{ Auth::user()->id }}";
+
 		var item = [];
 		console.log(quantity)
 
@@ -209,7 +221,7 @@
 
 			var data = {
 
-				_token : _token,
+				_token : "{!! csrf_token() !!}",
 				item : item
 			};
 

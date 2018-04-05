@@ -36,11 +36,11 @@
                                     <table class="table table-actions table-cart-item" id="item-table">
                                         <thead class="">
                                             <tr>
-                                                <th class="col-sm-8 col-md-4">Product</th>
+                                                <th class="col-sm-5 col-md-5">Product</th>
                                                 <th class="col-sm-1 col-md-1">Quantity</th>
-                                                <th class="col-sm-1 col-md-1">Unit Price</th>
-                                                <th class="col-sm-1 col-md-1">Total</th>
-                                                <th class="col-sm-1 col-md-1"><input type="hidden" id="agent_id" value="{{ $returnData['agent_id'] }}"></th>
+                                                <th class="col-sm-2 col-md-2">Unit Price</th>
+                                                <th class="col-sm-2 col-md-2">Total</th>
+                                                <th class="col-sm-2 col-md-2"><input type="hidden" id="agent_id" value="{{ $returnData['agent_id'] }}"></th>
                                             </tr>
                                         </thead>
                                         <tbody class="item-body">
@@ -60,8 +60,8 @@
                                                 <td class="col-sm-1 col-md-1 quantity-item" style="text-align: center">
                                                     <input type="text" class="form-control quantity" id="quantity" value="{{ $value->total_quantity }}">
                                                 </td>
-                                                <td class="col-sm-1 col-md-1"><strong>RM{{ $value->price }}</strong></td>
-                                                <td class="col-sm-1 col-md-1"><strong>RM{{ $value->total_price }}</strong></td>
+                                                <td class="col-sm-1 col-md-1"><strong>WM RM{{ $value->price_wm }}<br>EM RM{{ $value->price_em }}</strong></td>
+                                                <td class="col-sm-1 col-md-1"><strong>WM RM{{ $value->total_price_wm }}<br>EM RM{{ $value->total_price_em }}</strong></td>
                                                 <td class="col-sm-1 col-md-1">
                                                     <button type="button" class="btn btn-danger remove-item">
                                                         <i class="glyphicon glyphicon-trash"></i>Remove
@@ -103,7 +103,7 @@
                                             </tr>
                                             <tr>
                                                 <td><h3>Grand Total</h3></td>
-                                                <td><h3>RM{{ $returnData['grandTotalPrice'] }}</h3></td>
+                                                <td><h3>WM RM{{ $returnData['grandTotalPrice_wm'] }}<br>EM RM{{ $returnData['grandTotalPrice_em'] }}</h3></td>
                                             </tr>
                                             <tr>
                                                 <td>
