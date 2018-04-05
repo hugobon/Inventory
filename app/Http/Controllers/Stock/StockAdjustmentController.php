@@ -88,7 +88,7 @@ class StockAdjustmentController extends Controller
 			
 		$data = array(
 			'product_id' => $postdata->input("product_id"),
-			'product_name' => $checkproduct["code"]." (".$checkproduct["description"].")",
+			'product_name' => $checkproduct["code"]." (".$checkproduct["name"].")",
 			'adjustment_id' => $postdata->input("adjustment_id"),
 			'quantity' => $postdata->input("quantity"),
 			'remarks' => $postdata->input("remarks"),

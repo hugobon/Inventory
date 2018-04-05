@@ -50,7 +50,7 @@ class StockInController extends Controller
         $DocNo =  $this->generate_docno();
         $inStockDate = $request->input('in_stock_date');
 
-        $product =  product_m::get();
+        $product =  product_m::where('type','<>',['2','3'])->get();
         $supplier = supplier::get();
 
         $stockInId = stock_in::insertGetId([
