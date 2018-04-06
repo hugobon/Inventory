@@ -557,7 +557,7 @@ $(function() {
 		'autoGroup': true,
 	});
 	
-	$('body').on('change', '.product-weight', function(){
+	$('body').on('change', '.product-weight, .product-last_purchase', function(){
 		var numberd = $(this).val();
 		if(numberd > 0){
 			$(this).val(setnumber_decimal(numberd));
