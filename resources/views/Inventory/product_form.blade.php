@@ -472,6 +472,16 @@ $(function() {
 		'autoGroup': true,
 	});
 	
+	$('body').on('change', '.product-weight', function(){
+		var numberd = $(this).val();
+		if(numberd > 0){
+			$(this).val(setnumber_decimal(numberd));
+		}
+		else{
+			$(this).val('');
+		}
+	});
+	
 	$('body').on('change', '.sales-info', function(){
 		var numberd = $(this).val();
 		var gst = 0;
