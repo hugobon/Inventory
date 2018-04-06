@@ -108,7 +108,7 @@ select{cursor:pointer;}
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-md-4 control-label"> Category </label>
+										<label class="col-md-4 control-label"> Category <span class="required">*</span></label>
 										<div class="col-md-8">        
 											<select class="form-control product-category" name="category" >
 											<option value="" ></option>
@@ -470,6 +470,16 @@ $(function() {
 		'digits':'2',
 		'rightAlign': true,
 		'autoGroup': true,
+	});
+	
+	$('body').on('change', '.product-weight, .product-last_purchase', function(){
+		var numberd = $(this).val();
+		if(numberd > 0){
+			$(this).val(setnumber_decimal(numberd));
+		}
+		else{
+			$(this).val('');
+		}
 	});
 	
 	$('body').on('change', '.sales-info', function(){
