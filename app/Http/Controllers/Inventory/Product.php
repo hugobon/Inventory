@@ -13,7 +13,7 @@ use App\configuration\config_tax_m;
 use App\configuration\config_quantitytype_m;
 use App\configuration\config_productcategory_m;
 use App\inventory\product_promotion_m;
-use App\user_m;
+use App\User_m;
 
 use Auth;
 class Product extends Controller{
@@ -194,7 +194,7 @@ class Product extends Controller{
 				
 			$imagedata = New product_image_m;
 			$promotiondata = New product_promotion_m;
-			$userdata = New user_m;
+			$userdata = New User_m;
 			$packagedata = New product_package_m;
 			
 			$created_by_name = $updated_by_name = "";
@@ -492,7 +492,7 @@ class Product extends Controller{
 			
 			$imagedata = New product_image_m;
 			$promotiondata = New product_promotion_m;
-			$userdata = New user_m;
+			$userdata = New User_m;
 			
 			$created_by_name = $updated_by_name = "";
 			$user = $userdata->where('id', $data['created_by'])->first();
