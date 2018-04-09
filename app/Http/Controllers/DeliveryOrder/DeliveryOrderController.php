@@ -34,7 +34,13 @@ class DeliveryOrderController extends Controller
         $agentListing = "<option></option>";
 
         $orderTable = order_hdr::join('users','users.id','=','order_hdr.agent_id')
-                        ->select('order_hdr.order_no','order_hdr.delivery_type','order_hdr.invoice_no','order_hdr.status','users.code','users.name')
+                        ->join('global_status', function($join){
+                            $join->on('global_status.status','=','order_hdr.status')
+                                ->where('global_status.table','=',"order_hdr");
+                        })
+                        ->join('delivery_type', 'delivery_type.id','=','order_hdr.delivery_type')
+                        ->leftJoin('do_hdr','do_hdr.order_no','=','order_hdr.order_no')
+                        ->select('order_hdr.order_no','order_hdr.delivery_type','order_hdr.invoice_no','order_hdr.status','users.code','users.name','global_status.description','delivery_type.type_description','do_hdr.do_no')
                         ->orderBy('order_hdr.order_no', 'desc');
                         
         if(is_null($purchase_date)){
@@ -72,40 +78,41 @@ class DeliveryOrderController extends Controller
         	$delitypOption.= "<option value='".$v['delivery_type']."'>".$v['type_description']."</option>";
         }
         
-
         if(count($order_hdr) > 0){
             foreach ($order_hdr as $k => $v) {
-
+                $a = "#";
+                $linkSubmit = "";
                 if($v['status'] == "01"){
-                    $status = "<td>New</td>";
+                    $a = "javascript:;";
+                    $linkSubmit = "onclick='";
+                    $linkSubmit.= "$('#tableData').submit();";
+                    $linkSubmit.= "'";
+
+                    $classLabel = "class='label label-danger' data-toggle='tooltip' data-placement='top' title='Generate DO'";
                 }
                 else if($v['status'] == "02"){
-                    $status = "<td>Processing</td>";
+                    $classLabel = "class='label label-warning' style='background-color: orange !important;'";
                 }
                 else if($v['status'] == "03"){
-                    $status = "<td>Shipping</td>";
+                    $classLabel = "class='label label-warning'";
                 }
                 else if($v['status'] == "04"){
-                    $status = "<td>Delivered</td>";
+                    $classLabel = "class='label label-success'";
                 }
+                
 
                 $doListing.= "<tr>";
                 $doListing.= "<td>".$v['order_no']."</td>";
-
-                foreach ($delityp as $x => $y) {
-                    if($y['id'] == $v['delivery_type']){
-                        $doListing.= "<td>".$y['type_description']."</td>";
-                        break;
-                    }
-                }
-                $doListing.= "<td>".$v['invoice_no']."</td>";
+                $doListing.= "<td>".(new \DateTime($v['purchase_date']))->format('d M Y')."</td>";
+                $doListing.= "<td>".$v['type_description']."</td>";
+                $doListing.= "<td>".$v['do_no']."</td>";
                 $doListing.= "<td>".$v['name']." (".$v['code'].")</td>";
-                $doListing.= $status;
+                $doListing.= "<td><a href='".$a."' ".$linkSubmit."><span ".$classLabel.">".$v['description']."</span></a></td>";
                 $doListing.= "</tr>";
             }
         }
         else{
-            $doListing.= "<tr><td colspan='5' align='center'>No data found</td></tr>";
+            $doListing.= "<tr><td colspan='6' align='center'>No data found</td></tr>";
         }
 
         foreach ($agent as $k => $v) {
@@ -160,8 +167,9 @@ class DeliveryOrderController extends Controller
     public function deliveryOrder_form(Request $request){
 
     	$so = $request->get('sales_order');
+        $do = $request->get('delivery_order');
 
-        $orderDetail = $this->get_orderDetail($so);
+        $orderDetail = $this->get_orderDetail($so, $do);
 
         // get value help related to field needed
         $valueHelp = $this->getValueHelp();
@@ -199,7 +207,7 @@ class DeliveryOrderController extends Controller
 		return view('DeliveryOrder.deliveryOrder_form', compact('outputData'));
     }
 
-    private function get_orderDetail($order_no){
+    private function get_orderDetail($order_no, $do_no){
 
         // Get header information
         $order_hdr = order_hdr::join('address as bill', 'bill.id','=','order_hdr.bill_address')
@@ -238,11 +246,13 @@ class DeliveryOrderController extends Controller
         // Get item information
         $order_item = order_item::join('product','product.id','=','order_item.product_id')
                             ->select('order_item.*','product.id as productID','product.code','product.name')
-                            ->where('order_item.order_no', $order_no)->get();
+                            ->where('order_item.order_no', $order_no)
+                            ->get();
 
         $qtytype = $this->getValueHelp()['qtytype'];
 
         $item_list = "";
+        $do_item = [];
         foreach ($order_item as $k => $v) {
 
             if($v['product_status'] == "01"){
@@ -272,9 +282,18 @@ class DeliveryOrderController extends Controller
                 }                
                 $item_list.= $itemStatus;
             $item_list.= "</tr>";
+
+            $do_item[] = [
+                "order_id"      => $v['id'],
+                "product_id"    => "",
+                "product_desc"  => "",
+                "product_qty"   => "",
+                "product_typ"   => "",
+                "serialno"      => [],
+            ];
         }
 
-        return compact('order_hdr','order_item','item_list');
+        return compact('order_hdr','order_item','item_list','do_item');
     }
 
     public function getValueHelp(){
@@ -376,8 +395,6 @@ class DeliveryOrderController extends Controller
 
             do_item::insert($dataItemToInsert);
 
-            $this->deliveryOrder_view($do);
-
             $return = [
                 'status'    => "01",
                 'error'     => false,
@@ -391,7 +408,7 @@ class DeliveryOrderController extends Controller
             ];
         }
 
-        return compact('return','dataReceive', 'dataItemToInsert');
+        return compact('return','do','dataReceive', 'dataItemToInsert');
     }
 
     public function deliveryOrder_view($do){
@@ -424,9 +441,6 @@ class DeliveryOrderController extends Controller
                 'totalitem'     => count($orderDetail['order_item']),
             ];
 
-            return view('DeliveryOrder.deliveryOrder_view', compact('outputData'));
-            return compact('outputData','do_hdr','orderDetail');
-
             $return = [
                 'status'    => "01",
                 'error'     => false,
@@ -439,8 +453,8 @@ class DeliveryOrderController extends Controller
                 'message'   => "Failed to retrieve DO. Error: ".$e->getMessage()
             ];
         }
-        return $return;
-        // return view('DeliveryOrder.deliveryOrder_view', compact('outputData'));
+
+        return view('DeliveryOrder.deliveryOrder_view', compact('outputData'));
     }
 
     public function get_itemDetail(Request $request){
@@ -526,9 +540,8 @@ class DeliveryOrderController extends Controller
             $serialno = $request->get('serial_no');
             $product_id = $request->get('product_id');
 
-            $serialnoExist = product_serial_number::join('stock_in','stock_in.id','=','product_serial_number.stock_in_id')
-                                                ->where('stock_in.stock_product', $product_id)
-                                                ->where('product_serial_number.serial_number', $serialno)
+            $serialnoExist = product_serial_number::where('product_id', $product_id)
+                                                ->where('serial_number', $serialno)
                                                 ->where('product_serial_number.status','01')
                                                 ->first();
 

@@ -13,7 +13,7 @@
 
     // Store data from controller to temp array
     var dataReceive = JSON.parse(JSON.stringify({!! json_encode($outputData) !!}));
-
+    console.log(dataReceive);
     var gt_dataToSend = {
         do_hdr  : dataReceive.do_hdr,
         do_item : dataReceive.do_item
@@ -22,7 +22,7 @@
     var gt_idVerify = "";
 
     function get_itemDetail(e){
-
+        console.log(e);
         var headerTitle = "Item Detail";
         gt_idVerify = e;
 
@@ -37,94 +37,62 @@
             lv_serialno_list: []
         };
 
-        $('#product_code').html(dataReceive.order_hdr.product);
-        $('#serialNo_area').removeClass('has-success has-error');
-        $('#verify_success').css('display','none');
-        $('#verify_error').css('display','none');
-        $('#verify_msg').css('display', 'none').html("");
-        $('#inp_product_qty').val("");
-        $('#inp_product_typ').html(dataReceive.order_hdr.qtytype);
+        $.ajax({
+            url: "/delivery_order/get_itemDetail",
+            type: "POST",
+            data: {_token: "{!! csrf_token() !!}",id: e.path['3'].cells['0'].textContent},
+            success: function(response){
 
-        if(e.target.textContent == "Add New Item"){
+                lt_data['lv_order_id']     = e.path['3'].cells['0'].textContent;
+                lt_data['lv_product_id']   = e.path['3'].cells['4'].textContent;
+                lt_data['lv_product_desc'] = e.path['3'].cells['5'].textContent;
+                lt_data['lv_product_qty']  = e.path['3'].cells['6'].textContent;
+                lt_data['lv_product_typ']  = e.path['3'].cells['7'].textContent;
+                lv_serialno_list           = response.serialnoList;
 
-            lt_data['headerTitle'] = e.target.textContent;
-            var last_id = $('#tbody_item tr:last')[0].cells[0].textContent;
-            console.log(last_id);
-            if(last_id.indexOf('new') > -1){
-                lt_data['lv_order_id'] = "new_"+(+last_id.split("_")[1]+1);
-            }else{ lt_data['lv_order_id'] = "new_0";}
+                if(lv_serialno_list.length > 0){
 
-            $('#serialno_switch').prop('checked', false);
-            $('#serialNo_title').css('display', 'none');
-            $('#serialNo_list').css('display', 'none');
-            $('#serialNo_input').css('display', 'none');
+                    $('#serialno_switch').prop('checked', true);
+                    $('#serialNo_list').empty();
 
-            $('#qty_input').css('display', 'inherit');
-            $('#qty_dsp').css('display', 'none');
+                    $('#serialNo').css('display', 'inherit');
+                    $('#serialNo_list').css('display', 'inherit');
+                    $('#serialNo_title').css('display', 'inherit');
 
-            show_modal(lt_data);
-        }
-        else{
-
-            $.ajax({
-                url: "get_itemDetail",
-                type: "POST",
-                data: {_token: "{!! csrf_token() !!}",id: e.path['3'].cells['0'].textContent},
-                success: function(response){
-
-                    lt_data['lv_order_id']     = e.path['3'].cells['0'].textContent;
-                    lt_data['lv_product_id']   = e.path['3'].cells['1'].textContent;
-                    lt_data['lv_product_desc'] = e.path['3'].cells['5'].textContent;
-                    lt_data['lv_product_qty']  = e.path['3'].cells['6'].textContent;
-                    lt_data['lv_product_typ']  = e.path['3'].cells['2'].textContent;
-                    lv_serialno_list           = response.serialnoList;
-
-                    if(lv_serialno_list.length > 0){
-
-                        $('#serialno_switch').prop('checked', true);
-                        $('#serialNo_list').empty();
-
-                        $('#serialNo').css('display', 'inherit');
-                        $('#serialNo_list').css('display', 'inherit');
-                        $('#serialNo_input').css('display', 'inherit');
-                        $('#serialNo_title').css('display', 'inherit');
-
-                        for(var j=0; j<lv_serialno_list.length; j++){
-                            $('#serialNo_list').append('<div class="col-md-6" style="margin-bottom: 0.5%;"><p class="form-control-static">'+lv_serialno_list[j]+'</p></div>');
-                        }
-
-                        var total_serialno = $('#serialNo_list')['0'].children.length;
-                        $('#serialNo_title').html("Serial No. List ("+total_serialno+")");
-                    }
-                    else{
-
-                        $('#serialno_switch').prop('checked', false);
-                        $('#serialNo_title').css('display', 'none');
-                        $('#serialNo_list').css('display', 'none');
-                        $('#serialNo_input').css('display', 'none');
+                    for(var j=0; j<lv_serialno_list.length; j++){
+                        $('#serialNo_list').append('<div class="col-md-6" style="margin-bottom: 0.5%;"><p class="form-control-static">'+lv_serialno_list[j]+'</p></div>');
                     }
 
-                    $('#qty_input').css('display', 'none');
-                    $('#qty_dsp').css('display', 'inherit');
-
-                    show_modal(lt_data);
-                },
-                error: function(jqXHR, errorThrown, textStatus){
-                    console.log(jqXHR);
-                    console.log(errorThrown);
-                    console.log(textStatus);
+                    var total_serialno = $('#serialNo_list')['0'].children.length;
+                    $('#serialNo_title').html("Serial No. List ("+total_serialno+")");
                 }
-            });
-        }        
+                else{
+
+                    $('#serialno_switch').prop('checked', false);
+                    $('#serialNo_title').css('display', 'none');
+                    $('#serialNo_list').css('display', 'none');
+                }
+
+                $('#qty_input').css('display', 'none');
+                $('#qty_dsp').css('display', 'inherit');
+
+                show_modal(lt_data);
+            },
+            error: function(jqXHR, errorThrown, textStatus){
+                console.log(jqXHR);
+                console.log(errorThrown);
+                console.log(textStatus);
+            }
+        });
     }
 
     function show_modal(data){
 
         $('#order_id').val(data['lv_order_id']);
-        $('#product_code').val(data['lv_product_id']);
+        $('#product_code').html(data['lv_product_id']);
         $('#product_desc').html(data['lv_product_desc']);
         $('#product_qty').html(data['lv_product_qty']);
-        $('#product_typ').html(get_qtytyp(data['lv_product_typ']));
+        $('#product_typ').html(data['lv_product_typ']);
 
         var total_serialno = $('#serialNo_list')['0'].children.length;
         $('#serialNo_title').html("Serial No. List ("+total_serialno+")");
@@ -132,55 +100,6 @@
         $('#largeModalHead').html(data['headerTitle']);
 
         $("#add_delivery_order").modal("show");
-    }
-
-    function fn_add_serialno(){
-
-        $.ajax({
-            url: "verify_serialno",
-            type: "POST",
-            data: {
-                _token: "{!! csrf_token() !!}",
-                serial_no: $('#serialNo_input').val(),
-                product_id: $('#product_code').val()
-            },
-            success: function(response){
-                console.log(response);
-
-                if(!response.return.error){
-                    if(response.serialnoExist != null){
-
-                        $('#serialNo_area').removeClass('has-error').addClass('has-success');
-                        $('#verify_success').css('display','inherit');
-                        $('#verify_error').css('display','none');
-                        $('#verify_msg').css('display', 'inherit').html("Serial No. verified.");
-
-                        $('#serialNo_list').append('<div class="col-md-6" style="margin-bottom: 0.5%;"><p class="form-control-static">'+$('#serialNo_input').val()+'</p></div>');
-
-                        var total_serialno = $('#serialNo_list')['0'].children.length;
-                        $('#serialNo_title').html("Serial No. List ("+total_serialno+")");
-
-                        $('#serialNo_input').val("");
-                    }
-                    else{
-
-                        $('#serialNo_area').removeClass('has-success').addClass('has-error');
-                        $('#verify_success').css('display','none');
-                        $('#verify_error').css('display','inherit');
-                        $('#verify_msg').css('display', 'inherit').html("Serial No. not verified.");
-                    }
-                }
-                else{
-
-                    alert(response.return.message);
-                }
-            },
-            error: function(jqXHR, errorThrown, textStatus){
-                console.log(jqXHR);
-                console.log(errorThrown);
-                console.log(textStatus);
-            }
-        });        
     }
 
     function fn_toggleSwitch(e){
@@ -191,13 +110,6 @@
 
             $('#serialNo_title').css('display', 'inherit');
             $('#serialNo_list').css('display', 'inherit');
-            $('#serialNo_input').css('display', 'inherit');
-
-            // var qty = $('#product_qty').val();
-
-            // for(var i=0; i<qty; i++){
-            //     $('#serialNo_list').append('<div class="col-md-6" style="margin-bottom: 0.5%;"><p class="form-control-static">'++'</p></div>');
-            // }
 
             var total_serialno = $('#serialNo_list')['0'].children.length;
             $('#serialNo_title').html("Serial No. List ("+total_serialno+")");
@@ -205,7 +117,6 @@
         else{
             $('#serialNo_title').css('display', 'none');
             $('#serialNo_list').css('display', 'none');
-            $('#serialNo_input').css('display', 'none');
         }
     }
 
@@ -642,14 +553,8 @@
                             <label class="col-md-3 control-label">Serial No</label>
                             <div class="col-md-1">
                                 <label class="switch switch-small">
-                                    <input id="serialno_switch" type="checkbox" disable/><span></span>
+                                    <input id="serialno_switch" type="checkbox" disabled /><span></span>
                                 </label>
-                            </div>
-                            <div class="col-md-8">
-                                <input type="text" id="serialNo_input" class="form-control" onchange="fn_add_serialno()">
-                                <span id="verify_success" class="glyphicon glyphicon-ok form-control-feedback"></span>
-                                <span id="verify_error" class="glyphicon glyphicon-remove form-control-feedback"></span>
-                                <span id="verify_msg" class="help-block"></span>
                             </div>
                         </div>
                         <p id="serialNo_title" class="form-control-static" style="display: none;"></p>

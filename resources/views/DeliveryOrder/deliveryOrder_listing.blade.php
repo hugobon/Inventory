@@ -51,13 +51,36 @@ function fn_search(){
     });
 }
 
+function generateDO(e){
+
+    if(e.target.textContent == "Pending"){
+        $.ajax({
+            url: "form",
+            type: "POST",
+            data: {
+                _token : "{!! csrf_token() !!}",
+                sales_order: e.path[3].cells[0].textContent
+            },
+            success: function(response){
+                console.log(response);
+                // document.write(response);
+            },
+            error: function(jqXHR, errorThrown, textStatus){
+                console.log(jqXHR);
+                console.log(errorThrown);
+                console.log(textStatus);
+            }
+        });
+    }
+}
+
 </script>
 
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
     <li><a href="{{ url('home') }}">Home</a></li>
     <li><a href="#">Delivery Order</a></li>
-    <li class="active">Create Delivery Order</li>
+    <li class="active">Search Sales Order</li>
 </ul>
 <!-- END BREADCRUMB -->     
 
@@ -150,6 +173,11 @@ function fn_search(){
                             </div>
                         </div>
                     </div>
+                </div>
+            </form>
+            <form class="form-horizontal">
+                <!-- {{ csrf_field() }} -->
+                <div class="panel panel-default">
                     <div class="panel-body">
                         SO List: {!! $outputData['totalDO'] !!}
                         <div class="table-responsive">
@@ -157,22 +185,23 @@ function fn_search(){
                                 <thead>
                                     <tr>
                                         <th>SO No</th>
+                                        <th>Purchase Date</th>
                                         <th>Delivery Type</th>
-                                        <th>Invoice No</th>
+                                        <th>DO No</th>
                                         <th>Agent Code</th>
                                         <th>Status</th>
                                     <tr>
                                 </thead>
-                                <tbody id="soListing">
+                                <tbody>
                                     {!! $outputData['doListing'] !!}
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                    <!-- <div class="panel-footer">
-                        <button type="button" class="btn btn-default" onclick="fn_clear()">Clear Form</button>
-                        <button class="btn btn-primary pull-right">Save</button>
-                    </div> -->
+                    <div class="panel-footer">
+                        <!-- <button type="button" class="btn btn-default" onclick="fn_clear()">Clear Form</button> -->
+                        <!-- <button class="btn btn-primary pull-right">Save</button> -->
+                    </div>
                 </div>
             </form>
         </div>
