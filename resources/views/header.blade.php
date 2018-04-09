@@ -118,7 +118,12 @@
                         <a href="{{ url('delivery_order/listing') }}"><span class="fa fa-truck"></span> <span class="xn-text">Delivery Order</span></a>
                         <ul>
                             <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("delivery_order/listing")) ? "active" : "" ; ?>">
-                                <a href="{{ url('delivery_order/listing') }}"><span class="fa fa-puzzle-piece"></span>Delivery Order Listing</a>
+                                <form id="so" action="{{ url('delivery_order/listing') }}" method="post" style="display: none;">
+                                    {{ csrf_field() }}
+                                </form>
+                                <a href="javascript:;" onclick="$('#so').submit();"><span class="fa fa-puzzle-piece"></span>Create Delivery Order</a>
+                                <!-- <a href="javascript:;" onclick="$('#so').submit();"><span class="fa fa-puzzle-piece"></span>Delivery Order Listing</a> -->
+                                
                             </li>
                             <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("delivery_order/form")) ? "active" : "" ; ?>">
                                 <!-- <a href="{{ url('delivery_order/form') }}"><span class="fa fa-puzzle-piece"></span>Create Delivery Order</a> -->
