@@ -1004,6 +1004,7 @@ class Product extends Controller{
     }
 	
 	public function single_data_product($id = 0){
+		# Bhaihaqi modify 2018-04-09 10:27 PM
 		$data = array();
 		$productArr = array();
 		if($id > 0){
@@ -1017,6 +1018,7 @@ class Product extends Controller{
 				else
 					$gstpercentage = $taxgst['percent'];
 					
+				# Price of Product (Calc GST)	
 				$price_wm = $datap['price_wm'];
 				$price_em = $datap['price_em'];
 				$price_staff = $datap['price_staff'];
@@ -1035,7 +1037,7 @@ class Product extends Controller{
 				}
 				$packagedata = New product_package_m;
 				if($datap['type'] == 2){
-					#get product name
+					#Type Product Package
 					$product_list = $packagedata->where('package_id', $id)->get();
 					if(count($product_list) > 0){
 						foreach($product_list->all() as $key => $row){
@@ -1071,11 +1073,11 @@ class Product extends Controller{
 						}
 					}
 					$data['productArr'] = $productArr;
-					$data['product_list'] = $product_list;
+					// $data['product_list'] = $product_list; x guna
 					$data['typename'] = 'Package';
 				}
 				else{
-					#get package name
+					#Type Product
 					$package_list = $packagedata->where('product_id',$id)->orderBy('id', 'desc')->get();
 					if(count($package_list) > 0){
 						foreach($package_list->all() as $key => $row){
@@ -1113,7 +1115,7 @@ class Product extends Controller{
 					}
 							
 					$data['productArr'] = $productArr;
-					$data['package_list'] = $package_list;
+					// $data['package_list'] = $package_list; x guna
 					$data['typename'] = 'Product';
 				}
 				# get Quantity Type
@@ -1140,6 +1142,7 @@ class Product extends Controller{
 				$data['gstpercentage'] = $gstpercentage;
 			}
 		}
+		dd($data);
 		return $data;
     }
 	

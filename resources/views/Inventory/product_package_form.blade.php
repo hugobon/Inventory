@@ -124,7 +124,7 @@ select{cursor:pointer;}
 									<div class="form-group">
 										<label class="col-md-4 control-label"> Weight (g) </label>
 										<div class="col-md-8">
-											<input type="text" class="form-control mask_decimal product-weight" name="weight" value="{{ isset($weight) ? number_format($weight, 2, '.', '') : '' }}" />   
+											<input type="text" class="form-control mask_decimal product-weight" name="weight" value="{{ isset($weight) $$ $weight > 0 ? number_format($weight, 2, '.', '') : '' }}" />   
 										</div>
 									</div>
 								</div>
@@ -161,7 +161,7 @@ select{cursor:pointer;}
 									<div class="form-group">
 										<label class="col-md-4 control-label"> Point </label>
 										<div class="col-md-8">
-											<input type="text" class="form-control mask_number product-point" name="point" value="{{ isset($point) ? $point : '' }}" />   
+											<input type="text" class="form-control mask_number product-point" name="point" value="{{ isset($point) && $point > 0 ? $point : '' }}" />   
 										</div>
 									</div>
 								</div>
