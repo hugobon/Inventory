@@ -94,7 +94,7 @@ if(isset($id) && $id > 0){
 							</div>
 							<div class="form-group">
 								<label class="col-md-4 control-label"> Year: </label>
-								<div class="col-md-8 control-label text-left">{{ isset($year) && $year > 1900 ? $year : '' }}</div>
+								<div class="col-md-8 control-label text-left">{{ isset($year) && $year > 1900 ? $year : '' }}, {{ isset($monthArr[$month]) ? $monthArr[$month] : '' }}</div>
 							</div>
 							<div class="form-group">
 								<label class="col-md-4 control-label"> Point: </label>
@@ -154,6 +154,9 @@ if(isset($id) && $id > 0){
 							<hr />
 							<div class="panel-body">
 								<div class="table-responsive">
+									@if(isset($notforsale) && $notforsale == 1)
+										<h4><i style="color: #ff0000;"> &nbsp; &nbsp; <span class="fa fa-check-square-o"></span> &nbsp; Not For Sale </i></h4>
+									@endif
 									<table class="table table-striped">
 										<thead>
 											<tr>
@@ -166,21 +169,21 @@ if(isset($id) && $id > 0){
 										<tbody>
 											<tr>
 												<th class="text-right"> West Malaysia </th>
-												<td class="text-right"> RM {{ isset($price_wm) ? number_format($price_wm, 2, '.', '') : '' }} </td>
-												<td class="text-right"> RM {{ isset($wm_gst) ? number_format($wm_gst, 2, '.', '') : '' }} </td>
-												<td class="text-right"> RM {{ isset($wm_aftergst) ? number_format($wm_aftergst, 2, '.', '') : '' }} </td>
+												<td class="text-right"> {{ isset($price_wm) && $price_wm > 0 ? 'RM ' . number_format($price_wm, 2, '.', '') : '-' }} </td>
+												<td class="text-right"> {{ isset($wm_gst) && $wm_gst > 0 ? 'RM ' . number_format($wm_gst, 2, '.', '') : '-' }} </td>
+												<td class="text-right"> {{ isset($wm_aftergst) && $wm_aftergst > 0 ? 'RM ' . number_format($wm_aftergst, 2, '.', '') : '-' }} </td>
 											</tr>
 											<tr>
 												<th class="text-right"> East Malaysia </th>
-												<td class="text-right"> RM {{ isset($price_em) ? number_format($price_em, 2, '.', '') : '' }} </td>
-												<td class="text-right"> RM {{ isset($em_gst) ? number_format($em_gst, 2, '.', '') : '' }} </td>
-												<td class="text-right"> RM {{ isset($em_aftergst) ? number_format($em_aftergst, 2, '.', '') : '' }} </td>
+												<td class="text-right"> {{ isset($price_em) && $price_em > 0 ? 'RM ' . number_format($price_em, 2, '.', '') : '-' }} </td>
+												<td class="text-right"> {{ isset($em_gst) && $em_gst > 0 ? 'RM ' . number_format($em_gst, 2, '.', '') : '-' }} </td>
+												<td class="text-right"> {{ isset($em_aftergst) && $em_aftergst > 0 ? 'RM ' . number_format($em_aftergst, 2, '.', '') : '-' }} </td>
 											</tr>
 											<tr>
 												<th class="text-right"> Staff Price </th>
-												<td class="text-right"> RM {{ isset($price_staff) ? number_format($price_staff, 2, '.', '') : '' }} </td>
-												<td class="text-right"> RM {{ isset($staff_gst) ? number_format($staff_gst, 2, '.', '') : '' }} </td>
-												<td class="text-right"> RM {{ isset($staff_aftergst) ? number_format($staff_aftergst, 2, '.', '') : '' }} </td>
+												<td class="text-right"> {{ isset($price_staff) && $price_staff > 0 ? 'RM ' . number_format($price_staff, 2, '.', '') : '-' }} </td>
+												<td class="text-right"> {{ isset($staff_gst) && $staff_gst > 0 ? 'RM ' . number_format($staff_gst, 2, '.', '') : '-' }} </td>
+												<td class="text-right"> {{ isset($staff_aftergst) && $staff_aftergst > 0 ? 'RM ' . number_format($staff_aftergst, 2, '.', '') : '-' }} </td>
 											</tr>
 										</tbody>
 									</table>
