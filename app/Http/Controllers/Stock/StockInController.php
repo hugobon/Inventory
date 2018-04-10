@@ -12,6 +12,7 @@ use App\product_serial_number;
 use App\inventory\stockadjustment_m;
 use App\configuration\config_stockadjustment_m;
 use App\global_nr;
+use App\product_woserialnum;
 
 use Auth;
 use Carbon\Carbon;
@@ -97,8 +98,10 @@ class StockInController extends Controller
         $supplier = supplier::get();
         if($serialNumberBucket){
             $this->insertSerialNumber($serialNumberBucket,$stockInId,$productCode);
+        }else{
+            $this->productWithoutSerialNum($productCode,$quantity);
         }
-       
+        
          $message = "Successfully Inserted ";
          
          if($link_redirect){
@@ -146,8 +149,35 @@ class StockInController extends Controller
                 $numberOnly = "00000";
             }
             $generatedNo =  str_pad($numberOnly+1, 5, '0', STR_PAD_LEFT);
-            return "SR".($generatedNo);
-        
-      
+            return "SR".($generatedNo);      
+    }
+
+    private function productWithoutSerialNum($product_id,$quantity){
+        //Init
+        $product_woserialnum = new product_woserialnum;
+        //Check
+        $exist = $product_woserialnum->where('product_id',$product_id)->first();
+        try{			
+            if($exist){
+                $product_woserialnum->update([
+                                            'quantity'=>$exist->quantity+$quantity,
+                                            'updated_at'=>Carbon::now(),
+                                            'updated_by'=>Auth::user()->id
+                                            ]);
+            }else{
+                $product_woserialnum->insert([
+                                            'product_id'=>$product_id,
+                                            'quantity'=>$quantity,
+                                            'created_at'=>Carbon::now(),
+                                            'created_by'=>Auth::user()->id
+                                            ]);
+            }
+			return true;
+		}catch(\Exception $e){
+			return;
+		}
+
+
+
     }
 }
