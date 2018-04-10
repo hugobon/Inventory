@@ -13,11 +13,28 @@
 
     // Store data from controller to temp array
     var dataReceive = JSON.parse(JSON.stringify({!! json_encode($outputData) !!}));
-
+    console.log(dataReceive);
     var gt_dataToSend = {
         do_hdr  : [],
         do_item : []
     };
+
+    var itemLength = dataReceive.order_item.length;
+    for(var w=0; w<itemLength; w++){
+        var sn = [];
+        if(gt_dataToSend.do_item[w].do_no != ""){
+
+        }
+
+        gt_dataToSend.do_item.push({
+            order_id
+            product_id
+            product_desc
+            product_qty
+            product_typ
+            serialno
+        });
+    }
 
     var gt_idVerify = "";
 
@@ -44,6 +61,7 @@
         $('#verify_msg').css('display', 'none').html("");
         $('#inp_product_qty').val("");
         $('#inp_product_typ').html(dataReceive.order_hdr.qtytype);
+        $('#serialNo_input').val("");
 
         if(e.target.textContent == "Add New Item"){
 
@@ -185,51 +203,69 @@
 
     function fn_add_serialno(){
 
-        $.ajax({
-            url: "verify_serialno",
-            type: "POST",
-            data: {
-                _token: "{!! csrf_token() !!}",
-                serial_no: $('#serialNo_input').val(),
-                product_id: $('#product_code').val()
-            },
-            success: function(response){
-                console.log(response);
+        var lt_serialList = $('#serialNo_list')['0'].children;
+        var lv_serialnoExist = false;
+        for(var i=0; i<lt_serialList.length; i++){
 
-                if(!response.return.error){
-                    if(response.serialnoExist != null){
+            if(lt_serialList[i].textContent == $('#serialNo_input').val()){
 
-                        $('#serialNo_area').removeClass('has-error').addClass('has-success');
-                        $('#verify_success').css('display','inherit');
-                        $('#verify_error').css('display','none');
-                        $('#verify_msg').css('display', 'inherit').html("Serial No. verified.");
+                $('#serialNo_area').removeClass('has-success').addClass('has-error');
+                $('#verify_success').css('display','none');
+                $('#verify_error').css('display','inherit');
+                $('#verify_msg').css('display', 'inherit').html("Serial No. already insert.");
 
-                        $('#serialNo_list').append('<div class="col-md-6" style="margin-bottom: 0.5%;"><p class="form-control-static">'+$('#serialNo_input').val()+'</p></div>');
+                lv_serialnoExist = true;
+                break;
+            }
+        }
 
-                        var total_serialno = $('#serialNo_list')['0'].children.length;
-                        $('#serialNo_title').html("Serial No. List ("+total_serialno+")");
+        if(!lv_serialnoExist){
+            $.ajax({
+                url: "verify_serialno",
+                type: "POST",
+                data: {
+                    _token: "{!! csrf_token() !!}",
+                    serial_no: $('#serialNo_input').val(),
+                    product_id: $('#product_code').val()
+                },
+                success: function(response){
+                    console.log(response);
 
-                        $('#serialNo_input').val("");
+                    if(!response.return.error){
+                        if(response.serialnoExist != null){
+
+                            $('#serialNo_area').removeClass('has-error').addClass('has-success');
+                            $('#verify_success').css('display','inherit');
+                            $('#verify_error').css('display','none');
+                            $('#verify_msg').css('display', 'inherit').html("Serial No. verified.");
+
+                            $('#serialNo_list').append('<div class="col-md-6" style="margin-bottom: 0.5%;"><p class="form-control-static">'+$('#serialNo_input').val()+'</p></div>');
+
+                            var total_serialno = $('#serialNo_list')['0'].children.length;
+                            $('#serialNo_title').html("Serial No. List ("+total_serialno+")");
+
+                            $('#serialNo_input').val("");
+                        }
+                        else{
+
+                            $('#serialNo_area').removeClass('has-success').addClass('has-error');
+                            $('#verify_success').css('display','none');
+                            $('#verify_error').css('display','inherit');
+                            $('#verify_msg').css('display', 'inherit').html("Serial No. not verified.");
+                        }
                     }
                     else{
 
-                        $('#serialNo_area').removeClass('has-success').addClass('has-error');
-                        $('#verify_success').css('display','none');
-                        $('#verify_error').css('display','inherit');
-                        $('#verify_msg').css('display', 'inherit').html("Serial No. not verified.");
+                        alert(response.return.message);
                     }
+                },
+                error: function(jqXHR, errorThrown, textStatus){
+                    console.log(jqXHR);
+                    console.log(errorThrown);
+                    console.log(textStatus);
                 }
-                else{
-
-                    alert(response.return.message);
-                }
-            },
-            error: function(jqXHR, errorThrown, textStatus){
-                console.log(jqXHR);
-                console.log(errorThrown);
-                console.log(textStatus);
-            }
-        });        
+            });
+        }
     }
 
     function fn_toggleSwitch(e){
@@ -506,13 +542,15 @@
     function ajax_send(){
 
         console.log(gt_dataToSend);
-
         $.ajax({
             url: "create",
             type: "POST",
             data: {_token: "{!! csrf_token() !!}",gt_dataToSend},
             success: function(response){
-                console.log(response);
+
+                if(!response.return.error){
+                    window.location = "/delivery_order/view/"+response.do;
+                }
             },
             error: function(jqXHR, errorThrown, textStatus){
                 console.log(jqXHR);
