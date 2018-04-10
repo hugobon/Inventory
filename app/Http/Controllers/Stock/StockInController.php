@@ -12,6 +12,7 @@ use App\product_serial_number;
 use App\inventory\stockadjustment_m;
 use App\configuration\config_stockadjustment_m;
 use App\global_nr;
+use App\product_woserialnum;
 
 use Auth;
 use Carbon\Carbon;
@@ -50,7 +51,7 @@ class StockInController extends Controller
         $DocNo =  $this->generate_docno();
         $inStockDate = $request->input('in_stock_date');
 
-        $product =  product_m::get();
+        $product =  product_m::where('type','<>',['2','3'])->get();
         $supplier = supplier::get();
 
         $stockInId = stock_in::insertGetId([
@@ -69,18 +70,20 @@ class StockInController extends Controller
         $postData = $this->validate($request,[
 			'supplier_code' => 'required',
 			'product_code' => 'required',
-			'serial_number_scan_json' => 'required',
+			// 'serial_number_scan_json' => 'required',
 			'in_stock_date' => 'required',
             'stock_receive' => 'required',
             'description' => 'required',
-            'stock_in_id' => 'required'
+            'stock_in_id' => 'required',
+            'quantity' =>'required',
         ]);
 
      $supplierCode = $request->input('supplier_code');
      $stockInId = $request->input('stock_in_id');
      $productCode = $request->input('product_code');
-     $serialNumberBucket = $request->input('serial_number_scan_json');    
-
+     $serialNumberBucket = $request->input('serial_number_scan_json');  
+     $link_redirect  = $request->input('link_redirect');
+     $quantity  = $request->input('quantity');
      $inStockDate = $request->input('in_stock_date');
      $DocNo = $request->input('stock_receive');
      $description = $request->input('description');     
@@ -93,9 +96,20 @@ class StockInController extends Controller
      if($updateStockId){
         $product =  product_m::get();
         $supplier = supplier::get();
-        $this->insertSerialNumber($serialNumberBucket,$stockInId,$productCode);
-         $message = "Successfully Inserted ";   
-         return view('Stock.stockIn',compact('product','supplier','DocNo','inStockDate','stockInId'));
+        if($serialNumberBucket){
+            $this->insertSerialNumber($serialNumberBucket,$stockInId,$productCode);
+        }else{
+            $this->productWithoutSerialNum($productCode,$quantity);
+        }
+        
+         $message = "Successfully Inserted ";
+         
+         if($link_redirect){
+             return redirect($link_redirect);
+         }else{
+            return view('Stock.stockIn',compact('product','supplier','DocNo','inStockDate','stockInId'));
+         }   
+         
      }else{
         return 'failed';
      }    
@@ -135,8 +149,35 @@ class StockInController extends Controller
                 $numberOnly = "00000";
             }
             $generatedNo =  str_pad($numberOnly+1, 5, '0', STR_PAD_LEFT);
-            return "SR".($generatedNo);
-        
-      
+            return "SR".($generatedNo);      
+    }
+
+    private function productWithoutSerialNum($product_id,$quantity){
+        //Init
+        $product_woserialnum = new product_woserialnum;
+        //Check
+        $exist = $product_woserialnum->where('product_id',$product_id)->first();
+        try{			
+            if($exist){
+                $product_woserialnum->update([
+                                            'quantity'=>$exist->quantity+$quantity,
+                                            'updated_at'=>Carbon::now(),
+                                            'updated_by'=>Auth::user()->id
+                                            ]);
+            }else{
+                $product_woserialnum->insert([
+                                            'product_id'=>$product_id,
+                                            'quantity'=>$quantity,
+                                            'created_at'=>Carbon::now(),
+                                            'created_by'=>Auth::user()->id
+                                            ]);
+            }
+			return true;
+		}catch(\Exception $e){
+			return;
+		}
+
+
+
     }
 }

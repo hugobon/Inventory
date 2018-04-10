@@ -29,7 +29,7 @@ class StockReportController extends Controller
         $reports = $this->getReport($date);        
         
         return view('Stock.stockReport',compact('reports','date'));
-        // return compact('report');
+        // return compact('reports');
     }
 
     private function getBalanceReport(){
@@ -56,18 +56,18 @@ class StockReportController extends Controller
 
         foreach($productDetail as $product){
             $productId = $product->id;
-            $stockAdjustment = $stockadjustment_m->whereRaw('product_id ='.$product->id)
+            $stockAdjustment = $stockadjustment_m->leftJoin('product','product.id','=','stockadjustment.product_id')->whereRaw('product.id ='.$productId)
                                 ->whereRaw('MONTH(stockadjustment.created_at) = '.$currentMonth)
                                 ->get();
 
             $stockInMonth = $product_m->TotalProductCount()
-                                    ->whereRaw('product.id ='.$product->id)
+                                    ->whereRaw('product.id ='.$productId)
                                     ->whereRaw('MONTH(stock_in.created_at) = '.$currentMonth)
                                     ->value('stocksCount');
 
-            $stockDays = $product_serial_number->leftjoin('stock_in','stock_in.id','=','product_serial_number.stock_in_id')
-                                            ->whereRaw('product_id ='.$product->id)
+            $stockDays = $product_serial_number->leftjoin('stock_in','stock_in.id','=','product_serial_number.stock_in_id')                                            
                                             ->select('product_serial_number.stock_in_id','stock_in.created_at')
+                                            ->whereRaw('product_id ='.$productId)
                                             ->whereRaw('MONTH(stock_in.created_at) = '.$currentMonth)
                                             ->get();
 
