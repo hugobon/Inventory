@@ -36,8 +36,8 @@ if(isset($id) && $id > 0){
 .view-picture{ height: 250px; width: 100%; display: inline-block; position: relative; }
 .view-picture img { max-height: 98%; max-width: 98%; width: auto; height: auto; position: absolute;
 		top: 0; bottom: 0; left: 0; right: 0; margin: auto; }
-select{cursor:pointer;}
-.required{ color: #ff0000;}
+select, .checkbox-label{cursor:pointer;}
+.required, .price-required{ color: #ff0000;}
 </style>
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
@@ -152,8 +152,17 @@ select{cursor:pointer;}
 									</div>
 									<div class="form-group">
 										<label class="col-md-4 control-label"> Year </label>
-										<div class="col-md-8">        
+										<div class="col-md-3">        
 											<input type="text" class="form-control product-year mask_year" name="year" placeholder="2000" value="{{ isset($year) && $year > 1900 ? $year : '' }}" />								
+										</div>
+										<div class="col-md-5">  
+										<select class="form-control product-month" name="month" >
+											@if(count($monthArr) > 0)
+												@foreach($monthArr as $key => $monthstr)
+													<option value="{{ $key }}" {{ isset($month) && $month == $key ? "selected" : "" }}>{{ $monthstr }}</option>
+												@endforeach
+											@endif
+											</select>
 										</div>
 									</div>
 									<div class="form-group">
@@ -183,7 +192,14 @@ select{cursor:pointer;}
 										<hr />
 									</div>
 									<div class="form-group">
-										<label class="col-md-3 control-label"><br /> West Malaysia <span class="required">*</span></label>
+										<div class="col-md-3">
+										</div>
+										<label class="col-md-9 checkbox-label">
+											<input type="checkbox" class="icheckbox product-notforsale" name='notforsale' value='1' {{ isset($notforsale) && $notforsale == 1 ? 'checked' : '' }} />  &nbsp; Not For Sale 
+										</label>
+									</div>
+									<div class="form-group">
+										<label class="col-md-3 control-label"><br /> West Malaysia <span class="price-required">*</span></label>
 										<div class="col-md-3">
 											<span class="help-block"> Price </span>
 											<div class="input-group">
@@ -210,7 +226,7 @@ select{cursor:pointer;}
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-md-3 control-label"><br /> East Malaysia <span class="required">*</span></label>
+										<label class="col-md-3 control-label"><br /> East Malaysia <span class="price-required">*</span></label>
 										<div class="col-md-3">
 											<span class="help-block"> Price </span>
 											<div class="input-group">
@@ -237,7 +253,7 @@ select{cursor:pointer;}
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="col-md-3 control-label"><br /> Staff Price <span class="required">*</span></label>
+										<label class="col-md-3 control-label"><br /> Staff Price </label>
 										<div class="col-md-3">
 											<span class="help-block"> Price </span>
 											<div class="input-group">
@@ -409,9 +425,6 @@ rules: {
 		code: { required: true, minlength: 3,},
 		name: { required: true,},
 		category: { required: true,},
-		price_wm: { required: true,},
-		price_em: { required: true,},
-		price_staff: { required: true,},
 		qtytype_id: { required: true,},
 	}                                        
 });
@@ -435,6 +448,21 @@ function reload_image(baseid){
 	});
 }
 $(function() {
+	if($(this).find('.product-notforsale').is(':checked'))
+		$('.price-required').hide();
+	else
+		$('.price-required').show();
+			
+	$( ".checkbox-label" ).click(function() {
+		if($(this).find('.product-notforsale').is(':checked'))
+			$('.price-required').show();
+		else{
+			$('.product-price_em').closest('.form-group').removeClass('has-error');
+			$('.product-price_wm').closest('.form-group').removeClass('has-error');
+			$('.price-required').hide();
+		}
+	});
+	
 	$('.product-code').inputmask({
 		"mask": "*",
 		"repeat": 30,
@@ -523,6 +551,21 @@ $(function() {
 	});
 	
 	$("#submit_form").submit(function(){
+		if(!$(this).find('.product-notforsale').is(':checked')){
+			errorprice = 0;
+			price_wm = $('.product-price_wm').val();
+			price_em = $('.product-price_em').val();
+			if(price_wm == 0 || price_wm == ''){
+				errorprice = 1;
+				$('.product-price_wm').closest('.form-group').addClass('has-error');
+			}
+			if(price_em == 0 || price_em == ''){
+				errorprice = 1;
+				$('.product-price_em').closest('.form-group').addClass('has-error');
+			}
+			if(errorprice == 1)
+				return false;
+		}
 		productcode = $(".product-code").val().trim();
 		code_exist = 0;
 		$.ajax({

@@ -18,6 +18,22 @@ use App\User_m;
 use Auth;
 class Product extends Controller{
 
+	private $monthArr = array(
+					'0' => '',
+					'1' => 'January',
+					'2' => 'February',
+					'3' => 'March',
+					'4' => 'April',
+					'5' => 'May',
+					'6' => 'June',
+					'7' => 'July',
+					'8' => 'August',
+					'9' => 'September',
+					'10' => 'October',
+					'11' => 'November',
+					'12' => 'December',
+				);
+				
 	public function __construct(){
         $this->middleware('auth');
     }
@@ -120,6 +136,7 @@ class Product extends Controller{
 			'dataquantitytype' => $dataquantitytype,
 			'dataproductcategory' => $dataproductcategory,
 			'gstpercentage' => $gstpercentage,
+			'monthArr' => $this->monthArr,
 			'tabform' => 'active',
 			'tabgallery' => '',
 		);
@@ -158,6 +175,7 @@ class Product extends Controller{
 			$data['dataquantitytype'] = $dataquantitytype;
 			$data['dataproductcategory'] = $dataproductcategory;
 			$data['gstpercentage'] = $gstpercentage;
+			$data['monthArr'] = $this->monthArr;
 			$data['tabform'] = $tabform;
 			$data['tabgallery'] = $tabgallery;
 			
@@ -267,6 +285,7 @@ class Product extends Controller{
 			$data['statusArr'] = array('1' => 'Active', '0' => 'Inactive');
 			$data['packageArr'] = $packageArr;
 			$data['gstpercentage'] = $gstpercentage;
+			$data['monthArr'] = $this->monthArr;
 			
 			return view('Inventory/product_view',$data);
 		}
@@ -279,9 +298,6 @@ class Product extends Controller{
 			'name' => 'required',
 			'category' => 'required',
 			'qtytype_id' => 'required',
-			'price_wm' => 'required',
-			'price_em' => 'required',
-			'price_staff' => 'required',
 		]);
 		
 		#uppercase & Replacing multiple spaces with a single space
@@ -303,14 +319,16 @@ class Product extends Controller{
 			'qtytype_id' => $postdata->input("qtytype_id") != null ? $postdata->input("qtytype_id") : '1',
 			'weight' => $postdata->input("weight") != null ? $postdata->input("weight") : '0',
 			'point' => $postdata->input("point") != null ? $postdata->input("point") : '0',
-			'price_wm' => $postdata->input("price_wm"),
-			'price_em' => $postdata->input("price_em"),
-			'price_staff' => $postdata->input("price_staff"),
-			'last_purchase' => $postdata->input("last_purchase") > 0 ? $postdata->input("last_purchase") : 0,
-			'quantity_min' => $postdata->input("quantity_min") > 0 ? $postdata->input("quantity_min") : 0,
+			'notforsale' => $postdata->input("notforsale") != null ? $postdata->input("notforsale") : '0',
+			'price_wm' => $postdata->input("price_wm") != null ? $postdata->input("price_wm") : '0',
+			'price_em' => $postdata->input("price_em") != null ? $postdata->input("price_em") : '0',
+			'price_staff' => $postdata->input("price_staff") != null ? $postdata->input("price_staff") : '0',
+			'last_purchase' => $postdata->input("last_purchase") > 0 ? $postdata->input("last_purchase") : '0',
+			'quantity_min' => $postdata->input("quantity_min") > 0 ? $postdata->input("quantity_min") : '0',
 			'quantity' => 0,
 			'status' => $postdata->input("status") != null ? $postdata->input("status") : '1',
 			'year' => $postdata->input("year") > 1900 ? $postdata->input("year") : 1900,
+			'month' => $postdata->input("month") > 0 ? $postdata->input("month") : 0,
 			'category' => $postdata->input("category") > 0 ? $postdata->input("category") : '0',
 			'created_by' => Auth::user()->id,
 			'created_at' => date('Y-m-d H:i:s'),
@@ -333,9 +351,6 @@ class Product extends Controller{
 			'name' => 'required',
 			'category' => 'required',
 			'qtytype_id' => 'required',
-			'price_wm' => 'required',
-			'price_em' => 'required',
-			'price_staff' => 'required',
 		]);
 		
 		#uppercase & Replacing multiple spaces with a single space
@@ -357,13 +372,15 @@ class Product extends Controller{
 			'qtytype_id' => $postdata->input("qtytype_id") != null ? $postdata->input("qtytype_id") : '1',
 			'weight' => $postdata->input("weight") != null ? $postdata->input("weight") : '0',
 			'point' => $postdata->input("point") != null ? $postdata->input("point") : '0',
-			'price_wm' => $postdata->input("price_wm"),
-			'price_em' => $postdata->input("price_em"),
-			'price_staff' => $postdata->input("price_staff"),
+			'notforsale' => $postdata->input("notforsale") != null ? $postdata->input("notforsale") : '0',
+			'price_wm' => $postdata->input("price_wm") != null ? $postdata->input("price_wm") : '0',
+			'price_em' => $postdata->input("price_em") != null ? $postdata->input("price_em") : '0',
+			'price_staff' => $postdata->input("price_staff") != null ? $postdata->input("price_staff") : '0',
 			'last_purchase' => $postdata->input("last_purchase") > 0 ? $postdata->input("last_purchase") : 0,
 			'quantity_min' => $postdata->input("quantity_min") > 0 ? $postdata->input("quantity_min") : 0,
 			'status' => $postdata->input("status") != null ? $postdata->input("status") : '1',
 			'year' => $postdata->input("year") > 1900 ? $postdata->input("year") : 1900,
+			'month' => $postdata->input("month") > 0 ? $postdata->input("month") : 0,
 			'category' => $postdata->input("category") > 0 ? $postdata->input("category") : '0',
 			'updated_by' => Auth::user()->id,
 			'updated_at' => date('Y-m-d H:i:s'),
@@ -401,6 +418,7 @@ class Product extends Controller{
 			'dataquantitytype' => $dataquantitytype,
 			'dataproductcategory' => $dataproductcategory,
 			'gstpercentage' => $gstpercentage,
+			'monthArr' => $this->monthArr,
 			'tabform' => 'active',
 			'tabgallery' => '',
 			'productArr' => $productArr, # not package product
@@ -445,6 +463,7 @@ class Product extends Controller{
 			$data['dataproductcategory'] = $configproductcategorydata->orderBy('category', 'asc')->get();
 			$data['product_list'] = $packagedata->where('package_id', $id)->get();
 			$data['gstpercentage'] = $gstpercentage;
+			$data['monthArr'] = $this->monthArr;
 			$data['tabform'] = $tabform;
 			$data['tabgallery'] = $tabgallery;
 			$data['productArr'] = $productArr; # not package product
@@ -508,6 +527,7 @@ class Product extends Controller{
 			$data['promotion_list'] = $promotiondata->where('product_id',$id)->orderBy('id', 'desc')->get();
 			$data['statusArr'] = array('1' => 'Active', '0' => 'Inactive');
 			$data['gstpercentage'] = $gstpercentage;
+			$data['monthArr'] = $this->monthArr;
 			$data['product_list'] = $product_list;
 			$data['productArr'] = $productArr; # not package product
 			return view('Inventory/product_package_view',$data);
@@ -520,9 +540,6 @@ class Product extends Controller{
 			'code' => 'required',
 			'name' => 'required',
 			'category' => 'required',
-			'price_wm' => 'required',
-			'price_em' => 'required',
-			'price_staff' => 'required',
 			'qtytype_id' => 'required',
 		]);
 		
@@ -545,14 +562,16 @@ class Product extends Controller{
 			'qtytype_id' => $postdata->input("qtytype_id") != null ? $postdata->input("qtytype_id") : '1',
 			'weight' => $postdata->input("weight") != null ? $postdata->input("weight") : '0',
 			'point' => $postdata->input("point") != null ? $postdata->input("point") : '0',
-			'price_wm' => $postdata->input("price_wm"),
-			'price_em' => $postdata->input("price_em"),
-			'price_staff' => $postdata->input("price_staff"),
+			'notforsale' => $postdata->input("notforsale") != null ? $postdata->input("notforsale") : '0',
+			'price_wm' => $postdata->input("price_wm") != null ? $postdata->input("price_wm") : '0',
+			'price_em' => $postdata->input("price_em") != null ? $postdata->input("price_em") : '0',
+			'price_staff' => $postdata->input("price_staff") != null ? $postdata->input("price_staff") : '0',
 			//'last_purchase' => $postdata->input("last_purchase") > 0 ? $postdata->input("last_purchase") : 0,
 			//'quantity_min' => $postdata->input("quantity_min") > 0 ? $postdata->input("quantity_min") : 0,
 			'quantity' => 0,
 			'status' => $postdata->input("status") != null ? $postdata->input("status") : '1',
 			'year' => $postdata->input("year") > 1900 ? $postdata->input("year") : 1900,
+			'month' => $postdata->input("month") > 0 ? $postdata->input("month") : 0,
 			'category' => $postdata->input("category") > 0 ? $postdata->input("category") : '0',
 			'created_by' => Auth::user()->id,
 			'created_at' => date('Y-m-d H:i:s'),
@@ -597,9 +616,6 @@ class Product extends Controller{
 		$this->validate($postdata,[
 			'code' => 'required',
 			'name' => 'required',
-			'price_wm' => 'required',
-			'price_em' => 'required',
-			'price_staff' => 'required',
 			'qtytype_id' => 'required',
 		]);
 		
@@ -622,13 +638,15 @@ class Product extends Controller{
 			'qtytype_id' => $postdata->input("qtytype_id") != null ? $postdata->input("qtytype_id") : '1',
 			'weight' => $postdata->input("weight") != null ? $postdata->input("weight") : '0',
 			'point' => $postdata->input("point") != null ? $postdata->input("point") : '0',
-			'price_wm' => $postdata->input("price_wm"),
-			'price_em' => $postdata->input("price_em"),
-			'price_staff' => $postdata->input("price_staff"),
+			'notforsale' => $postdata->input("notforsale") != null ? $postdata->input("notforsale") : '0',
+			'price_wm' => $postdata->input("price_wm") != null ? $postdata->input("price_wm") : '0',
+			'price_em' => $postdata->input("price_em") != null ? $postdata->input("price_em") : '0',
+			'price_staff' => $postdata->input("price_staff") != null ? $postdata->input("price_staff") : '0',
 			//'last_purchase' => $postdata->input("last_purchase") > 0 ? $postdata->input("last_purchase") : 0,
 			//'quantity_min' => $postdata->input("quantity_min") > 0 ? $postdata->input("quantity_min") : 0,
 			'status' => $postdata->input("status") != null ? $postdata->input("status") : '1',
 			'year' => $postdata->input("year") > 1900 ? $postdata->input("year") : 1900,
+			'month' => $postdata->input("month") > 0 ? $postdata->input("month") : 0,
 			'category' => $postdata->input("category") > 0 ? $postdata->input("category") : '0',
 			'updated_by' => Auth::user()->id,
 			'updated_at' => date('Y-m-d H:i:s'),
@@ -1142,7 +1160,6 @@ class Product extends Controller{
 				$data['gstpercentage'] = $gstpercentage;
 			}
 		}
-		dd($data);
 		return $data;
     }
 	
