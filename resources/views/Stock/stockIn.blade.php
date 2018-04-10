@@ -49,9 +49,8 @@ textarea {
                             </div>
                             <div class="panel-body">   
                                         <div class="form-group">
-
-                                                    <input required type="text" name="stock_receive" class="form-control hide" id="stockNo" value="{{$DocNo}}">
-
+                                               <input required type="text" name="stock_receive" class="form-control hide" id="stockNo" value="{{$DocNo}}">
+                                        </div>
                                         <div class="form-group">
                                                 <label class="col-md-3 col-xs-12 control-label">In Stock Date</label>
                                                 <div class="col-md-6 col-xs-12">
@@ -59,8 +58,7 @@ textarea {
                                                             <span class="input-group-addon"><span class="fa fa-calendar"></span></span>
                                                             <input type="date" class="form-control" name="in_stock_date" id="stockDate" value="{{$inStockDate}}">                                            
                                                         </div>
-                                                        
-                                                    </div>
+                                                </div>
                                         </div>
                                         <div class="form-group">
                                                 <label class="col-md-3 col-xs-12 control-label">Supplier</label>
@@ -87,38 +85,52 @@ textarea {
                                         <div class="form-group">
                                                 <label class="col-md-3 col-xs-12 control-label">Quantity</label>
                                                 <div class="col-md-6 col-xs-12">
-                                                        <input required type="text" id="quantity" name="quantity" disabled class="form-control" value="0">
+                                                        <input required type="text" id="quantity" name="quantity" class="form-control" value="0">
                                                 </div>
                                         </div>
                                         <div class="form-group">
                                                 <label class="col-md-3 col-xs-12 control-label">Description</label>
                                                 <div class="col-md-6 col-xs-12">
                                                         <textarea id="textarea_barcode" cols="30" rows="10" class="form-control" name="description"></textarea>
-                                                </div>
-                                                
+                                                </div>                                                
                                         </div>
                                         <input type="text" name="serial_number_scan_json" id="serial_number_scan_json" hidden>
                                         <input type="text" name="stock_in_id" id="stock_in_id" hidden value="{{$stockInId}}">
-
-
-                                    </form>
+                                        <input type="text" name="stock_in_serial_check" id="stock_in_serial_check" hidden value="false">
                             </div>
-                    </div>
-            </div>
-    </div>
+                            <div class="panel-footer">
+                                    <input type="button" id="clearBtn" class="btn btn-default" value="Clear Form">
+                                    <input type="button" id="saveDialogBtn"class="btn btn-primary pull-right" value="Save">
+                            </div>
+                        </div>
+
+                    </form>                           
+                            </div>
+                 
 
         <div class="col-md-6">
-                <div class="panel panel-default">
+               
+                <div class="panel panel-default disable">
                         <div class="panel-heading">
+                                <div class="actions pull-right">                         
+                                    <label class="switch">
+                                        <input type="checkbox" value="false" id="serial_no_checkbox" name="serial_no_checkbox"/>
+                                    <span></span>
+                                    </label>
+                                
+                            </div>
                             <h3 class="panel-title">Serial Number List</h3>
-                            <div class="actions pull-right">
-                                    <button type="button" class="btn btn-md  btn-default"  data-toggle="modal" data-target="#uploadModal"><i class="fa fa-upload"></i>Upload CSV</button>
-                                   <button type="button"  class="btn btn-md  btn-default"  data-toggle="modal" data-target="#scannerModal"><i class="fa fa-barcode"></i>Scanner</button>
-                                </div>
+                            <div class="actions pull-right">                                  
+                                    
+                            </div>
                         </div>
-                        <div class="panel-body panel-body-table">
-                             <div class="panel-body">                              
-                            <div class="table-responsive">
+                        <div class="panel-body serialNo">
+                                <button type="button" class="btn btn-md  btn-default"  data-toggle="modal" data-target="#uploadModal"><i class="fa fa-upload"></i>Upload CSV</button>
+                                <button type="button"  class="btn btn-md  btn-default"  data-toggle="modal" data-target="#scannerModal"><i class="fa fa-barcode"></i>Scanner</button> 
+                            </div>   
+                        <div class="panel-body panel-body-table serialNo">  
+                                <div class="panel-body">
+                                <div class="table-responsive">
                                 <table class="table  datatable" id="table_listing">
                                     <thead>
                                         <tr>
@@ -131,15 +143,13 @@ textarea {
                                     </tbody>
                                 </table>
                             </div>
+                        </div>
                             </div>
                         </div>
-                        <div class="panel-footer">
-                                <input type="button" id="clearBtn" class="btn btn-default" value="Clear Form">
-                                <input type="button" id="saveDialogBtn"class="btn btn-primary pull-right" value="Save">
-                            </div>
+
                     </div>   
         </div>
-       
+    </div><!--ROW-->
     
 
 
@@ -238,16 +248,18 @@ textarea {
       <script type='text/javascript' src="{!! asset('js/papaparse.min.js') !!}"></script> 
       <script>
             $(document).ready(function() {
+                //Declare now
                var now = new Date();
-
                 var day = ("0" + now.getDate()).slice(-2);
                 var month = ("0" + (now.getMonth() + 1)).slice(-2);
+                var today = now.getFullYear()+"-"+(month)+"-"+(day);
+                //Init datatable
+                window.t = $('.datatable').DataTable();
+                //init counter
+                window.counter = 1;
 
-                var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
-                var t = $('.datatable').DataTable();
-                var counter = 1;
-                var arrayCol;
-           
+                 $('.serialNo').hide()
+                var arrayCol;           
         
                 $(".input_barcode").keyup(function(event) {
                     if (event.keyCode === 13 || event.keyCode === 116) {
@@ -293,11 +305,20 @@ textarea {
                     });
                 });
 
-
-
+            //CHg serial
+            $('#serial_no_checkbox').click(function(){
+                if($('#serial_no_checkbox').is(':checked')) { 
+                    $('.serialNo').show(); 
+                    $('#stock_in_serial_check').val(true)
+                    $("#quantity").prop('disabled', true)
+                }else{
+                    $('.serialNo').hide()
+                    $('#stock_in_serial_check').val(false)
+                    $("#quantity").prop('disabled', false)
+                }               
             })
 
-
+            })//ENDready
 
 
         function displayHTMLTable(results){
@@ -305,25 +326,34 @@ textarea {
         var data = results.data;
         
         for(i=0;i<data.length;i++){
-        table+= "<tr>";
-        var row = data[i];
-        var cells = row.join(",").split(",");
+            if(checkIfArrayIsUnique(data[i]) == true){
+                                t.row.add( [
+                                    counter,
+                                    data[i],
+                                ] ).draw( false );
+                                counter++;
+                                arrayCol = getSerialNumber()
+                                $('#quantity').val(arrayCol.length)
+            }
+        // table+= "<tr>";
+        // var row = data[i];
+        // var cells = row.join(",").split(",");
         
-        for(j=0;j<cells.length;j++){
-        table+= "<td>";
-        table+= cells[j];
-        table+= "</th>";
-        }
-        table+= "</tr>";
+        // for(j=0;j<cells.length;j++){
+        // table+= "<td>";
+        // table+= cells[j];
+        // table+= "</th>";
+        // }
+        // table+= "</tr>";
         }
         table+= "";
-        $("#table_listing").html(table);
+        // $("#table_listing").html(table);
         }
 
 
 
     function getSerialNumber(){
-        var t = $('.datatable').DataTable();
+        // var t = $('.datatable').DataTable();
         var data = t
                         .columns( 1 )
                         .data()
@@ -351,15 +381,16 @@ textarea {
 
     $('#saveDialogBtn').click(function(){
         //Validate
-        var stockNo = $('#stockNo').val();
-        var stockDate = $('#stockDate').val();
-        var supplier = $('#supplier').val();
-        var product = $('#product').val();
-        var quantity = $('#quantity').val();
-        var description = $('#textarea_barcode').val();
-        var serial = $('#serial_number_scan_json').val();
-        
-        if(stockNo != '' && stockDate != '' &&supplier != '' &&product != '' && quantity != '' && description != '' && serial != ''){
+        let stockNo = $('#stockNo').val();
+        let stockDate = $('#stockDate').val();
+        let supplier = $('#supplier').val();
+        let product = $('#product').val();
+        let quantity = $('#quantity').val();
+        let description = $('#textarea_barcode').val();
+        let serial = $('#serial_number_scan_json').val();
+        if($('#stock_in_serial_check').val() == "true" && serial == ''){
+           alert('No serial Number were inserted');
+        }else if(stockNo != '' && stockDate != '' &&supplier != '' &&product != '' && quantity != '' && description != ''){
             // open save dialog
             $("#saveDialog").modal("show");
             //$('#submit_form').submit();
@@ -375,6 +406,8 @@ textarea {
     })
 
     $(document).on('click','#saveClose',function(){
+        $('#submit_form').append("<input type='hidden' name='link_redirect' value='{{url('stock/report/receive')}}'>");  // This is added to the end of the form and triggers the redirect after the saving is done
+            
         $('#submit_form').submit();      
     })
     

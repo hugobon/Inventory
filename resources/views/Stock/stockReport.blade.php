@@ -146,7 +146,7 @@ textarea {
                                             $currentdate = strtotime('+1 day', $currentdate);
                                     }
                                     
-                                    @endphp
+                                @endphp
                                <td class="bg-primary">Stock In Month</td>
                                <td class="bg-success">Total Adjustment In Month (-)</td>
                                <td class="bg-danger">Total Adjustment In Month (+)</td>
@@ -179,45 +179,41 @@ textarea {
      
             
             var t = $('.datatable').DataTable({
-                "footerCallback": function ( row, data, start, end, display ) {
-              var api = this.api();
+              "footerCallback": function ( row, data, start, end, display ) {
+                var api = this.api();
+                var colNumber = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35];
 
-      
-      var colNumber = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35];
-
-              // Remove the formatting to get integer data for summation
-              var intVal = function ( i ) {
-   
-                  return typeof i === 'string' ?
-                      i.replace(/\D/g, '')*1 :
-                      typeof i === 'number' ?
-                          i : 0;
-                           
-              };
+                    // Remove the formatting to get integer data for summation
+                    var intVal = function ( i ) {        
+                        return typeof i === 'string' ?
+                            i.replace(/\D/g, '')*1 :
+                            typeof i === 'number' ?
+                                i : 0;                                
+                    };
 
               // Total over all pages
                for (d = 0; d < colNumber.length; d++) {
                   var COLNUMBER = colNumber[d];
                   if (api.column(COLNUMBER).data().length){
-                  var total = api
-                  
-                  .column( COLNUMBER )
-                  .data()
-                  .reduce( function (a, b) {
-                  return intVal(a) + intVal(b);
-                  } ) }
+                        var total = api                        
+                                    .column( COLNUMBER )
+                                    .data()
+                                    .reduce( function (a, b) {
+                                    return intVal(a) + intVal(b);
+                                    }) 
+                  }
                   else{ total = 0};
-                   
-    
+
               // Total over this page
                
               if (api.column(COLNUMBER).data().length){
-              var pageTotal = api
-                  .column( COLNUMBER, { page: 'current'} )
-                  .data()
-                  .reduce( function (a, b) {
-                      return intVal(a) + intVal(b);
-                  } ) }
+                var pageTotal = api
+                                .column( COLNUMBER, { page: 'current'} )
+                                .data()
+                                .reduce( function (a, b) {
+                                    return intVal(a) + intVal(b);
+                                }) 
+                  }
                   else{ pageTotal = 0};
     
               // Update footer

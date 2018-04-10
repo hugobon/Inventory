@@ -69,18 +69,20 @@ class StockInController extends Controller
         $postData = $this->validate($request,[
 			'supplier_code' => 'required',
 			'product_code' => 'required',
-			'serial_number_scan_json' => 'required',
+			// 'serial_number_scan_json' => 'required',
 			'in_stock_date' => 'required',
             'stock_receive' => 'required',
             'description' => 'required',
-            'stock_in_id' => 'required'
+            'stock_in_id' => 'required',
+            'quantity' =>'required',
         ]);
 
      $supplierCode = $request->input('supplier_code');
      $stockInId = $request->input('stock_in_id');
      $productCode = $request->input('product_code');
-     $serialNumberBucket = $request->input('serial_number_scan_json');    
-
+     $serialNumberBucket = $request->input('serial_number_scan_json');  
+     $link_redirect  = $request->input('link_redirect');
+     $quantity  = $request->input('quantity');
      $inStockDate = $request->input('in_stock_date');
      $DocNo = $request->input('stock_receive');
      $description = $request->input('description');     
@@ -93,9 +95,18 @@ class StockInController extends Controller
      if($updateStockId){
         $product =  product_m::get();
         $supplier = supplier::get();
-        $this->insertSerialNumber($serialNumberBucket,$stockInId,$productCode);
-         $message = "Successfully Inserted ";   
-         return view('Stock.stockIn',compact('product','supplier','DocNo','inStockDate','stockInId'));
+        if($serialNumberBucket){
+            $this->insertSerialNumber($serialNumberBucket,$stockInId,$productCode);
+        }
+       
+         $message = "Successfully Inserted ";
+         
+         if($link_redirect){
+             return redirect($link_redirect);
+         }else{
+            return view('Stock.stockIn',compact('product','supplier','DocNo','inStockDate','stockInId'));
+         }   
+         
      }else{
         return 'failed';
      }    
