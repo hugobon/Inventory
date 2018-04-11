@@ -75,7 +75,7 @@ class StockInController extends Controller
             'stock_receive' => 'required',
             'description' => 'required',
             'stock_in_id' => 'required',
-            'quantity' =>'required',
+            // 'quantity' =>'required',
         ]);
 
      $supplierCode = $request->input('supplier_code');
