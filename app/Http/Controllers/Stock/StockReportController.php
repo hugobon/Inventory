@@ -11,6 +11,7 @@ use App\supplier;
 use App\product_serial_number;
 use App\inventory\stockadjustment_m;
 use App\configuration\config_stockadjustment_m;
+use App\product_woserialnum;
 
 use Auth;
 use Carbon\Carbon;
@@ -43,6 +44,7 @@ class StockReportController extends Controller
         $stockadjustment_m = new stockadjustment_m;
         $stockIn = new stock_in;
         $product_serial_number = new product_serial_number;
+        $product_woserialnum = new product_woserialnum;
 
         $productDetail = $product_m->get();        
 
@@ -51,24 +53,33 @@ class StockReportController extends Controller
         $start = strtotime($startdate);
         $end = strtotime($enddate);
         
-        $currentdate = $start;
-        $stockAdjustmentValue = [];
+        
+       
 
         foreach($productDetail as $product){
+            $currentdate = $start;
+            $stockAdjustmentValue = [];
             $productId = $product->id;
             $stockAdjustment = $stockadjustment_m->leftJoin('product','product.id','=','stockadjustment.product_id')->whereRaw('product.id ='.$productId)
                                 ->whereRaw('MONTH(stockadjustment.created_at) = '.$currentMonth)
                                 ->get();
+
+            $stockWithoutSerialNumber = $product_woserialnum->join('stock_in','stock_in.id','=','product_woserialnum.stock_in_id')
+                                        ->leftJoin('product','product.id','=','product_woserialnum.product_id')
+                                        ->select('product_woserialnum.quantity','stock_in.in_stock_date')
+                                        ->whereRaw('product.id ='.$productId)
+                                        ->whereRaw('MONTH(product_woserialnum.created_at) = '.$currentMonth)
+                                        ->get();
 
             $stockInMonth = $product_m->TotalProductCount()
                                     ->whereRaw('product.id ='.$productId)
                                     ->whereRaw('MONTH(stock_in.created_at) = '.$currentMonth)
                                     ->value('stocksCount');
 
-            $stockDays = $product_serial_number->leftjoin('stock_in','stock_in.id','=','product_serial_number.stock_in_id')                                            
-                                            ->select('product_serial_number.stock_in_id','stock_in.created_at')
+            $stockDays = $product_serial_number->join('stock_in','stock_in.id','=','product_serial_number.stock_in_id')                                            
+                                            ->select('product_serial_number.stock_in_id','stock_in.created_at','stock_in.in_stock_date')
                                             ->whereRaw('product_id ='.$productId)
-                                            ->whereRaw('MONTH(stock_in.created_at) = '.$currentMonth)
+                                            ->whereRaw('MONTH(stock_in.in_stock_date) = '.$currentMonth)
                                             ->get();
 
             $totalAdjustmentminus = 0; 
@@ -85,17 +96,26 @@ class StockReportController extends Controller
                     }
                 }
                 foreach($stockDays as $stockDay){
-                    if(Carbon::parse($stockDay->created_at)->format('Y-m-d') == $cur_date){
-                        $stockInToday++;
+                    if(Carbon::parse($stockDay->in_stock_date)->format('Y-m-d') == $cur_date){
+                        $stockInToday = count($stockDays); //All of product_serial_number
                     }
                     $totalAdjustmentadd+=$stockInToday;
                 }
+
+                foreach($stockWithoutSerialNumber as $withoutSerial){
+                    if(Carbon::parse($withoutSerial->in_stock_date)->format('Y-m-d') == $cur_date){
+                        $stockInToday+=$withoutSerial->quantity;
+                        $totalAdjustmentadd+=$stockInToday;
+                    }
+                }
                 $stockAdjustmentValue[] = ['day_add' => $stockInToday,'day_minus' => $adjustmentQty,'date'=>$cur_date];           
                 $currentdate = strtotime('+1 day', $currentdate);   
-            }
+            } //end loop every day in month
 
             
-            $product->stockInMonth = $stockInMonth?$stockInMonth:0;
+
+            $product->asd = $stockWithoutSerialNumber;
+            $product->stockInMonth = $stockInMonth?$stockInMonth:$totalAdjustmentadd;
             $product->totalAdjustmentminus = $totalAdjustmentminus;
             $product->totalAdjustmentadd = $totalAdjustmentadd;
             $product->stockBalance = $stockInMonth - $totalAdjustmentminus + $totalAdjustmentadd;

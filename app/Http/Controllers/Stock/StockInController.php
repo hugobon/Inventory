@@ -99,7 +99,7 @@ class StockInController extends Controller
         if($serialNumberBucket){
             $this->insertSerialNumber($serialNumberBucket,$stockInId,$productCode);
         }else{
-            $this->productWithoutSerialNum($productCode,$quantity);
+            $this->productWithoutSerialNum($productCode,$quantity,$stockInId);
         }
         
          $message = "Successfully Inserted ";
@@ -108,6 +108,7 @@ class StockInController extends Controller
              return redirect($link_redirect);
          }else{
             return view('Stock.stockIn',compact('product','supplier','DocNo','inStockDate','stockInId'));
+            //return compact('productCode','quantity','stockInId','jadi');
          }   
          
      }else{
@@ -152,32 +153,21 @@ class StockInController extends Controller
             return "SR".($generatedNo);      
     }
 
-    private function productWithoutSerialNum($product_id,$quantity){
+    private function productWithoutSerialNum($product_id,$quantity,$stock_in_id){
         //Init
         $product_woserialnum = new product_woserialnum;
-        //Check
-        $exist = $product_woserialnum->where('product_id',$product_id)->first();
-        try{			
-            if($exist){
-                $product_woserialnum->update([
-                                            'quantity'=>$exist->quantity+$quantity,
-                                            'updated_at'=>Carbon::now(),
-                                            'updated_by'=>Auth::user()->id
-                                            ]);
-            }else{
+        try{	
                 $product_woserialnum->insert([
                                             'product_id'=>$product_id,
                                             'quantity'=>$quantity,
+                                            'stock_in_id'=>$stock_in_id,
                                             'created_at'=>Carbon::now(),
                                             'created_by'=>Auth::user()->id
                                             ]);
-            }
-			return true;
+                 return true;
+			
 		}catch(\Exception $e){
 			return;
 		}
-
-
-
     }
 }
