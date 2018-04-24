@@ -17,7 +17,7 @@ class Quantitytype extends Controller
 		$data = array(
 			'counttype' => $quantitytypedata->count(),
 			'startcount' => 0,
-			'typeArr' => $quantitytypedata->orderBy('id', 'desc')->paginate(10),
+			'typeArr' => $quantitytypedata->orderBy('id', 'desc')->paginate(20),
 			'status' => array( '1' => 'Active','0' => 'Inactive'),
 		);
 		return view('Configuration/quantitytype_listing',$data);
@@ -34,31 +34,17 @@ class Quantitytype extends Controller
 			return redirect('configuration/quantitytype');
 		
 		$quantitytypedata = New config_quantitytype_m;
-		if($search != '' && $search_status != ''){
-			$counttype = $quantitytypedata->where(function ($q) use($search){
+		if($search != ''){
+			$quantitytypedata = $quantitytypedata->where(function ($q) use($search){
 											$q->where('type','LIKE','%'. $search .'%')
 												->orWhere('remarks','LIKE','%'. $search .'%');
-										})
-										->where('status',$search_status)
-										->count();
-			$typeArr = $quantitytypedata->where(function ($q) use($search){
-											$q->where('type','LIKE','%'. $search .'%')
-												->orWhere('remarks','LIKE','%'. $search .'%');
-										})
-										->where('status',$search_status)->orderBy('id', 'desc')->paginate(10);
+										});
 		}
-		else if($search != ''){
-			$counttype = $quantitytypedata->where('type','LIKE','%'. $search .'%')
-										->orWhere('remarks','LIKE','%'. $search .'%')
-										->count();
-			$typeArr = $quantitytypedata->where('type','LIKE','%'. $search .'%')
-										->orWhere('remarks','LIKE','%'. $search .'%')->orderBy('id', 'desc')->paginate(10);
-		}
-		else{
-			$counttype = $quantitytypedata->where('status',$search_status)
-										->count();
-			$typeArr = $quantitytypedata->where('status',$search_status)->orderBy('id', 'desc')->paginate(10);
-		}
+		if($search_status != '')
+			$quantitytypedata = $quantitytypedata->where('status',$search_status);
+			
+		$counttype = $quantitytypedata->count();
+		$typeArr = $quantitytypedata->orderBy('id', 'desc')->paginate(20);
 		
 		$data = array(
 			'counttype' => $counttype,

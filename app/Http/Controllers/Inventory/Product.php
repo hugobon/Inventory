@@ -45,11 +45,19 @@ class Product extends Controller{
 	
 	public function listing(){
 		$productdata = New product_m;
+		$configproductcategorydata = New config_productcategory_m;
+		$dataproductcategory = $configproductcategorydata->orderBy('category', 'asc')->get();
+		$categoryArr = array();
+		if(count($dataproductcategory) > 0){
+			foreach($dataproductcategory->all() as $keycategory => $rowcategory)
+				$categoryArr[$rowcategory->id] = $rowcategory->category;
+		}
 		$data = array(
 			'countproduct' => $productdata->count(),
-			'productArr' => $productdata->orderBy('id', 'desc')->paginate(10),
+			'productArr' => $productdata->orderBy('id', 'desc')->paginate(20),
 			'typeArr' => array( '0' => '', '1' => 'Item','2' => 'Package '),
 			'statusArr' => array( '0' => 'Inactive', '1' => 'Active'),
+			'categoryArr' => $categoryArr,
 		);
         return view('Inventory/product_listing',$data);
     }
@@ -61,34 +69,35 @@ class Product extends Controller{
 		$datadecode = unserialize(base64_decode($x));
 		$search = isset($datadecode['search']) ? $datadecode['search'] : '';
 		$type = isset($datadecode['type']) ? $datadecode['type'] : '';
-		if($search == '' && $type == '')
+		$category = isset($datadecode['category']) ? $datadecode['category'] : '';
+		if($search == '' && $type == '' && $category == '')
 			return redirect('product/listing');
 		
 		$productdata = New product_m;
-		if($search != '' && $type != ''){
-			$countproduct = $productdata->where(function ($q) use($search){
+		$productArr = $productdata;
+		
+		# Better Way to search - Bhaihaqi
+		if($search != ''){
+			$productArr = $productArr->where(function ($q) use($search){
 											$q->where('code','LIKE','%'. $search .'%')
 												->orWhere('name','LIKE','%'. $search .'%');
-										})
-										->where('type',$type)
-										->count();
-			$productArr = $productdata->where(function ($q) use($search){
-											$q->where('code','LIKE','%'. $search .'%')
-												->orWhere('name','LIKE','%'. $search .'%');
-										})
-										->where('type',$type)->orderBy('id', 'desc')->paginate(10);
+										});
 		}
-		else if($search != ''){
-			$countproduct = $productdata->where('code','LIKE','%'. $search .'%')
-										->orWhere('name','LIKE','%'. $search .'%')
-										->count();
-			$productArr = $productdata->where('code','LIKE','%'. $search .'%')
-										->orWhere('name','LIKE','%'. $search .'%')->orderBy('id', 'desc')->paginate(10);
-		}
-		else{
-			$countproduct = $productdata->where('type',$type)
-										->count();
-			$productArr = $productdata->where('type',$type)->orderBy('id', 'desc')->paginate(10);
+		if($type != '')
+			$productArr = $productArr->where('type',$type);
+		if($category != '')
+			$productArr = $productArr->where('category',$category);
+			
+		$countproduct = $productArr->count();
+		$productArr = $productArr->orderBy('id', 'desc')->paginate(20);
+		
+		
+		$configproductcategorydata = New config_productcategory_m;
+		$dataproductcategory = $configproductcategorydata->orderBy('category', 'asc')->get();
+		$categoryArr = array();
+		if(count($dataproductcategory) > 0){
+			foreach($dataproductcategory->all() as $keycategory => $rowcategory)
+				$categoryArr[$rowcategory->id] = $rowcategory->category;
 		}
 		
 		$data = array(
@@ -98,6 +107,8 @@ class Product extends Controller{
 			'statusArr' => array( '0' => 'Inactive', '1' => 'Active'),
 			'search' => $search,
 			'type' => $type,
+			'category' => $category,
+			'categoryArr' => $categoryArr,
 		);
         return view('Inventory/product_listing',$data);
     }
@@ -105,13 +116,15 @@ class Product extends Controller{
 	public function form_search(Request $postdata){
 		$search = trim($postdata->input("search"));
 		$type = trim($postdata->input("type"));
+		$category = trim($postdata->input("category"));
 		
-		if($search == '' && $type == '')
+		if($search == '' && $type == '' && $category == '')
 			return redirect('product/listing');
 			
 		$rowdata = array(
 			'search' => $search,
 			'type' => $type,
+			'category' => $category,
 		);
 		
 		$base64data = trim(base64_encode(serialize($rowdata)), "=.");
@@ -918,7 +931,7 @@ class Product extends Controller{
 		$productdata = New product_m;
 		$promotiondata = New product_promotion_m;
 		$imagedata = New product_image_m;
-		$productQuery = $productdata->orderBy('id', 'desc')->where('status',1)->get();
+		$productQuery = $productdata->orderBy('id', 'desc')->where('status',1)->where('notforsale', 0)->get();
 		# get Tax GST percentage		
 		$taxgst = config_tax_m::where('code', 'gst')->first();
 		if($taxgst == false)
@@ -1045,7 +1058,7 @@ class Product extends Controller{
 		if($id > 0){
 			$productdata = New product_m;
 			$promotiondata = New product_promotion_m;
-			$datap = $productdata->where('id', $id)->first();
+			$datap = $productdata->where('id', $id)->where('notforsale', 0)->first();
 			if($datap){
 				# get Tax GST percentage		
 				$taxgst = config_tax_m::where('code', 'gst')->first();

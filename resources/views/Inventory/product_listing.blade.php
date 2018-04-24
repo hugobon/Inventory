@@ -4,6 +4,7 @@
 @section('content')
 <style>
 	select{cursor:pointer;}
+	.table-hover2 tr:hover{ background-color:red !important;}
 </style>
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
@@ -49,7 +50,7 @@
 						{{ csrf_field() }}
 						<div class="panel-body">
 							<div class="row">
-								<div class="col-md-6">
+								<div class="col-md-4">
 									<div class="form-group">
 										<label class="col-md-2 control-label"> Search </label>
 										<div class="col-md-10">        
@@ -58,14 +59,29 @@
 										</div>
 									</div>
 								</div>
-								<div class="col-md-4">
+								<div class="col-md-3">
 									<div class="form-group">
 										<label class="col-md-4 control-label"> Type </label>
 										<div class="col-md-8">        
 											<select class="form-control product-type" name="type" >
 												<option value=""> All </option>
-												<option value="1" {{ isset($type) && $type == 1 ? "selected" : "" }}> Item </option>
-												<option value="2" {{ isset($type) && $type == 2 ? "selected" : "" }}> Package </option>
+												<option value="1" {{ isset($type) && $type == 1 ? "selected" : "" }}> Product Item </option>
+												<option value="2" {{ isset($type) && $type == 2 ? "selected" : "" }}> Product Package </option>
+											</select>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="form-group">
+										<label class="col-md-4 control-label"> Category </label>
+										<div class="col-md-8">        
+											<select class="form-control product-category" name="category" >
+												<option value=""> All </option>
+												@if(count($categoryArr) > 0)
+													@foreach($categoryArr as $categoryid => $categoryname)
+														<option value="{{ $categoryid }}" {{ isset($category) && $category == $categoryid ? "selected" : "" }}>{{ $categoryname }}</option>
+													@endforeach
+												@endif
 											</select>
 										</div>
 									</div>
@@ -80,15 +96,16 @@
 					<div class="panel-body">
 					&nbsp; Total Product: <b>{{ $countproduct }}</b>
 					<div class="table-responsive">
-						<table class="table table-bordered table-striped table-actions">
+						<table class="table table-bordered table-hover table-striped">
 							<thead>
 								<tr>
 									<th ></th>
-									<th >Id</th>
-									<th class="col-md-2">Code</th>
+									<th class='text-center'>Id</th>
+									<th class="col-md-1">Code</th>
 									<th class="col-md-5">Name</th>
-									<th class="col-md-2">Type</th>
-									<th class="col-md-2">Status</th>
+									<th class="col-md-1">Type</th>
+									<th class="col-md-2">Category</th>
+									<th class="col-md-1">Status</th>
 									<th ></th>
 									<th ></th>
 									<th ></th>
@@ -103,32 +120,33 @@
 										$base64data = trim(base64_encode(serialize($rowarr)), "=.");
 									?>
 									<tr>
-										<td>{{ $key + $productArr->firstItem() }}</td>
-										<td>{{ $row->id }}</td>
+										<td class='text-center'>{{ $key + $productArr->firstItem() }}</td>
+										<td class='text-center'>{{ $row->id }}</td>
 										<td>{{ $row->code }}</td>
 										<td>{{ $row->name }}</td>
 										<td>{{ isset($typeArr[$row->type]) ? $typeArr[$row->type] : '' }}</td>
+										<td>{{ isset($categoryArr[$row->category]) ? $categoryArr[$row->category] : '' }}</td>
 										<td>{{ isset($statusArr[$row->status]) ? $statusArr[$row->status] : '' }}</td>
 										<td>
 											<a href="{{ url('product/view/' . $row->id) }}" 
 											title=" View {{ $row->code.' ('.$row->name.')' }}"
-											class="btn btn-info btn-rounded"><span class="fa fa-eye"></span></a>
+											class=""><span class="fa fa-eye"></span></a>
 										</td>
 										<td>
 											<a href="{{ url('product/edit/' . $row->id) }}" 
 											title=" Edit {{ $row->code.' ('.$row->name.')' }}"
-											class="btn btn-primary btn-rounded" ><span class="fa fa-edit"></span></a>
+											class="" ><span class="fa fa-edit"></span></a>
 										</td>
 										<td>
 											<a href="javascript:;" data-base64="{{ $base64data }}" data-code="{{ $row->code }}" data-name="{{ $row->name }}"
 											title=" Remove {{ $row->code.' ('.$row->name.')' }}"
-											class="btn btn-danger btn-rounded confirm-delete" ><span class="glyphicon glyphicon-trash"></span></a>
+											class="confirm-delete" ><i class="glyphicon glyphicon-trash"></i></a>
 										</td>
 									</tr>
 								@endforeach
 							@else
 							<tr>
-								<td colspan="9" class="text-center"> No Data Found <br />
+								<td colspan="10" class="text-center"> No Data Found <br />
 								<a href="{{ url('product/form') }}"><span class="fa fa-plus"></span> Add new product</a></td>
 							</tr>
 							@endif
