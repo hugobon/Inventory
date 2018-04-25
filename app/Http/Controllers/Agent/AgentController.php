@@ -277,6 +277,8 @@ class AgentController extends Controller
                                             ->get();
 
             // var_dump($cartItems);die();
+            $totalPrice_wm = 0.00;
+            $totalPrice_em = 0.00;
             $grandTotalPrice_wm = 0.00;
             $grandTotalPrice_em = 0.00;
             foreach ($cartItems as $key => $value){
@@ -297,13 +299,13 @@ class AgentController extends Controller
 
                 $cartItems[$key]['image'] = ($image['path'] == null ? '' : $image['path']);
 
-                $grandTotalPrice_wm = $grandTotalPrice_wm + str_replace(",","",$cartItems[$key]['total_price_wm']);
-                $grandTotalPrice_em = $grandTotalPrice_em + str_replace(",","",$cartItems[$key]['total_price_em']);
+                $totalPrice_wm = $totalPrice_wm + str_replace(",","",$cartItems[$key]['total_price_wm']);
+                $totalPrice_em = $totalPrice_em + str_replace(",","",$cartItems[$key]['total_price_em']);
 
             }
 
             // dd($grandTotalPrice_wm,$grandTotalPrice_em);
-            if($grandTotalPrice_wm < "300.00" || $grandTotalPrice_em < "300.00"){
+            if($totalPrice_wm < "300.00" || $totalPrice_em < "300.00"){
 
                 $shipping_fee = number_format(floatval("10.00"),2);
             }
@@ -312,15 +314,20 @@ class AgentController extends Controller
                 $shipping_fee = number_format(floatval("0.00"),2);
             }
 
-            $grandTotalPrice_wm = number_format(floatval($grandTotalPrice_wm),2);
-            $grandTotalPrice_em = number_format(floatval($grandTotalPrice_em),2);
+            $totalPrice_wm = number_format(floatval($totalPrice_wm),2);
+            $totalPrice_em = number_format(floatval($totalPrice_em),2);
+
+            $grandTotalPrice_wm = number_format(floatval($totalPrice_wm + $shipping_fee),2);
+            $grandTotalPrice_em = number_format(floatval($totalPrice_em + $shipping_fee),2);
 
             $returnData = [
 
                 'agent_id'        => $agent_id,
                 'grandTotalPrice_wm' => $grandTotalPrice_wm,
                 'grandTotalPrice_em' => $grandTotalPrice_em,
-                'shippingPrice'  => $shipping_fee
+                'shippingPrice'  => $shipping_fee,
+                'totalPrice_wm' => $totalPrice_wm,
+                'totalPrice_em' => $total_price_em
             ];
 
             $deliveryType = delivery_type::select('id','delivery_code as code','type_description as description')
@@ -417,6 +424,7 @@ class AgentController extends Controller
 
             $addressData = address::select('id','name','address_code','street1','street2','poscode','city','state','country')
                                     ->where('address_code','=',$agent_id."_AGENT")
+                                    ->where('reminder_flag','=','x')
                                     ->first();
 
             $cartItems = agent_select_product::leftJoin('product','product.id','=','agent_select_product.product_id')
@@ -426,6 +434,7 @@ class AgentController extends Controller
                                             ->get();
 
             // var_dump($cartItems);die();
+            $totalPrice = 0.00;
             $grandTotalPrice = 0.00;
             foreach ($cartItems as $key => $value){
 
@@ -450,12 +459,12 @@ class AgentController extends Controller
 
                 $cartItems[$key]['image'] = ($image['path'] == null ? '' : $image['path']);
 
-                $grandTotalPrice = $grandTotalPrice + str_replace(",","",$value->total_price);
+                $totalPrice = $totalPrice + str_replace(",","",$value->total_price);
 
             }
 
             //shipping fee
-            if($grandTotalPrice < "300.00"){
+            if($totalPrice < "300.00"){
 
                 $shipping_fee = number_format(floatval("10.00"),2);
             }
@@ -464,8 +473,10 @@ class AgentController extends Controller
                 $shipping_fee = number_format(floatval("0.00"),2);
             }
 
+            //total price
+            $totalPrice = number_format(floatval($totalPrice),2);
             //gandtotal price
-            $grandTotalPrice = number_format(floatval($grandTotalPrice),2);
+            $grandTotalPrice = number_format(floatval($totalPrice + $shipping_fee),2);
 
             if($deliveryType == "01"){
 
@@ -496,6 +507,7 @@ class AgentController extends Controller
 
                 'agent_id'        => $agent_id,
                 'grandTotalPrice' => $grandTotalPrice,
+                'totalPrice' => $totalPrice,
                 'shippingPrice'  => $shipping_fee,
                 'address' => $address,
                 'deliveryType' =>$deliveryType
@@ -606,8 +618,8 @@ class AgentController extends Controller
             $return['status'] = "02";
         }
 
-        // dd($return);
-        return view('Agent.agent_product_detail');
+        dd($return,$data);
+        return view('Agent.agent_product_detail',compact('data'));
     }
 
     private function fn_calc_total_price($quantity,$price){
@@ -814,6 +826,9 @@ class AgentController extends Controller
                 if($x && $y){
                     agent_select_product::where('agent_id',$agent_id)
                                     ->delete();
+
+                    address::where('id',$shipping_id)
+                                ->update(['reminder_flag' => 'x']);
                 }
 
                 $return['message'] = "Succssfuly placed the order";
