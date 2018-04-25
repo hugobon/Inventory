@@ -118,12 +118,19 @@
                                     <table class="col-md-12">
                                         <tbody>
                                             <tr>
-                                                <td><h4>Shipping Fee</h4></td>
-                                                <td><h4>RM{{ $returnData['shippingPrice'] }}</h4></td>
+                                                <td><h5>Shipping Fee</h5></td>
+                                                <td><h5>RM{{ $returnData['shippingPrice'] }}</h5></td>
                                             </tr>
                                             <tr>
-                                                <td><h3>Grand Total</h3></td>
-                                                <td><h3>RM{{ $returnData['grandTotalPrice'] }}</h3></td>
+                                                <td><h5>Total Price</h5></td>
+                                                <td><h5>RM{{ $returnData['totalPrice'] }}</h5></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2"><hr></td>
+                                            </tr>
+                                            <tr>
+                                                <td><h4>Grand Total</h4></td>
+                                                <td><h4>RM{{ $returnData['grandTotalPrice'] }}</h4></td>
                                             </tr>
                                             <tr>
                                                 <td hidden="">
