@@ -30,7 +30,7 @@ class Product_promotion extends Controller
 		$promotiondata = New product_promotion_m;
 		$data = array(
 			'countpromotion' => $promotiondata->count(),
-			'promotionArr' => $promotiondata->orderBy('id', 'desc')->paginate(10),
+			'promotionArr' => $promotiondata->orderBy('id', 'desc')->paginate(20),
 			'productArr' => $productArr,
 			'statusArr' => array( '1' => 'On','0' => 'Off'),
 		);
@@ -46,21 +46,16 @@ class Product_promotion extends Controller
 		$search_status = isset($datadecode['search_status']) ? $datadecode['search_status'] : '';
 		if($search_product == '' && $search_status == '')
 			return redirect('product/promotion/listing');
+			
 		$promotiondata = New product_promotion_m;
-		if($search_product != '' && $search_status != ''){
-			$countpromotion = $promotiondata->where('product_id',$search_product)
-												->where('status',$search_status)->count();
-			$promotionArr = $promotiondata->where('product_id',$search_product)
-												->where('status',$search_status)->orderBy('id', 'desc')->paginate(10);
-		}
-		else if($search_product != ''){
-			$countpromotion = $promotiondata->where('product_id',$search_product)->count();
-			$promotionArr = $promotiondata->where('product_id',$search_product)->orderBy('id', 'desc')->paginate(10);
-		}
-		else{
-			$countpromotion = $promotiondata->where('status',$search_status)->count();
-			$promotionArr = $promotiondata->where('status',$search_status)->orderBy('id', 'desc')->paginate(10);
-		}
+		if($search_product != '')
+			$promotiondata = $promotiondata->where('product_id',$search_product);
+		
+		if($search_status != '')
+			$promotiondata = $promotiondata->where('status',$search_status);
+			
+		$countpromotion = $promotiondata->count();
+		$promotionArr = $promotiondata->orderBy('id', 'desc')->paginate(20);
 		
 		$productdata = New product_m;
 		$data = $productdata->orderBy('code', 'asc')->get();
