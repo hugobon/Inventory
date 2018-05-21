@@ -927,7 +927,10 @@ class Product extends Controller{
 	
 	#pass to Amin
 	public function all_data_product(){
+	//date_default_timezone_set("Asia/Kuala_Lumpur");
 		$nowdatetime =  date('Y-m-d H:i:s');
+		// echo 'date.timezone: ' . ini_get('date.timezone');
+		// echo "<br /> Y-m-d H:i:s" . date('Y-m-d H:i:s');
 		$productdata = New product_m;
 		$promotiondata = New product_promotion_m;
 		$imagedata = New product_image_m;
