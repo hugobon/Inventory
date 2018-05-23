@@ -30,7 +30,7 @@ class Product_promotion extends Controller
 		$promotiondata = New product_promotion_m;
 		$data = array(
 			'countpromotion' => $promotiondata->count(),
-			'promotionArr' => $promotiondata->orderBy('id', 'desc')->paginate(10),
+			'promotionArr' => $promotiondata->orderBy('id', 'desc')->paginate(20),
 			'productArr' => $productArr,
 			'statusArr' => array( '1' => 'On','0' => 'Off'),
 		);
@@ -46,21 +46,16 @@ class Product_promotion extends Controller
 		$search_status = isset($datadecode['search_status']) ? $datadecode['search_status'] : '';
 		if($search_product == '' && $search_status == '')
 			return redirect('product/promotion/listing');
+			
 		$promotiondata = New product_promotion_m;
-		if($search_product != '' && $search_status != ''){
-			$countpromotion = $promotiondata->where('product_id',$search_product)
-												->where('status',$search_status)->count();
-			$promotionArr = $promotiondata->where('product_id',$search_product)
-												->where('status',$search_status)->orderBy('id', 'desc')->paginate(10);
-		}
-		else if($search_product != ''){
-			$countpromotion = $promotiondata->where('product_id',$search_product)->count();
-			$promotionArr = $promotiondata->where('product_id',$search_product)->orderBy('id', 'desc')->paginate(10);
-		}
-		else{
-			$countpromotion = $promotiondata->where('status',$search_status)->count();
-			$promotionArr = $promotiondata->where('status',$search_status)->orderBy('id', 'desc')->paginate(10);
-		}
+		if($search_product != '')
+			$promotiondata = $promotiondata->where('product_id',$search_product);
+		
+		if($search_status != '')
+			$promotiondata = $promotiondata->where('status',$search_status);
+			
+		$countpromotion = $promotiondata->count();
+		$promotionArr = $promotiondata->orderBy('id', 'desc')->paginate(20);
 		
 		$productdata = New product_m;
 		$data = $productdata->orderBy('code', 'asc')->get();
@@ -112,15 +107,22 @@ class Product_promotion extends Controller
 		if(count($datap) > 0){
 			foreach($datap->all() as $key => $row){
 				$productArr[$row->id] = array(
-					'code' => $row->code . ' (' . $row->name . ')',
+					'code' => ($row->type == 1 ? '(Product) - ' : '(Package) - ') . $row->code . ' (' . $row->name . ')',
 					'desc' => $row->name,
 				);
 			}
 		}
+		
+		$productGift = $productdata->where('type','<>',2)->orderBy('code', 'asc')->get();
+		$productGiftArr = array();
+		if(count($productGift) > 0){
+			foreach($productGift->all() as $keygift => $rowgift)
+				$productGiftArr[$rowgift->id] = $rowgift->code . ' (' . $rowgift->name . ')';
+		}
 		$data = array();
 		$data['gstpercentage'] = $gstpercentage;
 		$data['productArr'] = $productArr;
-		
+		$data['productGiftArr'] = $productGiftArr;
 		return view('Inventory/product_promotion_form',$data);
     }
 	
@@ -142,6 +144,12 @@ class Product_promotion extends Controller
 			$productdata = New product_m;
 			$productArr = $productdata->where('id', $product_id)->first();
 			
+			$productGift = $productdata->where('type','<>',2)->orderBy('code', 'asc')->get();
+			$productGiftArr = array();
+			if(count($productGift) > 0){
+				foreach($productGift->all() as $keygift => $rowgift)
+					$productGiftArr[$rowgift->id] = $rowgift->code . ' (' . $rowgift->name . ')';
+			}
 			$giftdata = New product_promotion_gift_m;
 			$data = array();
 			$data = $promotion;
@@ -149,6 +157,7 @@ class Product_promotion extends Controller
 			$data['productArr'] = $productArr;
 			$data['statusArr'] = array( '1' => 'On','0' => 'Off');
 			$data['gift_list'] = $giftdata->where('promotion_id', $id)->get();
+			$data['productGiftArr'] = $productGiftArr;
 			return view('Inventory/product_promotion_form',$data);
 		}
 		return redirect("product/promotion/listing");
@@ -175,6 +184,15 @@ class Product_promotion extends Controller
 			$giftdata = New product_promotion_gift_m;
 			$gift_list = $giftdata->where('promotion_id', $id)->get();
 
+			#get gift product name
+			$productGiftArr = array();
+			if(count($gift_list) > 0){
+				foreach($gift_list->all() as $key => $row){
+					$datap = $productdata->where('id', $row->product_id)->where('type','<>', 2)->first();
+					$productGiftArr[$datap['id']] = $datap['code'] . ' (' . $datap['name'] . ')';
+				}
+			}
+			
 			$data = array();
 			$userdata = New User_m;
 			
@@ -192,6 +210,7 @@ class Product_promotion extends Controller
 			$data['gstpercentage'] = $gstpercentage;
 			$data['productArr'] = $productArr;
 			$data['gift_list'] = $gift_list;
+			$data['productGiftArr'] = $productGiftArr;
 			$data['statusArr'] = array( '1' => 'On','0' => 'Off');
 			return view('Inventory/product_promotion_view',$data);
 		}
@@ -204,7 +223,6 @@ class Product_promotion extends Controller
 			'daterange' => 'required',
 			'price_wm' => 'required',
 			'price_em' => 'required',
-			'price_staff' => 'required',
 		]);
 		
 		$daterange = $postdata->input("daterange");
@@ -230,7 +248,7 @@ class Product_promotion extends Controller
 			'end' => $end,
 			'price_wm' => $postdata->input("price_wm"),
 			'price_em' => $postdata->input("price_em"),
-			'price_staff' => $postdata->input("price_staff"),
+			'price_staff' => $postdata->input("price_staff") != null ? $postdata->input("price_staff") : '0',
 			'status' => $postdata->input("status") != null ? $postdata->input("status") : '1',
 			'created_by' => 1,
 			'created_at' => date('Y-m-d H:i:s'),
@@ -247,10 +265,10 @@ class Product_promotion extends Controller
 			$promotiondescription = $postdata->input("promotiondescription");
 			$giftdata = New product_promotion_gift_m;
 			foreach($giftid as $k => $v){
-				if(trim($promotiongift[$k]) != ''){
+				if($promotiongift[$k] > 0){
 					$datagift = array(
 						'promotion_id' => $id,
-						'gift' => trim($promotiongift[$k]),
+						'product_id' => $promotiongift[$k],
 						'quantity' => $promotionquantity[$k] > 0 ? $promotionquantity[$k] : 1,
 						'description' => $promotiondescription[$k] != null ? $promotiondescription[$k] : '',
 						'created_by' => 1,
@@ -276,7 +294,6 @@ class Product_promotion extends Controller
 			'daterange' => 'required',
 			'price_wm' => 'required',
 			'price_em' => 'required',
-			'price_staff' => 'required',
 		]);
 		
 		$daterange = $postdata->input("daterange");
@@ -299,7 +316,7 @@ class Product_promotion extends Controller
 			'end' => $end,
 			'price_wm' => $postdata->input("price_wm"),
 			'price_em' => $postdata->input("price_em"),
-			'price_staff' => $postdata->input("price_staff"),
+			'price_staff' => $postdata->input("price_staff") != null ? $postdata->input("price_staff") : '0',
 			'status' => $postdata->input("status") != null ? $postdata->input("status") : '1',
 			'updated_by' => 1,
 			'updated_at' => date('Y-m-d H:i:s'),
@@ -318,10 +335,10 @@ class Product_promotion extends Controller
 		foreach($giftid as $k => $v){
 			if($v > 0){
 				#update
-				if(trim($promotiongift[$k]) != ''){
+				if($promotiongift[$k] > 0){
 					$datagift = array(
 						'promotion_id' => $id,
-						'gift' => trim($promotiongift[$k]),
+						'product_id' => $promotiongift[$k],
 						'quantity' => $promotionquantity[$k] > 0 ? $promotionquantity[$k] : 1,
 						'description' => $promotiondescription[$k] != null ? trim($promotiondescription[$k]) : '',
 						'updated_by' => 1,
@@ -333,10 +350,10 @@ class Product_promotion extends Controller
 			}
 			else{
 				#insert
-				if(trim($promotiongift[$k]) != ''){
+				if($promotiongift[$k] > 0){
 					$datagift = array(
 						'promotion_id' => $id,
-						'gift' => trim($promotiongift[$k]),
+						'product_id' => $promotiongift[$k],
 						'quantity' => $promotionquantity[$k] > 0 ? $promotionquantity[$k] : 1,
 						'description' => $promotiondescription[$k] != null ? trim($promotiondescription[$k]) : '',
 						'created_by' => 1,

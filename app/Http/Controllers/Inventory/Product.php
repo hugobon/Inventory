@@ -13,6 +13,7 @@ use App\configuration\config_tax_m;
 use App\configuration\config_quantitytype_m;
 use App\configuration\config_productcategory_m;
 use App\inventory\product_promotion_m;
+use App\inventory\product_promotion_gift_m;
 use App\User_m;
 
 use Auth;
@@ -44,11 +45,19 @@ class Product extends Controller{
 	
 	public function listing(){
 		$productdata = New product_m;
+		$configproductcategorydata = New config_productcategory_m;
+		$dataproductcategory = $configproductcategorydata->orderBy('category', 'asc')->get();
+		$categoryArr = array();
+		if(count($dataproductcategory) > 0){
+			foreach($dataproductcategory->all() as $keycategory => $rowcategory)
+				$categoryArr[$rowcategory->id] = $rowcategory->category;
+		}
 		$data = array(
 			'countproduct' => $productdata->count(),
-			'productArr' => $productdata->orderBy('id', 'desc')->paginate(10),
+			'productArr' => $productdata->orderBy('id', 'desc')->paginate(20),
 			'typeArr' => array( '0' => '', '1' => 'Item','2' => 'Package '),
 			'statusArr' => array( '0' => 'Inactive', '1' => 'Active'),
+			'categoryArr' => $categoryArr,
 		);
         return view('Inventory/product_listing',$data);
     }
@@ -60,34 +69,35 @@ class Product extends Controller{
 		$datadecode = unserialize(base64_decode($x));
 		$search = isset($datadecode['search']) ? $datadecode['search'] : '';
 		$type = isset($datadecode['type']) ? $datadecode['type'] : '';
-		if($search == '' && $type == '')
+		$category = isset($datadecode['category']) ? $datadecode['category'] : '';
+		if($search == '' && $type == '' && $category == '')
 			return redirect('product/listing');
 		
 		$productdata = New product_m;
-		if($search != '' && $type != ''){
-			$countproduct = $productdata->where(function ($q) use($search){
+		$productArr = $productdata;
+		
+		# Better Way to search - Bhaihaqi
+		if($search != ''){
+			$productArr = $productArr->where(function ($q) use($search){
 											$q->where('code','LIKE','%'. $search .'%')
 												->orWhere('name','LIKE','%'. $search .'%');
-										})
-										->where('type',$type)
-										->count();
-			$productArr = $productdata->where(function ($q) use($search){
-											$q->where('code','LIKE','%'. $search .'%')
-												->orWhere('name','LIKE','%'. $search .'%');
-										})
-										->where('type',$type)->orderBy('id', 'desc')->paginate(10);
+										});
 		}
-		else if($search != ''){
-			$countproduct = $productdata->where('code','LIKE','%'. $search .'%')
-										->orWhere('name','LIKE','%'. $search .'%')
-										->count();
-			$productArr = $productdata->where('code','LIKE','%'. $search .'%')
-										->orWhere('name','LIKE','%'. $search .'%')->orderBy('id', 'desc')->paginate(10);
-		}
-		else{
-			$countproduct = $productdata->where('type',$type)
-										->count();
-			$productArr = $productdata->where('type',$type)->orderBy('id', 'desc')->paginate(10);
+		if($type != '')
+			$productArr = $productArr->where('type',$type);
+		if($category != '')
+			$productArr = $productArr->where('category',$category);
+			
+		$countproduct = $productArr->count();
+		$productArr = $productArr->orderBy('id', 'desc')->paginate(20);
+		
+		
+		$configproductcategorydata = New config_productcategory_m;
+		$dataproductcategory = $configproductcategorydata->orderBy('category', 'asc')->get();
+		$categoryArr = array();
+		if(count($dataproductcategory) > 0){
+			foreach($dataproductcategory->all() as $keycategory => $rowcategory)
+				$categoryArr[$rowcategory->id] = $rowcategory->category;
 		}
 		
 		$data = array(
@@ -97,6 +107,8 @@ class Product extends Controller{
 			'statusArr' => array( '0' => 'Inactive', '1' => 'Active'),
 			'search' => $search,
 			'type' => $type,
+			'category' => $category,
+			'categoryArr' => $categoryArr,
 		);
         return view('Inventory/product_listing',$data);
     }
@@ -104,13 +116,15 @@ class Product extends Controller{
 	public function form_search(Request $postdata){
 		$search = trim($postdata->input("search"));
 		$type = trim($postdata->input("type"));
+		$category = trim($postdata->input("category"));
 		
-		if($search == '' && $type == '')
+		if($search == '' && $type == '' && $category == '')
 			return redirect('product/listing');
 			
 		$rowdata = array(
 			'search' => $search,
 			'type' => $type,
+			'category' => $category,
 		);
 		
 		$base64data = trim(base64_encode(serialize($rowdata)), "=.");
@@ -810,20 +824,35 @@ class Product extends Controller{
 				if($checkproduct == false)
 					return redirect("product/listing")->with("errorid"," Data not found");
 				
-				$search = isset($datadecode['search']) ? $datadecode['search'] : '';
-				
-				if($checkproduct['type'] == 2){
-					#delete all package product
-					$packagedata = New product_package_m;
-					$packagedata->where('package_id', $deleteid)->delete();
+				$packagedata = New product_package_m;
+				if($checkproduct['type'] == 1){
+					#check Product have in package or not
+					$checkpackage = $packagedata->where('product_id', $deleteid)->first();
+					if($checkpackage != false)
+						return redirect("product/listing")->with("errorid"," Product " . $checkproduct['code'] . "  (" . $checkproduct['name'] . ") have in package");
 				}
+				$search = isset($datadecode['search']) ? $datadecode['search'] : '';
 				
 				if(product_m::where('id', $deleteid)->delete()){
 					if($checkproduct['type'] == 2){
-						#delete all package product
-						$packagedata = New product_package_m;
-						$packagedata->where('product_id', $deleteid)->delete();
+						#delete all package product\
+						$packagedata->where('package_id', $deleteid)->delete();
 					}
+					
+					#delete all promotion
+					$promotiondata = New product_promotion_m;
+					$promotiongiftdata = New product_promotion_gift_m;
+					$promotion_list = $promotiondata->where('product_id',$deleteid)->orderBy('id', 'desc')->get();
+					foreach($promotion_list->all() as $key => $rowpromotion){
+						# delete all gift in table promotion
+						$promotion_id = $rowpromotion->id;
+						$promotiongiftdata->where('promotion_id', $promotion_id)->delete();
+					}
+					# delete all promotion
+					$promotiondata->where('product_id', $deleteid)->delete();
+					# delete all promotion Gift
+					$promotiongiftdata->where('product_id', $deleteid)->delete();
+					
 					
 					#delete all image
 					$imagedata = New product_image_m;
@@ -898,11 +927,14 @@ class Product extends Controller{
 	
 	#pass to Amin
 	public function all_data_product(){
+	//date_default_timezone_set("Asia/Kuala_Lumpur");
 		$nowdatetime =  date('Y-m-d H:i:s');
+		// echo 'date.timezone: ' . ini_get('date.timezone');
+		// echo "<br /> Y-m-d H:i:s" . date('Y-m-d H:i:s');
 		$productdata = New product_m;
 		$promotiondata = New product_promotion_m;
 		$imagedata = New product_image_m;
-		$productQuery = $productdata->orderBy('id', 'desc')->where('status',1)->get();
+		$productQuery = $productdata->orderBy('id', 'desc')->where('status',1)->where('notforsale', 0)->get();
 		# get Tax GST percentage		
 		$taxgst = config_tax_m::where('code', 'gst')->first();
 		if($taxgst == false)
@@ -1023,11 +1055,13 @@ class Product extends Controller{
 	
 	public function single_data_product($id = 0){
 		# Bhaihaqi modify 2018-04-09 10:27 PM
+		$nowdatetime =  date('Y-m-d H:i:s');
 		$data = array();
 		$productArr = array();
 		if($id > 0){
 			$productdata = New product_m;
-			$datap = $productdata->where('id', $id)->first();
+			$promotiondata = New product_promotion_m;
+			$datap = $productdata->where('id', $id)->where('notforsale', 0)->first();
 			if($datap){
 				# get Tax GST percentage		
 				$taxgst = config_tax_m::where('code', 'gst')->first();
@@ -1151,11 +1185,50 @@ class Product extends Controller{
 				$data['price_staff'] = number_format($price_staff, 2, '.', '');
 				$data['staff_gst'] = number_format($staff_gst, 2, '.', '');
 				$data['staff_aftergst'] = number_format($staff_aftergst, 2, '.', '');
-					
+				$data['nowdatetime'] = $nowdatetime;
+				#in promotion range
+ 				$promotion = $promotiondata->where('product_id',$id)
+											->where('start','<=',$nowdatetime)
+											->where('end','>=',$nowdatetime)
+											->where('status',1)
+											->orderBy('id', 'desc')->first();
+				if($promotion){
+					$data['typename'] = $data['typename'] . " Promotion";
+					#price after gst
+					$price_wm = $promotion['price_wm'];
+					$price_em = $promotion['price_em'];
+					$price_staff = $promotion['price_staff'];
+					$wm_gst = $wm_aftergst = $em_gst = $em_aftergst = $staff_gst = $staff_aftergst = 0;
+					if($price_wm > 0){
+						$wm_gst = ($price_wm / 100) * $gstpercentage;
+						$wm_aftergst = $price_wm + $wm_gst;
+					}
+					if($price_em > 0){
+						$em_gst = ($price_em / 100) * $gstpercentage;
+						$em_aftergst = $price_em + $em_gst;
+					}
+					if($price_staff > 0){
+						$staff_gst = ($price_staff / 100) * $gstpercentage;
+						$staff_aftergst = $price_staff + $staff_gst;
+					}
+					$data['price_wm'] = number_format($price_wm, 2, '.', '');
+					$data['wm_gst'] = number_format($wm_gst, 2, '.', '');
+					$data['wm_aftergst'] = number_format($wm_aftergst, 2, '.', '');
+					$data['price_em'] = number_format($price_em, 2, '.', '');
+					$data['em_gst'] = number_format($em_gst, 2, '.', '');
+					$data['em_aftergst'] = number_format($em_aftergst, 2, '.', '');
+					$data['price_staff'] = number_format($price_staff, 2, '.', '');
+					$data['staff_gst'] = number_format($staff_gst, 2, '.', '');
+					$data['staff_aftergst'] = number_format($staff_aftergst, 2, '.', '');
+					$data['promotion_id'] = $promotion['id'];
+					$data['promotion_description'] = $promotion['description'];
+					$data['promotion_start'] = $promotion['start'];
+					$data['promotion_end'] = $promotion['end'];
+				}
+				
 				$imagedata = New product_image_m;
 				$promotiondata = New product_promotion_m;
 				$data['imageArr'] = $imagedata->where('product_id',$id)->orderBy('status', 'desc')->orderBy('id', 'desc')->get();
-				$data['promotion_list'] = $promotiondata->where('product_id',$id)->orderBy('id', 'desc')->get();
 				$data['statusArr'] = array('1' => 'Active', '0' => 'Inactive');
 				$data['gstpercentage'] = $gstpercentage;
 			}

@@ -17,7 +17,7 @@ class Productcategory extends Controller
 		$data = array(
 			'countcategory' => $productcategorydata->count(),
 			'startcount' => 0,
-			'categoryArr' => $productcategorydata->orderBy('id', 'desc')->paginate(10),
+			'categoryArr' => $productcategorydata->orderBy('id', 'desc')->paginate(20),
 			'status' => array( '1' => 'Active','0' => 'Inactive'),
 		);
 		return view('Configuration/productcategory_listing',$data);
@@ -34,31 +34,18 @@ class Productcategory extends Controller
 			return redirect('configuration/productcategory');
 		
 		$productcategorydata = New config_productcategory_m;
-		if($search != '' && $search_status != ''){
-			$countcategory = $productcategorydata->where(function ($q) use($search){
+		if($search != ''){
+			$productcategorydata = $productcategorydata->where(function ($q) use($search){
 											$q->where('category','LIKE','%'. $search .'%')
 												->orWhere('remarks','LIKE','%'. $search .'%');
-										})
-										->where('status',$search_status)
-										->count();
-			$categoryArr = $productcategorydata->where(function ($q) use($search){
-											$q->where('category','LIKE','%'. $search .'%')
-												->orWhere('remarks','LIKE','%'. $search .'%');
-										})
-										->where('status',$search_status)->orderBy('id', 'desc')->paginate(10);
+										});
 		}
-		else if($search != ''){
-			$countcategory = $productcategorydata->where('category','LIKE','%'. $search .'%')
-										->orWhere('remarks','LIKE','%'. $search .'%')
-										->count();
-			$categoryArr = $productcategorydata->where('category','LIKE','%'. $search .'%')
-										->orWhere('remarks','LIKE','%'. $search .'%')->orderBy('id', 'desc')->paginate(10);
-		}
-		else{
-			$countcategory = $productcategorydata->where('status',$search_status)
-										->count();
-			$categoryArr = $productcategorydata->where('status',$search_status)->orderBy('id', 'desc')->paginate(10);
-		}
+		if($search_status != '')
+			$productcategorydata = $productcategorydata->where('status',$search_status);
+			
+		$countcategory = $productcategorydata->count();
+		$categoryArr = $productcategorydata->orderBy('id', 'desc')->paginate(20);
+		
 		
 		$data = array(
 			'countcategory' => $countcategory,

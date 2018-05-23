@@ -103,7 +103,7 @@ select{cursor:pointer;}
 										@if(count($productArr) > 0)
 											@foreach($productArr as $productid => $productdata)
 												<option value="{{ $productid }}" {{ isset($product_id) && $product_id == $productid ? "selected" : "" }}
-												data-desc="{{ $productdata['desc']  }}">
+												data-desc="{{ $productdata['desc']  }}" title="{{ $productdata['desc']  }}">
 												{{ $productdata['code'] }}</option>
 											@endforeach
 										@endif
@@ -146,7 +146,7 @@ select{cursor:pointer;}
 								<thead>
 									<tr>
 										<th class="text-center">#</th>
-										<th class="col-md-5"> Gift <span class="required">*</span></th>
+										<th class="col-md-5"> Product Gift <span class="required">*</span></th>
 										<th class="col-md-2"> Quantity <span class="required">*</span></th>
 										<th class="col-md-4"> Description </th>
 										<th class="text-center">
@@ -162,8 +162,16 @@ select{cursor:pointer;}
 											<td class="text-center product-number">{{ ($key + 1) }}</td>
 											<td>
 												<input type="hidden" class="giftid" name="giftid[]" value="{{ $row->id }}" />
-												<input type="text" class="form-control promotiongift" 
-												name="promotiongift[]" value="{{ $row->gift }}" /></td>
+												<select class="form-control promotiongift" name="promotiongift[]" >
+													<option value=""> </option>
+													@if(count($productGiftArr) > 0)
+														@foreach($productGiftArr as $productid => $productname)
+															<option value="{{ $productid }}"  {{ $row->product_id == $productid ? "selected" : "" }} >
+															{{ $productname }}</option>
+														@endforeach
+													@endif
+												</select>
+											</td>
 											<td><input type="text" class="form-control promotionquantity mask_number" 
 												name="promotionquantity[]" value="{{ $row->quantity }}" /></td>
 											<td><input type="text" class="form-control productdescription" 
@@ -179,8 +187,16 @@ select{cursor:pointer;}
 										<td class="text-center product-number">1</td>
 										<td>
 											<input type="hidden" class="giftid" name="giftid[]" value="" />
-											<input type="text" class="form-control promotiongift" 
-											name="promotiongift[]" value="" /></td>
+											<select class="form-control promotiongift" name="promotiongift[]" >
+												<option value=""> </option>
+												@if(count($productGiftArr) > 0)
+													@foreach($productGiftArr as $productid => $productname)
+														<option value="{{ $productid }}" >
+														{{ $productname }}</option>
+													@endforeach
+												@endif
+											</select>
+										</td>
 										<td><input type="text" class="form-control promotionquantity mask_number" 
 											name="promotionquantity[]" value="" /></td>
 										<td><input type="text" class="form-control productdescription" 
@@ -257,7 +273,7 @@ select{cursor:pointer;}
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-md-3 control-label"><br /> Staff Price <span class="required">*</span></label>
+								<label class="col-md-3 control-label"><br /> Staff Price </label>
 								<div class="col-md-2">
 									<span class="help-block"> Price </span>
 									<div class="input-group">
@@ -315,7 +331,6 @@ rules: {
 		daterange:{ required: true,},
 		price_wm: { required: true,},
 		price_em: { required: true,},
-		price_staff: { required: true,},
 	}                                        
 });
 function setnumber_decimal(numberd){

@@ -56,19 +56,19 @@
                                             <tr class="row-cart-item">
                                                 <td class="col-sm-8 col-md-4 column-cart-item">
                                                     <div class="media cart-content">
-                                                        <input type="hidden" id="id" value="{{ $value->id }}">
-                                                        <input type="hidden" id="produt_id" value="{{ $value->product_id }}">
+                                                        <input type="hidden" id="id" value="{{ $value['id'] }}">
+                                                        <input type="hidden" id="produt_id" value="{{ $value['product_id'] }}">
                                                         <a class="thumbnail pull-left img-content" href="#"> <img class="media-object" src="{{ $value['image'] == '' ? asset('invalid_image.png') : asset('storage/'.$value['image']) }}" style="width: 72px; height: 72px;"> </a>
                                                         <div class="media-body">
-                                                            <h4 class="media-heading"><a href="#">{{ $value->name }}</a></h4>
+                                                            <h4 class="media-heading"><a href="#">{{ $value['name'] }}</a></h4>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td class="col-sm-1 col-md-2 quantity-item" style="text-align: center">
-                                                    <p>{{ $value->total_quantity }}</p>
+                                                    <p>{{ $value['total_quantity'] }}</p>
                                                 </td>
-                                                <td class="col-sm-1 col-md-1"><strong>RM{{ $value->price }}</strong></td>
-                                                <td class="col-sm-1 col-md-1"><strong>RM{{ $value->total_price }}</strong></td>
+                                                <td class="col-sm-1 col-md-1"><strong>RM{{ $value['price'] }}</strong></td>
+                                                <td class="col-sm-1 col-md-1"><strong>RM{{ $value['total_price'] }}</strong></td>
                                                 <td hidden="">
                                                     <button type="button" class="btn btn-danger remove-item">
                                                         <i class="glyphicon glyphicon-trash"></i>Remove
@@ -118,12 +118,19 @@
                                     <table class="col-md-12">
                                         <tbody>
                                             <tr>
-                                                <td><h4>Shipping Fee</h4></td>
-                                                <td><h4>RM{{ $returnData['shippingPrice'] }}</h4></td>
+                                                <td><h5>Shipping Fee</h5></td>
+                                                <td><h5>RM{{ $returnData['shippingPrice'] }}</h5></td>
                                             </tr>
                                             <tr>
-                                                <td><h3>Grand Total</h3></td>
-                                                <td><h3>RM{{ $returnData['grandTotalPrice'] }}</h3></td>
+                                                <td><h5>Total Price</h5></td>
+                                                <td><h5>RM{{ $returnData['totalPrice'] }}</h5></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2"><hr></td>
+                                            </tr>
+                                            <tr>
+                                                <td><h4>Grand Total</h4></td>
+                                                <td><h4>RM{{ $returnData['grandTotalPrice'] }}</h4></td>
                                             </tr>
                                             <tr>
                                                 <td hidden="">

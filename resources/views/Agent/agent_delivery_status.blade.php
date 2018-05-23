@@ -1,9 +1,8 @@
 @extends('header')
-@include('Agent.js.agent_control')
-@include('Agent.css.agent_css')
 @section('title','Config')
 @section('content')
 
+ <script src="{!! asset('joli/js/plugins/smartwizard/jquery.smartWizard-2.0.min.js') !!}"></script>
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
     <li><a href="javascript:;">Home</a></li>                    
@@ -32,7 +31,7 @@
                                 <p><span id="form-title">Purchase Date : {{ $orderHdr->purchase_date }} </span></p>
                             </div>
                         </div>
-                        <div class="container cart-list" style="margin-top:0px;">
+                        <div class="container cart-list col-md-12" style="margin-top:0px;">
                             <div class="row cart-row">
                                 <div class="col-sm-12 col-md-12">
                                     <div class="wizard">
@@ -63,7 +62,7 @@
                                             </li>
                                         </ul>
                                         
-                                        <div class="stepContainer" style="height: 54px;">
+                                        <div class="stepContainer" style="height: 54px;" hidden>
                                             <div id="step-1" class="content" style="display: none;">   
                                                 <h4>Step 1 Content</h4>
                                                 <p>Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam id dolor id nibh ultricies vehicula.</p>
@@ -141,4 +140,5 @@
     });
 
 </script>
+
 @endsection
