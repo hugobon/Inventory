@@ -232,6 +232,8 @@ class AgentController extends Controller
 
     public function fn_get_product_list($mode = null){
 
+            $product = Array();
+
         try{
             
             // $data = product_m::select("*")->paginate(12);
@@ -244,6 +246,10 @@ class AgentController extends Controller
             // die();
             // dd($data);
 
+            $product = array_merge( $data['productArr']['Product'], $data['productArr']['Package'],$data['productArr']['Promotion']);
+
+            // dd($data,$product);
+
             $count = agent_select_product::where('agent_id',Auth::user()->id)->count();
 
             $return['message'] = 'succssfuly';
@@ -255,8 +261,10 @@ class AgentController extends Controller
             $image = "";
         }
 
+        // return $return;
+
         if($mode == "all"){
-            return view('Agent.agent_product_list',compact('data','count'));
+            return view('Agent.agent_product_list',compact('product','count'));
         }
         elseif($mode == "package"){
             return view('Agent.agent_product_package',compact('data','count'));
@@ -426,43 +434,49 @@ class AgentController extends Controller
                                     ->where('address_code','=',$agent_id."_AGENT")
                                     ->where('reminder_flag','=','x')
                                     ->first();
+                                    
+            if($addressData == null){
+                $addressData = address::select('id','name','address_code','street1','street2','poscode','city','state','country')
+                                    ->where('address_code','=',$agent_id."_AGENT")
+                                    ->first();
+            }
 
             $cartItems = agent_select_product::leftJoin('product','product.id','=','agent_select_product.product_id')
                                             ->select('agent_select_product.id','product.id as product_id','product.name','product.description','product.price_wm','product.price_em','product.quantity_min'
                                                 ,'product.quantity as stock_quantity','agent_select_product.quantity as total_quantity')
                                             ->where('agent_select_product.agent_id','=',$agent_id)
-                                            ->get();
+                                            ->get()->toArray();
 
-            // var_dump($cartItems);die();
+            // dd($addressData);
             $totalPrice = 0.00;
             $grandTotalPrice = 0.00;
             foreach ($cartItems as $key => $value){
 
                 if(strtolower($addressData->state) == strtolower("Sabah") || strtolower($addressData->state) ==  strtolower("Sarawak")){
 
-                    $cartItems[$key]['price'] = $this->fn_calc_gst_price(number_format(floatval($value->price_em),2));
-                    $total_price = $this->fn_calc_total_price($value->total_quantity,$cartItems[$key]['price']);
+                    $cartItems[$key]['price'] = $this->fn_calc_gst_price(number_format(floatval($cartItems[$key]['price_em']),2));
+                    $total_price = $this->fn_calc_total_price($cartItems[$key]['total_quantity'],$cartItems[$key]['price']);
                     $cartItems[$key]['total_price'] = $total_price;
                 }
                 else{
-                    $cartItems[$key]['price'] = $this->fn_calc_gst_price(number_format(floatval($value->price_wm),2));
-                    $total_price = $this->fn_calc_total_price($value->total_quantity,$cartItems[$key]['price']);
+                    $cartItems[$key]['price'] = $this->fn_calc_gst_price(number_format(floatval($cartItems[$key]['price_wm']),2));
+                    $total_price = $this->fn_calc_total_price($cartItems[$key]['total_quantity'],$cartItems[$key]['price']);
                     $cartItems[$key]['total_price'] = $total_price;
                 }
                 
                 // dd($cartItems);
 
                 $image = product_image_m::select('type','description','file_name','path')
-                                        ->where('product_id',$value->product_id)
+                                        ->where('product_id',$cartItems[$key]['product_id'])
                                         ->orderBy('status','desc')
                                         ->first();
 
-                $cartItems[$key]['image'] = ($image['path'] == null ? '' : $image['path']);
+                $cartItems[$key]['image'] = ($image->path == null ? '' : $image->path);
 
-                $totalPrice = $totalPrice + str_replace(",","",$value->total_price);
+                $totalPrice = $totalPrice + str_replace(",","",$cartItems[$key]['total_price']);
 
             }
-
+            // dd($cartItems,$image);
             //shipping fee
             if($totalPrice < "300.00"){
 
@@ -525,7 +539,7 @@ class AgentController extends Controller
             $return['status'] = "02";
         }
 
-        // return $return;
+        // dd($cartItems);
         return view('Agent.agent_place_order',compact('cartItems','returnData','address','deliveryType'));
     }
 
