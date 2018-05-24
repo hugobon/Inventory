@@ -12,6 +12,7 @@ use App\product_serial_number;
 use App\inventory\stockadjustment_m;
 use App\configuration\config_stockadjustment_m;
 use App\product_woserialnum;
+use DB;
 
 use Auth;
 use Carbon\Carbon;
@@ -53,15 +54,15 @@ class StockReportController extends Controller
         $start = strtotime($startdate);
         $end = strtotime($enddate);
         
-        
-       
-
         foreach($productDetail as $product){
             $currentdate = $start;
             $stockAdjustmentValue = [];
             $productId = $product->id;
-            $stockAdjustment = $stockadjustment_m->leftJoin('product','product.id','=','stockadjustment.product_id')->whereRaw('product.id ='.$productId)
+
+            $stockAdjustment = $stockadjustment_m->leftJoin('product','product.id','=','stockadjustment.product_id')
+                                ->whereRaw('product.id ='.$productId)
                                 ->whereRaw('MONTH(stockadjustment.created_at) = '.$currentMonth)
+                                ->select('stockadjustment.created_at','stockadjustment.quantity')
                                 ->get();
 
             $stockWithoutSerialNumber = $product_woserialnum->join('stock_in','stock_in.id','=','product_woserialnum.stock_in_id')
@@ -73,7 +74,7 @@ class StockReportController extends Controller
 
             $stockInMonth = $product_m->TotalProductCount()
                                     ->whereRaw('product.id ='.$productId)
-                                    ->whereRaw('MONTH(stock_in.created_at) = '.$currentMonth)
+                                    // ->whereRaw('MONTH(stock_in.created_at) = '.$currentMonth)
                                     ->value('stocksCount');
 
             $stockDays = $product_serial_number->join('stock_in','stock_in.id','=','product_serial_number.stock_in_id')                                            
@@ -88,13 +89,16 @@ class StockReportController extends Controller
             while($currentdate <= $end){
                 $adjustmentQty = 0;
                 $stockInToday = 0;
+                $stockInTodayWS = 0;
                 $cur_date = date('Y-m-d', $currentdate);
+
                 foreach($stockAdjustment as $adjustment){
                     if(Carbon::parse($adjustment->create_at)->format('Y-m-d') == $cur_date){
                         $totalAdjustmentminus+=$adjustment->quantity;
-                        $adjustmentQty = $adjustment->quantity;
+                        $adjustmentQty = $totalAdjustmentminus;
                     }
                 }
+
                 foreach($stockDays as $stockDay){
                     if(Carbon::parse($stockDay->in_stock_date)->format('Y-m-d') == $cur_date){
                         $stockInToday = count($stockDays); //All of product_serial_number
@@ -104,8 +108,8 @@ class StockReportController extends Controller
 
                 foreach($stockWithoutSerialNumber as $withoutSerial){
                     if(Carbon::parse($withoutSerial->in_stock_date)->format('Y-m-d') == $cur_date){
-                        $stockInToday+=$withoutSerial->quantity;
-                        $totalAdjustmentadd+=$stockInToday;
+                        $stockInTodayWS+=$withoutSerial->quantity;
+                        $totalAdjustmentadd+=$stockInTodayWS;
                     }
                 }
                 $stockAdjustmentValue[] = ['day_add' => $stockInToday,'day_minus' => $adjustmentQty,'date'=>$cur_date];           
@@ -113,13 +117,12 @@ class StockReportController extends Controller
             } //end loop every day in month
 
             
-
-            $product->asd = $stockWithoutSerialNumber;
             $product->stockInMonth = $stockInMonth?$stockInMonth:$totalAdjustmentadd;
             $product->totalAdjustmentminus = $totalAdjustmentminus;
             $product->totalAdjustmentadd = $totalAdjustmentadd;
             $product->stockBalance = $stockInMonth - $totalAdjustmentminus + $totalAdjustmentadd;
             $product->stockAdjustmentValue = $stockAdjustmentValue;
+            $product->asd = $stockAdjustment;
             
         }
         return $productDetail;
