@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AlterProductWoserialnum extends Migration
+class AlterProductWoserialnumAddcolum extends Migration
 {
     /**
      * Run the migrations.
@@ -15,7 +15,7 @@ class AlterProductWoserialnum extends Migration
     {
         Schema::table('product_woserialnum', function (Blueprint $table) {
             //
-            $table->integer('quantity_reduced')->nullable()->after('quantity');
+            $table->integer('stock_in_id')->nullable()->after('quantity_reduced');
         });
     }
 

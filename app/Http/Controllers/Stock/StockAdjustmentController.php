@@ -106,9 +106,11 @@ class StockAdjustmentController extends Controller
 		// }
 		$serialNumberIdBucket = $postdata->input('serial_number_scan_json');   
 		$serialNumberIdArray = json_decode($serialNumberIdBucket);
-				foreach($serialNumberIdArray as $stockQty){
-			$product_serial_number->where('id',$stockQty)->update(['status'=>'03','updated_by'=>Auth::user()->id,'updated_at'	=> Carbon::now()]);
-		}
+		if(is_array($serialNumberIdArray)){
+			foreach($serialNumberIdArray as $stockQty){
+				$product_serial_number->where('id',$stockQty)->update(['status'=>'03','updated_by'=>Auth::user()->id,'updated_at'	=> Carbon::now()]);
+			}
+		}				
 		
 		return redirect('stock/adjustment')
 		->with("message","Success Submit Product ".$checkproduct["code"]." (".$checkproduct["description"]."),

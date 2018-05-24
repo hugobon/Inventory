@@ -154,7 +154,8 @@ class SupplierController extends Controller
 			return 'Error: '.$e;
 		}
 		
-		return $this->fn_get_detail($id);
+		$outputData = $this->fn_get_detail($id);
+		return view('Supplier.supplierDetail_view',compact('outputData'));
 	}
 	
 	public function fn_get_detail($id = null){
@@ -163,7 +164,8 @@ class SupplierController extends Controller
 			
 			$outputData = supplier::where('id',$id)->first();
 			
-			return view('Supplier.supplierDetail_view',compact('outputData'));
+			// return 
+			return $outputData;
 			
 			
 		}catch(\Exception $e){

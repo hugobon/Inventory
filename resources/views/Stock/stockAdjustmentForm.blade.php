@@ -91,7 +91,7 @@ textarea {
 										</div>
 										<div class="form-group">
 												<div class="col-md-6 col-xs-12 col-lg-9">
-												<a href="#" class="btn btn-success pull-right" id="adjust_btn">Adjust</a>
+												<a href="#" class="btn btn-success pull-right" id="adjust_btn">Calculate Adjustment</a>
 												</div>
                                         </div>
 										
@@ -171,7 +171,7 @@ textarea {
                            </div>
                         <div class="panel-footer">
                                 <input type="button" id="clearBtn" class="btn btn-default" value="Clear Form">
-                                <input type="button" id="submitBtn"class="btn btn-primary pull-right" value="Save">
+                                <input type="button" id="submitBtn"class="btn btn-primary pull-right" value="Confirm">
                             </div>
                     </div>   
 
@@ -340,7 +340,7 @@ textarea {
         var adjustment_select = $('#adjustment_select').val();
         var serial = $('#serial_number_scan_json').val();
         
-        if(quantity_input != '' && remarks_input != '' &&product_input != '' &&adjustment_select != '' ){
+        if(quantity_input != ''  &&product_input != '' &&adjustment_select != '' ){
             $('#submit_form').submit();
         }else{
             alert('Please fill the fields')
