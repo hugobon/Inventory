@@ -73,26 +73,40 @@
 										</div>		
 								        <div class="panel-footer">
 								        	<div class="col-md-12">
+								        		<div class="row">
+													<div class="col-md-12">
+														<div class="info">
+											                <table style="margin-top: 20px;">
+												       			<tr>
+												       				<td><h4 class="font-bold price-text-color">WM </h4></td>
+												    				<td><h4 class="font-bold price-text-color">: RM{{ $value['wm_aftergst'] }}</h4></td>
+												       			</tr>
+												       			<tr>
+											       					<td><h4 class="font-bold price-text-color">EM</h4></td>
+											       					<td><h4 class="font-bold price-text-color">: RM{{ $value['em_aftergst'] }}</h4></td>
+												       			</tr>
+												       		</table>
+												       	</div>
+											       	</div>
+											    </div>
 								                <form action="javascript:;" class="save-item">
 													<input type="hidden" name="id" id="id" value="{{ $value['id'] }}">
-													<div class="col-md-3 info" style="margin: 5px;">
-														<div class="form-group info-detail">
-											                <label class="control-label">Quantity</label>
-											                <input type="text" class="form-control quantity" name="quantity" id="quantity" min="1" max="200" step="1" value="1">
-										                </div>
+													<div class="row">
+														<div class="col-md-8 info" style="margin: 5px;">
+															<div class="form-group info-detail">
+												                <label class="control-label">Quantity</label>
+												                <div class="input-group col-md-12 qty">
+																	<span class="input-group-btn">
+																        <button class="btn btn-secondary btn-minus" type="button">-</button>
+																    </span>
+																	<input type="text" class="form-control quantity" name="quantity" id="quantity" min="1" max="200" step="1" value="1">
+																	<span class="input-group-btn">
+																	  	<button class="btn btn-secondary btn-plus" type="button">+</button>
+																	</span>
+																</div>
+											                </div>
+														</div>
 													</div>
-													<div class="col-md-8">
-										                <table style="margin-top: 20px; margin-left:5px; ">
-											       			<tr>
-											       				<td><h4 class="font-bold price-text-color">WM </h4></td>
-											    				<td><h4 class="font-bold price-text-color">: RM{{ $value['wm_aftergst'] }}</h4></td>
-											       			</tr>
-											       			<tr>
-										       					<td><h4 class="font-bold price-text-color">EM</h4></td>
-										       					<td><h4 class="font-bold price-text-color">: RM{{ $value['em_aftergst'] }}</h4></td>
-											       			</tr>
-											       		</table>
-											       	</div>
 													<button type="submit" class="btn btn-block btn-danger add-to-cart">Add to cart</button>
 												</form>
 											</div>
@@ -135,30 +149,30 @@
 	$(document).ready(function(){
 
 	 $(".btn-minus").on("click",function(){
-
-	 		var now = $(this).closest('div.x').find('.quantity').val();
+	 		console.log($(this).closest('.qty').find('input.quantity').val())
+	 		var now = $(this).closest('.qty').find('input.quantity').val();
             // var now = $(".quantity").val();
             if ($.isNumeric(now)){
                 if (parseInt(now) -1 > 0){ now--;}
-                $(this).closest('div.x').find('.quantity').val(now);
+                $(this).closest('.qty').find('input.quantity').val(now);
             }else{
-                $(this).closest('div.x').find('.quantity').val("1");
+                $(this).closest('.qty').find('input.quantity').val("1");
             }
         })            
         $(".btn-plus").on("click",function(){
-
-        	var now = $(this).closest('div.x').find('.quantity').val();
-        	var max = $(this).closest('div.x').find('.quantity').attr('max');
+        	// console.log($(this).closest('.qty').find('input.quantity').val())
+        	var now = $(this).closest('.qty').find('input.quantity').val();
+        	var max = $(this).closest('.qty').find('input.quantity').attr('max');
         	// console.log(max)
             // var now = $(".quantity").val();
             if(now == max){
-            	 $(this).closest('div.x').find('.quantity').val(max);
+            	 $(this).closest('.qty').find('input.quantity').val(max);
             }
             else{
 	            if ($.isNumeric(now)){
-	                $(this).closest('div.x').find('.quantity').val(parseInt(now)+1);
+	                $(this).closest('.qty').find('input.quantity').val(parseInt(now)+1);
 	            }else{
-	                $(this).closest('div.x').find('.quantity').val("1");
+	                $(this).closest('.qty').find('input.quantity').val("1");
 	            }
 	        }
         });
