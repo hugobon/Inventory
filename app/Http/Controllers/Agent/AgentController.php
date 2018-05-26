@@ -282,26 +282,26 @@ class AgentController extends Controller
                                             ->select('agent_select_product.id','product.id as product_id','product.name','product.description','product.price_wm','product.price_em','product.quantity_min'
                                                 ,'product.quantity as stock_quantity','agent_select_product.quantity as total_quantity')
                                             ->where('agent_select_product.agent_id','=',$agent_id)
-                                            ->get();
+                                            ->get()->toArray();
 
-            // var_dump($cartItems);die();
+            // dd($cartItems);die();
             $totalPrice_wm = 0.00;
             $totalPrice_em = 0.00;
             $grandTotalPrice_wm = 0.00;
             $grandTotalPrice_em = 0.00;
             foreach ($cartItems as $key => $value){
 
-                $cartItems[$key]['price_wm'] = $this->fn_calc_gst_price(number_format(floatval($value->price_wm),2));
-                $cartItems[$key]['price_em'] = $this->fn_calc_gst_price(number_format(floatval($value->price_em),2));
+                $cartItems[$key]['price_wm'] = $this->fn_calc_gst_price(number_format(floatval($cartItems[$key]['price_wm']),2));
+                $cartItems[$key]['price_em'] = $this->fn_calc_gst_price(number_format(floatval($cartItems[$key]['price_em']),2));
 
-                $total_price_wm = $this->fn_calc_total_price($value->total_quantity,$cartItems[$key]['price_wm']);
-                $total_price_em = $this->fn_calc_total_price($value->total_quantity,$cartItems[$key]['price_em']);
+                $total_price_wm = $this->fn_calc_total_price($cartItems[$key]['total_quantity'],$cartItems[$key]['price_wm']);
+                $total_price_em = $this->fn_calc_total_price($cartItems[$key]['total_quantity'],$cartItems[$key]['price_em']);
 
                 $cartItems[$key]['total_price_wm'] = $total_price_wm;
                 $cartItems[$key]['total_price_em'] = $total_price_em;
 
                 $image = product_image_m::select('type','description','file_name','path')
-                                        ->where('product_id',$value->product_id)
+                                        ->where('product_id',$cartItems[$key]['product_id'])
                                         ->orderBy('status','desc')
                                         ->first();
 
@@ -795,8 +795,8 @@ class AgentController extends Controller
 
                         'order_no' => $order_no['data'],
                         'do_no' => "",
-                        'product_id' => $v->product_id,
-                        'product_qty' => $v->total_quantity,
+                        'product_id' => $v['product_id'],
+                        'product_qty' => $v['total_quantity'],
                         'product_typ' => "",
                         'product_status' => "01",
                         'created_by' =>  Auth::user()->id,
@@ -916,10 +916,10 @@ class AgentController extends Controller
             
             $addressData = Array(
 
-                'id' => $value->id,
-                'address_code' => $value->address_code,
+                'id' => $value['id'],
+                'address_code' => $value['address_code'],
                 'name' => $value->name,
-                'address' => $value->street1.",".$value->street2.",".$value->poscode.",".$value->city.",".$value->state.",".$value->country,
+                'address' => $value['street1'].",".$value['street2'].",".$value['poscode'].",".$value['city'].",".$value['state'].",".$value['country'],
             );
 
             $address[] = $addressData;
@@ -948,8 +948,8 @@ class AgentController extends Controller
                                 ->get();
 
             foreach ($data as $key => $value) {
-                $date = new \DateTime($value->purchase_date);
-                $value->purchase_date = $date->format('d M Y');;
+                $date = new \DateTime($value['purchase_date']);
+                $value['purchase_date'] = $date->format('d M Y');;
             }
 
             $return['message'] = "succssfuly retrived";

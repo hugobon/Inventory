@@ -49,19 +49,19 @@
                                             <tr class="row-cart-item">
                                                 <td class="col-sm-8 col-md-4 column-cart-item">
                                                     <div class="media cart-content">
-                                                        <input type="hidden" id="id" value="{{ $value->id }}">
-                                                        <input type="hidden" id="produt_id" value="{{ $value->product_id }}">
+                                                        <input type="hidden" id="id" value="{{ $value['id'] }}">
+                                                        <input type="hidden" id="produt_id" value="{{ $value['product_id'] }}">
                                                         <a class="thumbnail pull-left img-content" href="#"> <img class="media-object" src="{{ $value['image'] == '' ? asset('invalid_image.png') : asset('storage/'.$value['image']) }}" style="width: 72px; height: 72px;"> </a>
                                                         <div class="media-body">
-                                                            <h4 class="media-heading"><a href="#">{{ $value->name }}</a></h4>
+                                                            <h4 class="media-heading"><a href="#">{{ $value['name'] }}</a></h4>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td class="col-sm-1 col-md-1 quantity-item" style="text-align: center">
-                                                    <input type="text" class="form-control quantity" id="quantity" value="{{ $value->total_quantity }}">
+                                                    <input type="text" class="form-control quantity" id="quantity" value="{{ $value['total_quantity'] }}">
                                                 </td>
-                                                <td class="col-sm-1 col-md-1"><strong>WM RM{{ $value->price_wm }}<br>EM RM{{ $value->price_em }}</strong></td>
-                                                <td class="col-sm-1 col-md-1"><strong>WM RM{{ $value->total_price_wm }}<br>EM RM{{ $value->total_price_em }}</strong></td>
+                                                <td class="col-sm-1 col-md-1"><strong>WM RM{{ $value['price_wm'] }}<br>EM RM{{ $value['price_em'] }}</strong></td>
+                                                <td class="col-sm-1 col-md-1"><strong>WM RM{{ $value['total_price_wm'] }}<br>EM RM{{ $value['total_price_em'] }}</strong></td>
                                                 <td class="col-sm-1 col-md-1">
                                                     <button type="button" class="btn btn-danger remove-item">
                                                         <i class="glyphicon glyphicon-trash"></i>Remove
@@ -86,7 +86,7 @@
                                                     <div class="col-md-12" id="">        
                                                         <select class="form-control delivery-type">
                                                             @foreach($deliveryType as $key => $value)
-                                                            <option data-code="{{ $value->id }}" value="{{ $value->code }}" >{{ $value->description }}</option>
+                                                            <option data-code="{{ $value['id'] }}" value="{{ $value['code'] }}" >{{ $value['description'] }}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -229,46 +229,6 @@
         var table_item = $('.table-cart-item').find('.row-cart-item');
         var delivery_type = $('.delivery-type').val();
         var delivery_id = $('.delivery-type').children('option').data('code');
-        var cartItems = {!! $cartItems !!};
-        console.log(cartItems)
-        console.log(agent_id)
-        console.log(delivery_id);
-
-        // for(var i=0;i<table_item.length;i++){
-
-        //     console.log(table_item.eq(i).find('input').eq(0).attr('value'));
-        //     console.log(table_item.eq(i).find('input').eq(2).attr('value'));
-        //     console.log(table_item.eq(i).find('strong').eq(0).html());
-        //     console.log(table_item.eq(i).find('strong').eq(1).html());
-        // }
-
-        // var data = {
-
-        //     _token : "{!! csrf_token() !!}",
-        //     id   :  agent_id,
-        //     delivery_type : delivery_type
-        // };
-
-        // $.ajax({
-
-        //     url : "/agent/get_place_order_items",
-        //     dataType : "json",
-        //     type : "GET",
-        //     data: JSON.stringify(data),
-        //     contentType : "application/json"
-
-        // }).done(function(response){
-
-        //     if(response.return.status == "01"){
-        //         // document.location.reload();
-
-        //     }
-
-        //     console.log(response)
-
-        // }).fail(function(){
-
-        // });
 
         window.location.href = "{{ url('agent/get_place_order_items') }}"+"/"+agent_id+"/"+delivery_type
 
