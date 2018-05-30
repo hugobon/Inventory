@@ -139,7 +139,8 @@ textarea {
                                                             <td>{{ $stock['product_name'] }} </td>
                                                             <td>{{ $stock['stocksCount']}} </td>
                                                             <td>
-                                                                <a href="{{url('product/view/'.$stock['product_id'])}}" class="btn btn-info btn-rounded "><span class="fa fa-eye"></span></a>
+                                                                <a href="{{url('product/view/'.$stock['product_id'])}}" class="btn btn-info btn-rounded " data-toggle="tooltip" data-placement="bottom" title="Product Details"><span class="fa fa-eye"></span></a>
+                                                                <a href="{{url('stock/barcode/'.$stock['product_id'])}}" class="btn btn-info btn-rounded " data-toggle="tooltip" data-placement="bottom" title="Barcode"><span class="fa fa-barcode"></span></a>
                                                             </td>
                                                         </tr>
                                                     @endforeach
