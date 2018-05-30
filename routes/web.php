@@ -176,5 +176,8 @@ Route::get('stock/listing', 'Stock\StockController@index');
 Route::get('stock/report/balance', 'Stock\StockReportController@index');
 Route::post('stock/report/balance', 'Stock\StockReportController@index');
 Route::get('stock/report/receive', 'Stock\StockInReportController@index');
+Route::get('stock/report/sales', 'Stock\StockSalesReportController@index');
+Route::get('stock/barcode/{x?}', 'Stock\StockBarcodeListingController@index');
+
 
 
