@@ -43,10 +43,10 @@
                                     <table class="table table-actions table-order-item" id="item-table">
                                         <thead>
                                             <tr>
-                                                <th class="">Product</th>
-                                                <th class="">Quantity</th>
-                                                <th class="">Unit Price</th>
-                                                <th class="">Total</th>
+                                                <th class="col-md-5">Product</th>
+                                                <th class="col-md-2">Quantity</th>
+                                                <th class="col-md-2">Unit Price</th>
+                                                <th class="col-md-2">Total</th>
                                                 <th hidden=""><input type="hidden" id="agent_id" value="{{ $returnData['agent_id'] }}"></th>
                                             </tr>
                                         </thead>
@@ -64,7 +64,7 @@
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td class="col-sm-1 col-md-2 quantity-item" style="text-align: center">
+                                                <td class="col-md-2 quantity-item" style="text-align: center">
                                                     <p>{{ $value['total_quantity'] }}</p>
                                                 </td>
                                                 <td class="col-sm-1 col-md-1"><strong>RM{{ $value['price'] }}</strong></td>
