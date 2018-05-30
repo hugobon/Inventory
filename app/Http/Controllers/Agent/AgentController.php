@@ -291,8 +291,8 @@ class AgentController extends Controller
             $grandTotalPrice_em = 0.00;
             foreach ($cartItems as $key => $value){
 
-                $cartItems[$key]['price_wm'] = $this->fn_calc_gst_price(number_format(floatval($cartItems[$key]['price_wm']),2));
-                $cartItems[$key]['price_em'] = $this->fn_calc_gst_price(number_format(floatval($cartItems[$key]['price_em']),2));
+                $cartItems[$key]['price_wm'] = $this->fn_calc_gst_price($cartItems[$key]['price_wm']);
+                $cartItems[$key]['price_em'] = $this->fn_calc_gst_price($cartItems[$key]['price_em']);
 
                 $total_price_wm = $this->fn_calc_total_price($cartItems[$key]['total_quantity'],$cartItems[$key]['price_wm']);
                 $total_price_em = $this->fn_calc_total_price($cartItems[$key]['total_quantity'],$cartItems[$key]['price_em']);
@@ -351,7 +351,7 @@ class AgentController extends Controller
             $return['status'] = "02";
         }
         
-        // dd($return);
+        // dd($return,$cartItems);
         return view('Agent.agent_checkout',compact('cartItems','returnData','deliveryType'));
     }
 
@@ -454,12 +454,12 @@ class AgentController extends Controller
 
                 if(strtolower($addressData->state) == strtolower("Sabah") || strtolower($addressData->state) ==  strtolower("Sarawak")){
 
-                    $cartItems[$key]['price'] = $this->fn_calc_gst_price(number_format(floatval($cartItems[$key]['price_em']),2));
+                    $cartItems[$key]['price'] = $this->fn_calc_gst_price($cartItems[$key]['price_em']);
                     $total_price = $this->fn_calc_total_price($cartItems[$key]['total_quantity'],$cartItems[$key]['price']);
                     $cartItems[$key]['total_price'] = $total_price;
                 }
                 else{
-                    $cartItems[$key]['price'] = $this->fn_calc_gst_price(number_format(floatval($cartItems[$key]['price_wm']),2));
+                    $cartItems[$key]['price'] = $this->fn_calc_gst_price($cartItems[$key]['price_wm']);
                     $total_price = $this->fn_calc_total_price($cartItems[$key]['total_quantity'],$cartItems[$key]['price']);
                     $cartItems[$key]['total_price'] = $total_price;
                 }
@@ -585,7 +585,7 @@ class AgentController extends Controller
 
             $total_price = number_format(floatval($this->fn_calc_gst_price($product->price_wm) * (int)$quantity),2);
 
-                $total_price = str_replace(",","", $total_price);
+            $total_price = str_replace(",","", $total_price);
             // dd($total_price);
 
             // $updateQuantity = $quantity + $cartItem->quantity;
@@ -648,15 +648,18 @@ class AgentController extends Controller
 
         try{
 
+            $AfterGst = 0.00;
+            $price = (float)$price;
             $gstRate = config_tax::select('percent')
                                 ->where('code',"gst")
                                 ->first();
 
-
             $gst = 1 + ($gstRate->percent/100);
+            $gst = (float)$gst;
 
-            $AfterGst = $price * $gst;
-            $AfterGst = number_format(floatval($AfterGst),2);
+            $AfterGst = ($price * $gst);
+            $AfterGst = round($AfterGst,2);
+            $AfterGst = number_format($AfterGst, 2, '.', '');
 
             $return['message'] = "succssfuly calculate";
             $return['status'] = "01";
@@ -667,7 +670,7 @@ class AgentController extends Controller
             $return['message'] = $e->getMessage();
             $return['status'] = "02";
         }
-        // dd($AfterGst);
+        // dd($AfterGst,$price,$gst);
         return $AfterGst;
     }
 

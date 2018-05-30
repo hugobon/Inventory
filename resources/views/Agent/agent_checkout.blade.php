@@ -36,11 +36,11 @@
                                     <table class="table table-actions table-cart-item" id="item-table">
                                         <thead class="">
                                             <tr>
-                                                <th class="col-sm-5 col-md-5">Product</th>
-                                                <th class="col-sm-1 col-md-1">Quantity</th>
-                                                <th class="col-sm-2 col-md-2">Unit Price</th>
-                                                <th class="col-sm-2 col-md-2">Total</th>
-                                                <th class="col-sm-2 col-md-2"><input type="hidden" id="agent_id" value="{{ $returnData['agent_id'] }}"></th>
+                                                <th class="col-md-5">Product</th>
+                                                <th class="col-md-3">Quantity</th>
+                                                <th class="col-md-2">Unit Price</th>
+                                                <th class="col-md-2">Total</th>
+                                                <th class=""><input type="hidden" id="agent_id" value="{{ $returnData['agent_id'] }}"></th>
                                             </tr>
                                         </thead>
                                         <tbody class="item-body">
@@ -58,13 +58,21 @@
                                                     </div>
                                                 </td>
                                                 <td class="col-sm-1 col-md-1 quantity-item" style="text-align: center">
-                                                    <input type="text" class="form-control quantity" id="quantity" value="{{ $value['total_quantity'] }}">
+                                                    <div class="input-group col-md-12 qty">
+                                                        <span class="input-group-btn">
+                                                            <button class="btn btn-secondary btn-minus" type="button">-</button>
+                                                        </span>
+                                                        <input type="text" class="form-control quantity" id="quantity" value="{{ $value['total_quantity'] }}">
+                                                        <span class="input-group-btn">
+                                                            <button class="btn btn-secondary btn-plus" type="button">+</button>
+                                                        </span>
+                                                    </div>
                                                 </td>
                                                 <td class="col-sm-1 col-md-1"><strong>WM RM{{ $value['price_wm'] }}<br>EM RM{{ $value['price_em'] }}</strong></td>
                                                 <td class="col-sm-1 col-md-1"><strong>WM RM{{ $value['total_price_wm'] }}<br>EM RM{{ $value['total_price_em'] }}</strong></td>
                                                 <td class="col-sm-1 col-md-1">
                                                     <button type="button" class="btn btn-danger remove-item">
-                                                        <i class="glyphicon glyphicon-trash"></i>Remove
+                                                        <i class="glyphicon glyphicon-trash"></i>
                                                     </button>
                                                 </td>
                                             </tr>
@@ -138,6 +146,35 @@
 </div>
 
 <script type="text/javascript">
+
+     $(".btn-minus").on("click",function(){
+            console.log($(this).closest('.qty').find('input.quantity').val())
+            var now = $(this).closest('.qty').find('input.quantity').val();
+            // var now = $(".quantity").val();
+            if ($.isNumeric(now)){
+                if (parseInt(now) -1 > 0){ now--;}
+                $(this).closest('.qty').find('input.quantity').val(now);
+            }else{
+                $(this).closest('.qty').find('input.quantity').val("1");
+            }
+        })            
+        $(".btn-plus").on("click",function(){
+            // console.log($(this).closest('.qty').find('input.quantity').val())
+            var now = $(this).closest('.qty').find('input.quantity').val();
+            var max = $(this).closest('.qty').find('input.quantity').attr('max');
+            // console.log(max)
+            // var now = $(".quantity").val();
+            if(now == max){
+                 $(this).closest('.qty').find('input.quantity').val(max);
+            }
+            else{
+                if ($.isNumeric(now)){
+                    $(this).closest('.qty').find('input.quantity').val(parseInt(now)+1);
+                }else{
+                    $(this).closest('.qty').find('input.quantity').val("1");
+                }
+            }
+        });
     
     $('.remove-item').on('click', function () {
 
