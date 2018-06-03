@@ -307,26 +307,33 @@ class AgentController extends Controller
 
                 $cartItems[$key]['image'] = ($image['path'] == null ? '' : $image['path']);
 
-                $totalPrice_wm = $totalPrice_wm + str_replace(",","",$cartItems[$key]['total_price_wm']);
-                $totalPrice_em = $totalPrice_em + str_replace(",","",$cartItems[$key]['total_price_em']);
+                $totalPrice_wm = $totalPrice_wm + (float)$cartItems[$key]['total_price_wm'];
+                $totalPrice_em = $totalPrice_em + (float)$cartItems[$key]['total_price_em'];
 
             }
 
-            // dd($grandTotalPrice_wm,$grandTotalPrice_em);
-            if($totalPrice_wm < "300.00" || $totalPrice_em < "300.00"){
+            if($totalPrice_wm < 300.00 || $totalPrice_em < 300.00){
 
-                $shipping_fee = number_format(floatval("10.00"),2);
+                $shipping_fee = number_format(10.00,2);
             }
             else{
 
-                $shipping_fee = number_format(floatval("0.00"),2);
+                $shipping_fee = number_format(0.00,2);
             }
 
-            $totalPrice_wm = number_format(floatval($totalPrice_wm),2);
-            $totalPrice_em = number_format(floatval($totalPrice_em),2);
+            $totalPrice_wm = round($totalPrice_wm,2);
+            $totalPrice_em = round($totalPrice_em,2);
 
-            $grandTotalPrice_wm = number_format(floatval($totalPrice_wm + $shipping_fee),2);
-            $grandTotalPrice_em = number_format(floatval($totalPrice_em + $shipping_fee),2);
+            $grandTotalPrice_wm = (float)$totalPrice_wm + (float)$shipping_fee;
+            $grandTotalPrice_em = (float)$totalPrice_em + (float)$shipping_fee;
+
+            $totalPrice_wm = number_format($totalPrice_wm,2);
+            $totalPrice_em = number_format($totalPrice_em,2);
+
+            $grandTotalPrice_wm = number_format(round($grandTotalPrice_wm,2),2);
+            $grandTotalPrice_em = number_format(round($grandTotalPrice_em,2),2);
+
+
 
             $returnData = [
 
@@ -335,7 +342,7 @@ class AgentController extends Controller
                 'grandTotalPrice_em' => $grandTotalPrice_em,
                 'shippingPrice'  => $shipping_fee,
                 'totalPrice_wm' => $totalPrice_wm,
-                'totalPrice_em' => $total_price_em
+                'totalPrice_em' => $totalPrice_em
             ];
 
             $deliveryType = delivery_type::select('id','delivery_code as code','type_description as description')
@@ -351,7 +358,7 @@ class AgentController extends Controller
             $return['status'] = "02";
         }
         
-        // dd($return,$cartItems);
+        // dd($return,$cartItems,$returnData,$totalPrice_wm,$totalPrice_em);
         return view('Agent.agent_checkout',compact('cartItems','returnData','deliveryType'));
     }
 
@@ -473,24 +480,29 @@ class AgentController extends Controller
 
                 $cartItems[$key]['image'] = ($image->path == null ? '' : $image->path);
 
-                $totalPrice = $totalPrice + str_replace(",","",$cartItems[$key]['total_price']);
+                $totalPrice = $totalPrice + (float)$cartItems[$key]['total_price'];
 
             }
             // dd($cartItems,$image);
             //shipping fee
-            if($totalPrice < "300.00"){
+            if($totalPrice < 300.00){
 
-                $shipping_fee = number_format(floatval("10.00"),2);
+                $shipping_fee = number_format(10.00,2);
             }
             else{
 
-                $shipping_fee = number_format(floatval("0.00"),2);
+                $shipping_fee = number_format(0.00,2);
             }
 
             //total price
-            $totalPrice = number_format(floatval($totalPrice),2);
+            $totalPrice = round($totalPrice,2);
             //gandtotal price
-            $grandTotalPrice = number_format(floatval($totalPrice + $shipping_fee),2);
+            $grandTotalPrice = (float)$totalPrice + (float)$shipping_fee;
+            
+            $grandTotalPrice = round($grandTotalPrice,2);
+
+            $totalPrice = number_format($totalPrice,2);
+            $grandTotalPrice = number_format($grandTotalPrice,2);
 
             if($deliveryType == "01"){
 
@@ -539,7 +551,7 @@ class AgentController extends Controller
             $return['status'] = "02";
         }
 
-        // dd($cartItems);
+        // dd($cartItems,$returnData,$cartItems);
         return view('Agent.agent_place_order',compact('cartItems','returnData','address','deliveryType'));
     }
 
@@ -681,22 +693,12 @@ class AgentController extends Controller
 
         try{
 
-            if($newAddress['id'] != "" && $newAddress['address_code'] != ""){
-
-                $newAddress['updated_by'] =  Auth::user()->id;
-                $newAddress['updated_at'] = \Carbon\Carbon::now();
-
-                address::where('id',$newAddress['id'])
-                        ->where('address_code', $newAddress['address_code'])
-                        ->update($newAddress);
-
-                $return['message'] = "succssfuly updated";
-                $return['status'] = "01";
-
-            }
-            else{
+            $address = address::where('address_code',$newAddress['address_code'])
+                                ->get();
+            if(empty($address)){
 
                 $newAddress['address_code'] = Auth::user()->id."_AGENT";
+                $newAddress['reminder_flag'] = "x";
                 $newAddress ['created_by'] =  Auth::user()->id;
                 $newAddress['created_at'] = \Carbon\Carbon::now();
 
@@ -704,9 +706,36 @@ class AgentController extends Controller
                 address::insert($newAddress);
 
                 $return['message'] = "succssfuly saved";
-                 $return['status'] = "01";
+                $return['status'] = "01";
             }
+            else{
+                 if($newAddress['id'] != "" && $newAddress['address_code'] != ""){
 
+                    $newAddress['updated_by'] =  Auth::user()->id;
+                    $newAddress['updated_at'] = \Carbon\Carbon::now();
+
+                    address::where('id',$newAddress['id'])
+                            ->where('address_code', $newAddress['address_code'])
+                            ->update($newAddress);
+
+                    $return['message'] = "succssfuly updated";
+                    $return['status'] = "01";
+
+                }
+                else{
+
+                    $newAddress['address_code'] = Auth::user()->id."_AGENT";
+                    $newAddress['reminder_flag'] = "";
+                    $newAddress ['created_by'] =  Auth::user()->id;
+                    $newAddress['created_at'] = \Carbon\Carbon::now();
+
+                    // dd($newAddress);
+                    address::insert($newAddress);
+
+                    $return['message'] = "succssfuly saved";
+                    $return['status'] = "01";
+                }
+            }
         }
         catch(\Exception $e){
 
