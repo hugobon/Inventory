@@ -909,7 +909,7 @@ class AgentController extends Controller
                             ->select('order_hdr.order_no','order_hdr.agent_id','order_hdr.agent_id','order_hdr.invoice_no','order_hdr.total_items','order_hdr.total_price','order_hdr.delivery_type','order_hdr.purchase_date','order_hdr.status','delivery_type.type_description','global_status.description')
                             ->where('order_no','=',$order_no)
                             ->first();
-
+            dd($orderHdr);
 
             $date = new \DateTime($orderHdr->purchase_date);
             $orderHdr->purchase_date = $date->format('d M Y');
@@ -928,7 +928,7 @@ class AgentController extends Controller
             $return['status'] = "02";
         }
 
-        // dd($orderHdr,$return);
+        dd($orderHdr,$return);
         return view('Agent.agent_delivery_status',compact('return','data','orderHdr'));
     }
 
