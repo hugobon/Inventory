@@ -172,7 +172,7 @@ if(isset($id) && $id > 0){
 							</div>
 							<div class="form-group">
 								<label class="col-md-6 control-label"> Stock Quantity: </label>
-								<div class="col-md-6 control-label text-left"> {{ isset($quantity) ? number_format($quantity) : '' }}</div>
+								<div class="col-md-6 control-label text-left"> {{ isset($inventorytotal) ? number_format($inventorytotal) : '' }}</div>
 							</div>
 						</div>
 					</div>
