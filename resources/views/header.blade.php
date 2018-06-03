@@ -92,22 +92,14 @@
                     <li class="xn-openable <?php echo in_array(request()->path(), array()) ? "active" : "" ; ?>">
                         <a href="javascript:;"><span class="fa fa-user"></span> <span class="xn-text">Agent </span></a>
                         <ul>
-                            <li>
-                                <a href="{{ url('agent/register') }}"><span class="fa fa-puzzle-piece"></span> Register Agent </a>
-                            </li>
                             <li class="xn-openable">
                                 <a href="javascript:;"><span class="glyphicon glyphicon-shopping-cart"></span>Agent Option </a>
                                 <ul>
                                     <li>
-                                        <a href="{{ url('agent/get_order_stock/display') }}/{{ Auth::user()->id }}"><span class="glyphicon glyphicon-list-alt"></span> Configure </a>
                                         <a href="{{ url('agent/get_address/display') }}"><span class="glyphicon glyphicon-list-alt"></span> Address Configure </a>
                                         <a href="{{ url('agent/get_product_list/all') }}"><span class="glyphicon glyphicon-list-alt"></span> Product List </a>
-                                        <a href="{{ url('agent/get_product_list/package') }}"><span class="glyphicon glyphicon-list-alt"></span> Product Package </a>
-                                        <a href="{{ url('agent/get_product_list/promo') }}"><span class="glyphicon glyphicon-list-alt"></span> Product Promo </a>
                                         <a href="{{ url('agent/get_delivery_status') }}"><span class="glyphicon glyphicon-list-alt"></span> Delivery Status </a>
-                                        <a href="javascript:;"><span class="glyphicon glyphicon-list-alt"></span> Purchase Report </a>
                                     </li>
-                                    <li><a href="javascript:;"><span class="fa fa-search"></span> Stock Balance Report </a></li>
                                 </ul>
                             </li>
                             <!-- <li><a href="javascript:;"><span class="fa fa-book"></span> Audit Trail </a></li> -->
