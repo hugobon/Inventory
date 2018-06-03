@@ -15,6 +15,7 @@ use App\configuration\config_productcategory_m;
 use App\inventory\product_promotion_m;
 use App\inventory\product_promotion_gift_m;
 use App\User_m;
+use App\product_serial_number;
 
 use Auth;
 class Product extends Controller{
@@ -185,13 +186,17 @@ class Product extends Controller{
 				$tabform = '';
 				$tabgallery = 'active';
 			}
-				
+			# Total Product Stock
+			$productserialnumberdata = New product_serial_number;
+			$inventorytotal = $productserialnumberdata->where('product_id',$id)->where('status','01')->count();
+			
 			$data['dataquantitytype'] = $dataquantitytype;
 			$data['dataproductcategory'] = $dataproductcategory;
 			$data['gstpercentage'] = $gstpercentage;
 			$data['monthArr'] = $this->monthArr;
 			$data['tabform'] = $tabform;
 			$data['tabgallery'] = $tabgallery;
+			$data['inventorytotal'] = $inventorytotal;
 			
 			return view('Inventory/product_form',$data);
 		}
@@ -292,6 +297,10 @@ class Product extends Controller{
 				}
 			}
 			
+			# Total Product Stock
+			$productserialnumberdata = New product_serial_number;
+			$inventorytotal = $productserialnumberdata->where('product_id',$id)->where('status','01')->count();
+			
 			$data['created_by_name'] = $created_by_name;
 			$data['updated_by_name'] = $updated_by_name;
 			$data['imageArr'] = $imagedata->where('product_id',$id)->orderBy('status', 'desc')->orderBy('id', 'desc')->get();
@@ -300,6 +309,7 @@ class Product extends Controller{
 			$data['packageArr'] = $packageArr;
 			$data['gstpercentage'] = $gstpercentage;
 			$data['monthArr'] = $this->monthArr;
+			$data['inventorytotal'] = $inventorytotal;
 			
 			return view('Inventory/product_view',$data);
 		}
@@ -744,7 +754,7 @@ class Product extends Controller{
 				'updated_at' => date('Y-m-d H:i:s'),
 			);
 			
-			if($postdata->hasFile('upload_image')) {
+			if($postdata->hasFile('upload_image')){
 				$picture_name = $postdata->file('upload_image')->getClientOriginalName();
 				$picture_type = $postdata->file('upload_image')->getMimeType();
 				$pictureArr = explode("/",$picture_type); # check if image or not
