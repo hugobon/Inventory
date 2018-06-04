@@ -13,6 +13,7 @@ use App\inventory\stockadjustment_m;
 use App\configuration\config_stockadjustment_m;
 use App\global_nr;
 use App\product_woserialnum;
+use Session;
 
 use Auth;
 use Carbon\Carbon;
@@ -97,18 +98,26 @@ class StockInController extends Controller
         $product =  product_m::get();
         $supplier = supplier::get();
         if($serialNumberBucket){
-            $this->insertSerialNumber($serialNumberBucket,$stockInId,$productCode);
+            $insert = $this->insertSerialNumber($serialNumberBucket,$stockInId,$productCode);
+            
         }else{
-            $this->productWithoutSerialNum($productCode,$quantity,$stockInId);
+            $insert = $this->productWithoutSerialNum($productCode,$quantity,$stockInId);
         }
         
-         $message = "Successfully Inserted ";
+        if($insert){
+            $message = $insert['success']." was successfully saved,".$insert['exist']." was already existed";
+        }else{
+            $message = "Successfully Inserted ";
+        } 
+        
+         
+
          
          if($link_redirect){
              return redirect($link_redirect);
          }else{
+            Session::flash('message', $message);
             return view('Stock.stockIn',compact('product','supplier','DocNo','inStockDate','stockInId'));
-            //return compact('productCode','quantity','stockInId','jadi');
          }   
          
      }else{
@@ -122,20 +131,32 @@ class StockInController extends Controller
 
         #makeInsertArray 
         $dataToInsert = [];
+        $countSuccess = 0;
+        $countExist = 0;
         foreach($serialNumberArray as $productSerialNumber){
-            $dataToInsert[] = [
-                'serial_number' => $productSerialNumber,
-                'stock_in_id'=>$stockInId,
-                'product_id'=>$productCode,
-                'created_by'	=> Auth::user()->id,
-                'status' => '01',
-		        'created_at'	=> Carbon::now()
-            ];
+            $exist = product_serial_number::where('serial_number',$productSerialNumber)->first();
+
+            if(!$exist){
+                $dataToInsert[] = [
+                    'serial_number' => $productSerialNumber,
+                    'stock_in_id'=>$stockInId,
+                    'product_id'=>$productCode,
+                    'created_by'	=> Auth::user()->id,
+                    'status' => '01',
+                    'created_at'	=> Carbon::now()
+                ];
+                $countSuccess++;
+            }else{
+                $countExist++;
+            }
+            
         }
+
+        $message = ['success' => $countSuccess,'exist' => $countExist];
         
-        try{			
+        try{
 			product_serial_number::insert($dataToInsert);			
-			return true;
+			return $message;
 			
 		}catch(\Exception $e){
 			return;
@@ -164,7 +185,9 @@ class StockInController extends Controller
                                             'created_at'=>Carbon::now(),
                                             'created_by'=>Auth::user()->id
                                             ]);
-                 return true;
+
+                $message = ['success' => $quantity,'exist' => 0];
+                 return $message;
 			
 		}catch(\Exception $e){
 			return;

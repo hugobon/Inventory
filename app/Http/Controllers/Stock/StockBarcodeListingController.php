@@ -24,12 +24,25 @@ class StockBarcodeListingController  extends Controller
     }
 
     public function index($product_id){
-        $data = product_serial_number::leftjoin('product','product.id','=','product_serial_number.product_id')
+        
+        if($product_id === 'all'){
+            $data = product_serial_number::leftjoin('product','product.id','=','product_serial_number.product_id')
+                                        ->leftjoin('stock_in','stock_in.id','product_serial_number.stock_in_id')
+                                        ->select('product_serial_number.serial_number','stock_in.in_stock_date','stock_in.stock_received_number')
+                                        ->get();
+                                        
+            $product_name['name'] = "All products";
+
+        }else{
+            $data = product_serial_number::leftjoin('product','product.id','=','product_serial_number.product_id')
                                         ->leftjoin('stock_in','stock_in.id','product_serial_number.stock_in_id')
                                         ->select('product_serial_number.serial_number','stock_in.in_stock_date','stock_in.stock_received_number')
                                         ->where('product_id',$product_id)
                                         ->get();
-        $product_name = product_m::where('id',$product_id)->select('name')->first();
+            $product_name = product_m::where('id',$product_id)->select('name')->first();
+        }
+        
+        
 
         return view('Stock.stockBarcode',compact('data','product_name'));
         // return compact('reports');
