@@ -115,7 +115,7 @@
                                         <td>{{$stockIn->in_stock_date}}</td>
                                         <td>{{$stockIn->stock_received_number}}</td>
                                         <td>{{$stockIn->description}}</td>
-                                        <td></td>
+                                        <td>{{$stockIn->amount}}</td>
                                         </tr>
                                         @endforeach
                                     </tbody>
@@ -123,8 +123,7 @@
                             </div>
                         </div>
                         <div class="panel-footer">
-                            <button type="button" class="btn btn-default" onclick="fn_clear()">Clear Form</button>
-                            <button class="btn btn-primary pull-right">Save</button>
+                            <a href="{{ url('stock/barcode/all') }}" class="btn btn-primary pull-right">Show All Barcode</a>
                         </div>
                     </div>
                 </form>
