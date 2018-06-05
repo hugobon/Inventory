@@ -91,7 +91,7 @@
 											    </div>
 								                <form action="javascript:;" class="save-item">
 													<input type="hidden" name="id" id="id" value="{{ $value['id'] }}">
-													<div class="row">
+													<div class="row item-row">
 														<div class="col-md-8 info" style="margin: 5px;">
 															<div class="form-group info-detail">
 												                <label class="control-label">Quantity</label>
@@ -217,7 +217,7 @@
 		var cart = $('.cart');
 		// console.log($(this).closest('form.save-item').children('.info').children('.info-detail').find('select#quantity').val())
 		var product_id = $(this).closest('form.save-item').find('input#id').val();
-		var quantity = $(this).closest('form.save-item').children('.info').children('.info-detail').find('input#quantity').val();
+		var quantity = $(this).closest('form.save-item').children('.item-row').children('.info').children('.info-detail').children('div.qty').find('input.quantity').val();
 		// var agent_id = $(this).closest('form.save-item').find('input#agent_id').val();
 		// var _token = $(this).closest('form.save-item').find('input#_token').val();
 		var agent_id = "{{ Auth::user()->id }}";
