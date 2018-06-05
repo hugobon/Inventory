@@ -431,9 +431,6 @@ class AgentController extends Controller
 
     public function fn_get_place_order_items($agent_id = null,$deliveryType = null){
 
-        // $agent_id = (!empty($request->get('agent_id')) ? $request->get('agent_id') : '');
-        // $delivery_type = (!empty($request->get('delivery_type')) ? $request->get('delivery_type') : '');
-
         // dd($delivery_type);
         try{
 
@@ -471,19 +468,21 @@ class AgentController extends Controller
                     $cartItems[$key]['total_price'] = $total_price;
                 }
                 
-                // dd($cartItems);
 
-                $image = product_image_m::select('type','description','file_name','path')
+                $prdimage = product_image_m::select('type','description','file_name','path')
                                         ->where('product_id',$cartItems[$key]['product_id'])
                                         ->orderBy('status','desc')
                                         ->first();
+                // dd($prdimage['path']);
 
-                $cartItems[$key]['image'] = ($image->path == null ? '' : $image->path);
+                $cartItems[$key]['image'] = ($prdimage['path'] == null ? '' : $prdimage['path']);
 
                 $totalPrice = $totalPrice + (float)$cartItems[$key]['total_price'];
+                $totalPrice = round($totalPrice,2);
 
             }
-            // dd($cartItems,$image);
+
+            // dd($cartItems,$prdimage,$totalPrice);
             //shipping fee
             if($totalPrice < 300.00){
 
@@ -552,6 +551,7 @@ class AgentController extends Controller
         }
 
         // dd($cartItems,$returnData,$cartItems);
+        // dd($return);
         return view('Agent.agent_place_order',compact('cartItems','returnData','address','deliveryType'));
     }
 
@@ -585,33 +585,15 @@ class AgentController extends Controller
 
         try {
 
-            $cartItem = agent_select_product::select('id','product_id','agent_id','quantity')
-                                            ->where('id',$id)
-                                            ->first();
+            foreach($quantity as $key => $value) {
 
-            $product = product_m::select('type','code','price_wm','price_em','price_staff','quantity')
-                                ->where('id',$cartItem['product_id'])
-                                ->first();
+                $value['updated_by'] = Auth::user()->id;
+                $value['updated_at'] = \Carbon\Carbon::now();
 
-
-
-            $total_price = number_format(floatval($this->fn_calc_gst_price($product->price_wm) * (int)$quantity),2);
-
-            $total_price = str_replace(",","", $total_price);
-            // dd($total_price);
-
-            // $updateQuantity = $quantity + $cartItem->quantity;
-            // $updateTotalPrice = number_format(floatval($total_price + $cartItem->total_price),2);
-            // $updateTotalPrice = str_replace(",","", $updateTotalPrice);
-
-            agent_select_product::where('id',$id)
-                                    ->update([
-
-                                        'quantity' => $quantity,
-                                        'updated_by' =>  Auth::user()->id,
-                                        'updated_at' => \Carbon\Carbon::now()
-
-                                    ]);
+                agent_select_product::where('agent_id',$id)   
+                                    ->where('product_id',$value['product_id'])
+                                    ->update($quantity[$key]);
+            }
 
             $return['message'] = "succssfuly retrived";
             $return['status'] = "01";
@@ -624,7 +606,7 @@ class AgentController extends Controller
             
         }
 
-        return compact('return');
+        return compact('return','quantity');
     }
 
     public function fn_get_product_details($product_id = null){

@@ -214,18 +214,84 @@
         });
     });
 
-    $('.quantity').change(function(){
+    // $('.qty').find('.quantity').change(function(){
+    // $('.qty').children('input.quantity, select').each(function() {
+    //     $(this).change(function() {
+    //         console.log('fuck')
+    //         var id = $(this).closest('.row-cart-item').find('input#id').val();
+    //         var quantity = $(this).closest('.quantity-item').find('.qty').find('input.quantity').val();
+    //         console.log(quantity)
+    //         // console.log($(this).closest('.quantity-item').find('.quantity').val())
 
-        var id = $(this).closest('.row-cart-item').find('input#id').val();
-        var quantity = $(this).closest('.quantity-item').find('input#quantity').val();
-        // console.log(quantity)
-        // console.log($(this).closest('.quantity-item').find('.quantity').val())
+    //         var data = {
 
-        // var item = {
+    //             _token : "{!! csrf_token() !!}",
+    //             id   :  id,
+    //             quantity : quantity
+    //         };
 
-        //     id       : id,
-        //     quantity : quantity
-        // };
+    //         $.ajax({
+
+    //             url : "/agent/update_quantity_item",
+    //             dataType : "json",
+    //             type : "POST",
+    //             data: JSON.stringify(data),
+    //             contentType : "application/json"
+
+    //         }).done(function(response){
+
+    //             if(response.return.status == "01"){
+    //                 // document.location.reload();
+    //             }
+
+    //             console.log(response)
+
+    //         }).fail(function(){
+
+    //         });
+    //     });
+    // });
+
+    $('.continue-shopping').click(function(){
+        
+        window.location.href = "{{ url('agent/get_product_list/all') }}";
+    })
+
+    $('.checkout-item').click(function(){
+       
+        var agent_id = $('#agent_id').val();
+        var table_item = $('.table-cart-item').find('.row-cart-item');
+        var delivery_type = $('.delivery-type').val();
+        var delivery_id = $('.delivery-type').children('option').data('code');
+
+        // window.location.href = "{{ url('agent/get_place_order_items') }}"+"/"+agent_id+"/"+delivery_type;
+
+        console.log($(this).closest('.cart-row').children('.table-cart-item'))
+        console.log(table_item)
+
+        var lv_data = [];
+        for(var i=0;i<table_item.length;i++){
+
+            var product_id = table_item.eq(i).find('td.column-cart-item').find('.cart-content').children('input').eq(1).val();
+            var quantity = table_item.eq(i).find('td.quantity-item').find('.qty').children('input').val();
+
+            lv_data.push({
+
+                product_id : product_id,
+                quantity : quantity
+            });
+        }
+
+        fn_update_quantity(lv_data,agent_id,function(status){
+
+            if(status == "01"){
+                window.location.href = "{{ url('agent/get_place_order_items') }}"+"/"+agent_id+"/"+delivery_type
+            }
+        });
+
+    });
+
+    function fn_update_quantity(quantity,id,callback){
 
         var data = {
 
@@ -244,32 +310,17 @@
 
         }).done(function(response){
 
-            if(response.return.status == "01"){
-                document.location.reload();
-            }
+            // if(response.return.status == "01"){
+            //     // document.location.reload();
+            // }
+            callback(response.return.status);
 
             console.log(response)
 
         }).fail(function(){
 
         });
-    });
-
-    $('.continue-shopping').click(function(){
-        
-        window.location.href = "{{ url('agent/get_product_list/all') }}";
-    })
-
-    $('.checkout-item').click(function(){
-       
-        var agent_id = $('#agent_id').val();
-        var table_item = $('.table-cart-item').find('.row-cart-item');
-        var delivery_type = $('.delivery-type').val();
-        var delivery_id = $('.delivery-type').children('option').data('code');
-
-        window.location.href = "{{ url('agent/get_place_order_items') }}"+"/"+agent_id+"/"+delivery_type
-
-    });
+    }
 
 </script>
 @endsection
