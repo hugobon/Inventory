@@ -453,7 +453,7 @@ $(function() {
 	else
 		$('.price-required').show();
 			
-	$( ".checkbox-label" ).click(function() {
+	$( ".checkbox-label").click(function() {
 		if($(this).find('.product-notforsale').is(':checked'))
 			$('.price-required').show();
 		else{
