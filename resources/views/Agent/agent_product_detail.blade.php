@@ -86,7 +86,7 @@
 					        
 					                    <!-- Botones de compra -->
 					                    <div class="section" style="padding-bottom:20px;">
-					                        <button class="btn btn-success"><span style="margin-right:20px" class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span> Add to Cart</button>
+					                        <button class="btn btn-success1"><span style="margin-right:20px" class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span> Add to Cart</button>
 					                        <h6><a href="#"></a></h6>
 					                    </div>                                   
 					                </div>

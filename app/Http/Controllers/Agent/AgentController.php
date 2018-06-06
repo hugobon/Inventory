@@ -307,8 +307,8 @@ class AgentController extends Controller
 
                 $cartItems[$key]['image'] = ($image['path'] == null ? '' : $image['path']);
 
-                $totalPrice_wm = $totalPrice_wm + (float)$cartItems[$key]['total_price_wm'];
-                $totalPrice_em = $totalPrice_em + (float)$cartItems[$key]['total_price_em'];
+                $totalPrice_wm = $totalPrice_wm + (float)str_replace(",", "", $cartItems[$key]['total_price_wm']);
+                $totalPrice_em = $totalPrice_em + (float)str_replace(",", "", $cartItems[$key]['total_price_em']);
 
             }
 
@@ -477,7 +477,7 @@ class AgentController extends Controller
 
                 $cartItems[$key]['image'] = ($prdimage['path'] == null ? '' : $prdimage['path']);
 
-                $totalPrice = $totalPrice + (float)$cartItems[$key]['total_price'];
+                $totalPrice = $totalPrice + (float)str_replace(",", "", $cartItems[$key]['total_price']);
                 $totalPrice = round($totalPrice,2);
 
             }
@@ -587,12 +587,13 @@ class AgentController extends Controller
 
             foreach($quantity as $key => $value) {
 
-                $value['updated_by'] = Auth::user()->id;
-                $value['updated_at'] = \Carbon\Carbon::now();
-
                 agent_select_product::where('agent_id',$id)   
                                     ->where('product_id',$value['product_id'])
-                                    ->update($quantity[$key]);
+                                    ->update([
+                                        'quantity' => $value['quantity'],
+                                        'updated_by' => Auth::user()->id,
+                                        'updated_at' => \Carbon\Carbon::now()
+                                    ]);
             }
 
             $return['message'] = "succssfuly retrived";
@@ -632,8 +633,9 @@ class AgentController extends Controller
 
     private function fn_calc_total_price($quantity,$price){
 
-        $total_price = ($quantity * $price);
-        $total_price = number_format(floatval($total_price),2);
+        $total_price = (float)$quantity * (float)$price;
+        $total_price = round(floatval($total_price),2);
+        $total_price = number_format($total_price,2);
 
         return $total_price;
     }

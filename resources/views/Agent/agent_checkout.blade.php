@@ -69,7 +69,7 @@
                                                     </div>
                                                 </td>
                                                 <td class="col-sm-1 col-md-1"><strong>WM RM{{ $value['price_wm'] }}<br>EM RM{{ $value['price_em'] }}</strong></td>
-                                                <td class="col-sm-1 col-md-1"><strong>WM RM{{ $value['total_price_wm'] }}<br>EM RM{{ $value['total_price_em'] }}</strong></td>
+                                                <td class="col-sm-1 col-md-1 column-tot-price"><strong>WM RM{{ $value['total_price_wm'] }}<br>EM RM{{ $value['total_price_em'] }}</strong></td>
                                                 <td class="col-sm-1 col-md-1">
                                                     <button type="button" class="btn btn-danger remove-item">
                                                         <i class="glyphicon glyphicon-trash"></i>
@@ -103,23 +103,22 @@
                                         </div>
                                     </div>
                                     <hr>
-                                    <table class="col-md-12">
+                                    <table class="col-md-12" id="total-price">
                                         <tbody>
-                                            <tr>
+                                            <tr id="row-shipping">
                                                 <td><h5>Shipping Fee</h5></td>
-                                                <td><h5>RM{{ $returnData['shippingPrice'] }}</h5></td>
+                                                <td id="col-shipping"><h5>RM{{ $returnData['shippingPrice'] }}</h5></td>
                                             </tr>
-                                            <tr>
+                                            <tr id="row-total-price">
                                                 <td><h5>Total Price</h5></td>
-                                                <td><h5>WM RM{{ $returnData['totalPrice_wm'] }}<br>EM RM{{ $returnData['totalPrice_em'] }}</h5></td>
+                                                <td id="col-total-price"><h5>WM RM{{ $returnData['totalPrice_wm'] }}<br>EM RM{{ $returnData['totalPrice_em'] }}</h5></td>
                                             </tr>
                                             <tr>
                                                 <td colspan="2"><hr></td>
                                             </tr>
-                                            <tr>
-
+                                            <tr id="row-grand-total">
                                                 <td><h4>Grand Total</h4></td>
-                                                <td><h4>WM RM{{ $returnData['grandTotalPrice_wm'] }}<br>EM RM{{ $returnData['grandTotalPrice_em'] }}</h4></td>
+                                                <td id="col-grand-total"><h4>WM RM{{ $returnData['grandTotalPrice_wm'] }}<br>EM RM{{ $returnData['grandTotalPrice_em'] }}</h4></td>
                                             </tr>
                                             <tr>
                                                 <td>
@@ -147,34 +146,81 @@
 
 <script type="text/javascript">
 
-     $(".btn-minus").on("click",function(){
-            console.log($(this).closest('.qty').find('input.quantity').val())
-            var now = $(this).closest('.qty').find('input.quantity').val();
-            // var now = $(".quantity").val();
+    $(".btn-minus").on("click",function(){
+        console.log($(this).closest('.qty').find('input.quantity').val())
+        var now = $(this).closest('.qty').find('input.quantity').val();
+        var productid = $(this).closest('.row-cart-item').children('.column-cart-item').children('.cart-content').find('input#produt_id').val();
+        console.log(productid)
+
+        if ($.isNumeric(now)){
+            if (parseInt(now) -1 > 0){ now--;}
+            $(this).closest('.qty').find('input.quantity').val(now);
+            fn_calculate_order($(this).closest('.row-cart-item'),now,productid);
+        }else{
+            $(this).closest('.qty').find('input.quantity').val("1");
+        }
+    });
+    $(".btn-plus").on("click",function(){
+        // console.log($(this).closest('.qty').find('input.quantity').val())
+        var now = $(this).closest('.qty').find('input.quantity').val();
+        var max = $(this).closest('.qty').find('input.quantity').attr('max');
+        var productid = $(this).closest('.row-cart-item').children('.column-cart-item').children('.cart-content').find('input#produt_id').val();
+        console.log(productid)
+
+        if(now == max){
+             $(this).closest('.qty').find('input.quantity').val(max);
+        }
+        else{
             if ($.isNumeric(now)){
-                if (parseInt(now) -1 > 0){ now--;}
-                $(this).closest('.qty').find('input.quantity').val(now);
+                now = parseInt(now)+1;
+                $(this).closest('.qty').find('input.quantity').val(parseInt(now));
+                fn_calculate_order($(this).closest('.row-cart-item'),now,productid);
             }else{
                 $(this).closest('.qty').find('input.quantity').val("1");
             }
-        })            
-        $(".btn-plus").on("click",function(){
-            // console.log($(this).closest('.qty').find('input.quantity').val())
-            var now = $(this).closest('.qty').find('input.quantity').val();
-            var max = $(this).closest('.qty').find('input.quantity').attr('max');
-            // console.log(max)
-            // var now = $(".quantity").val();
-            if(now == max){
-                 $(this).closest('.qty').find('input.quantity').val(max);
+        }
+    });
+
+    function fn_calculate_order(table,quantity,productid){
+
+        var cartItems = {!! json_encode($cartItems) !!};
+        var newTotal_wm = 0.00;
+        var newTotal_em = 0.00;
+        for(var i=0;i<cartItems.length;i++){
+            if(cartItems[i].product_id == productid){
+
+                newTotal_wm = parseFloat(cartItems[i].price_wm) * parseFloat(quantity);
+                newTotal_em = parseFloat(cartItems[i].price_em) * parseFloat(quantity);
+                newTotal_wm = newTotal_wm.toFixed(2);
+                newTotal_em = newTotal_em.toFixed(2);
+                quantity = quantity.toString();
+                cartItems[i].total_price_wm = newTotal_wm;
+                cartItems[i].total_price_em = newTotal_em;
+                cartItems[i].total_quantity = quantity;
+                newTotal_wm = newTotal_wm.replace(/(\d)(?=(\d{3})+\.)/g, '$1,');
+                newTotal_em = newTotal_em.replace(/(\d)(?=(\d{3})+\.)/g, '$1,');
+                break;
             }
-            else{
-                if ($.isNumeric(now)){
-                    $(this).closest('.qty').find('input.quantity').val(parseInt(now)+1);
-                }else{
-                    $(this).closest('.qty').find('input.quantity').val("1");
-                }
-            }
-        });
+        }
+
+        // console.log(table.children('.column-tot-price'),cartItems)
+        table.children('.column-tot-price').html('<strong>WM RM'+newTotal_wm+'<br>EM RM'+newTotal_em+'</strong>');
+
+        var newTotal_price_wm = 0.00;
+        var newTotal_price_em = 0.00;
+        console.log(cartItems)
+        for(var i=0;i<cartItems.length;i++){
+
+            newTotal_price_wm = newTotal_price_wm + parseFloat(cartItems[i].total_price_wm.replace(",",""));
+            newTotal_price_em = newTotal_price_em + parseFloat(cartItems[i].total_price_em.replace(",",""));
+        }
+
+        newTotal_price_wm = newTotal_price_wm.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,');
+        newTotal_price_em = newTotal_price_em.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,');
+
+        console.log($('#total-price').children('tbody').children('tr#row-total-price').children('td#col-total-price').html('<h5>WM RM'+newTotal_price_wm+'<br>EM RM'+newTotal_price_em+'</h5>'))
+        console.log($('#total-price').children('tbody').children('tr#row-grand-total').children('td#col-grand-total').html('<h4>WM RM'+newTotal_price_wm+'<br>EM RM'+newTotal_price_em+'</h4>'))
+    }
     
     $('.remove-item').on('click', function () {
 
