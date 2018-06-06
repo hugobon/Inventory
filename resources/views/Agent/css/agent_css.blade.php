@@ -349,7 +349,7 @@ li.active{border-bottom:3px solid silver;}
 
 .item-photo{display:flex;justify-content:center;align-items:center;border-right:1px solid #f6f6f6;}
 .menu-items{list-style-type:none;font-size:11px;display:inline-flex;margin-bottom:0;margin-top:20px}
-.btn-success{width:100%;border-radius:0;}
+.btn-success1{width:100%;border-radius:0;}
 .section{width:100%;margin-left:-15px;padding:2px;padding-left:15px;padding-right:15px;background:#f8f9f9}
 .title-price{margin-top:30px;margin-bottom:0;color:black}
 .title-attr{margin-top:0;margin-bottom:0;color:black;}

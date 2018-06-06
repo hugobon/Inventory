@@ -244,6 +244,13 @@ $(document).ready(function(){
 
         $("#ModalAddress").modal();
     });
+
+     $('.poscode').keyup(function() {
+        var value = $(this).val();
+        value = value.replace(/[^\d]/g, '');
+        $(this).val(value);
+    });
+
 });
 
 $('.save-address').click(function(){

@@ -263,6 +263,13 @@
         },500);
         
     });
+
+
+    $('.poscode').keyup(function() {
+        var value = $(this).val();
+        value = value.replace(/[^\d]/g, '');
+        $(this).val(value);
+    });
 });
     
     $('.place-order-item').click(function(){
