@@ -1,5 +1,5 @@
 @extends('header')
-@section('title','Config - Quantity Type')
+@section('title','Config - Delivery Type')
 
 @section('content')
 <style>
@@ -10,7 +10,7 @@ select{cursor:pointer;}
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
 	<li><a href="{{ url('home') }}">Home</a></li>                    
-	<li><a href="{{ url('configuration/quantitytype') }}">Config - Quantity Type</a></li>
+	<li><a href="{{ url('configuration/deliverytype') }}">Config - Delivery Type</a></li>
 </ul>
 <!-- END BREADCRUMB -->                       
 
@@ -38,35 +38,23 @@ select{cursor:pointer;}
 			<div class="panel panel-default">
 
 				<div class="panel-heading">
-					<h3 class="panel-title">Configuration - Quantity Type Listing</h3>
+					<h3 class="panel-title">Configuration - Delivery Type Listing</h3>
 					<div class="actions pull-right">
-						<a href="javascript:;" class="btn btn-default  btn-sm btn-circle addnewtype" title="Add New Quantity Type" >
-					<i class="fa fa-plus"></i> New Quantity Type </a>
+						<a href="javascript:;" class="btn btn-default  btn-sm btn-circle addnew_deliverytype" title="Add New deliverytype" >
+					<i class="fa fa-plus"></i> New Delivery Type </a>
 					</div>
 				</div>
 				<div class="panel-body panel-body-table">
-					<form id="form_search" class="form-horizontal" method="POST" action="{{ url('configuration/quantitytype/form_search') }}" >
+					<form id="form_search" class="form-horizontal" method="POST" action="{{ url('configuration/deliverytype/form_search') }}" >
 						{{ csrf_field() }}
 						<div class="panel-body">
 							<div class="row">
-								<div class="col-md-5">
+								<div class="col-md-10">
 									<div class="form-group">
-										<label class="col-md-4 control-label"> Search </label>
-										<div class="col-md-8">        
+										<label class="col-md-2 control-label"> Search </label>
+										<div class="col-md-10">        
 											<input type="text" class="form-control type-search" name="search" 
-											placeholder=" Type / Remarks " value="{{ isset($search) ? $search : '' }}" />									
-										</div>
-									</div>
-								</div>
-								<div class="col-md-5">
-									<div class="form-group">
-										<label class="col-md-4 control-label"> Status </label>
-										<div class="col-md-8">        
-											<select class="form-control type-status" name="search_status" >
-												<option value=""> All </option>
-												<option value="1" {{ isset($search_status) && $search_status == '1' ? "selected" : "" }}> Active </option>
-												<option value="0" {{ isset($search_status) && $search_status == '0' ? "selected" : "" }}> Inactive </option>
-											</select>
+											placeholder=" Delivery Code / Type Description " value="{{ isset($search) ? $search : '' }}" />									
 										</div>
 									</div>
 								</div>
@@ -74,65 +62,66 @@ select{cursor:pointer;}
 									<button type="submit" class="btn btn-primary">Search</button>
 								</div>
 								<div class="col-md-1">
-									<a href="{{ url('configuration/quantitytype') }}" class="btn btn-danger">Reset</a>
+									<a href="{{ url('configuration/deliverytype') }}" class="btn btn-danger">Reset</a>
 								</div>
 							</div>
 						</div>
 					</form>
 					<div class="panel-body">
-					&nbsp; Total Quantity Type: <b>{{ $counttype }}</b>
+					&nbsp; Total deliverytype: <b>{{ $counttype }}</b>
 					<div class="table-responsive">
 						<table class="table table-bordered table-striped table-actions">
 							<thead>
 								<tr>
 									<th ></th>
-									<th >Id</th>
-									<th class="col-md-3">Quantity Type</th>
-									<th class="col-md-4">Remarks</th>
-									<th class="col-md-2">Status</th>
+									<th class="col-md-1 text-center">Id</th>
+									<th class="col-md-2 text-center">Code</th>
+									<th class="col-md-5">Type Description</th>
 									<th class="col-md-2">Create at</th>
 									<th ></th>
 									<th ></th>
 								</tr>
 							</thead>
 							<tbody>
-							@if(count($typeArr) > 0)
+							@if(count($deliverytypeArr) > 0)
 								
-								@foreach($typeArr->all() as $key => $row)
+								@foreach($deliverytypeArr->all() as $key => $row)
 									<?php
 										$rowarr = array('selectid' => $row->id,'search' => Request::segment(4));
 										$base64data = trim(base64_encode(serialize($rowarr)), "=.");
 									?>
 									<tr>
-										<td>{{ $key + $typeArr->firstItem() }}</td>
-										<td>{{ $row->id }}</td>
-										<td>{{ $row->type }}</td>
-										<td>{{ $row->remarks }}</td>										
-										<td>{{ isset($status[$row->status]) ? $status[$row->status] : 'Active' }}</td>
+										<td class="text-center" >{{ $key + $deliverytypeArr->firstItem() }}</td>
+										<td class="text-center" >{{ $row->id }}</td>
+										<td class="text-center">{{ $row->delivery_code }}</td>
+										<td>{{ $row->type_description }}</td>
 										<td>{{ !in_array($row->created_at, array('0000-00-00','','null')) ? date('d/m/Y, h:i A', strtotime($row->created_at)) : '' }}</td>
 										<td>
-											<a href="javascript:;" data-base64="{{ $base64data }}" data-type="{{ $row->type }}"
-												data-remarks="{{ $row->remarks }}" data-status="{{ $row->status }}" 
-											title=" Edit {{ $row->type }}"
-											class="btn btn-primary btn-rounded edittype" ><span class="fa fa-edit"></span></a>
+											<a href="javascript:;" data-base64="{{ $base64data }}" 
+												data-code="{{ $row->delivery_code }}" data-name="{{ $row->type_description }}" 
+												data-address="{{ $row->address }}" data-tel="{{ $row->tel }}" 
+												data-fax="{{ $row->fax }}"  data-email="{{ $row->email }}" 
+											title=" Edit {{ $row->type_description . " (" . $row->delivery_code . ")" }}"
+											class="btn btn-primary btn-rounded edit_deliverytype" ><span class="fa fa-edit"></span></a>
 										</td>
 										<td>
-											<a href="javascript:;" data-base64="{{ $base64data }}" data-type="{{ $row->type }}"
-											title=" Remove {{ $row->type }}"
+											<a href="javascript:;" data-base64="{{ $base64data }}" 
+											data-code="{{ $row->type_description . " (" . $row->delivery_code . ")" }}"
+											title=" Remove {{ $row->type_description . " (" . $row->delivery_code . ")" }}"
 											class="btn btn-danger btn-rounded confirm-delete" ><span class="glyphicon glyphicon-trash"></span></a>
 										</td>
 									</tr>
 								@endforeach
 							@else
 							<tr>
-								<td colspan="9" class="text-center"> No Data Found <br />
-								<a href="javascript:;" class="addnewtype"><span class="fa fa-plus"></span> New Quantity Type</a></td>
+								<td colspan="7" class="text-center"> No Data Found <br />
+								<a href="javascript:;" class="addnew_deliverytype"><span class="fa fa-plus"></span> New Delivery Type</a></td>
 							</tr>
 							@endif
 							</tbody>
 						</table>
 					</div>
-					{{ $typeArr->links() }}
+					{{ $deliverytypeArr->links() }}
 					</div>
 				</div>
 			</div>                                                
@@ -142,46 +131,37 @@ select{cursor:pointer;}
 	<!-- END RESPONSIVE TABLES -->
 	
 	<!-- Modal -->
-	<div class="modal fade" id="QtyTypeModal" role="dialog">
+	<div class="modal fade" id="deliverytypeModal" role="dialog">
 		<div class="modal-dialog">
 			<!-- Modal content-->
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal">&times;</button>
-					<h4 class="modal-title">Configuration - Quantity Type Form</h4>
+					<h4 class="modal-title">Configuration - Delivery Type Form</h4>
 				</div>
 				<div class="modal-body">
 					<div class="row">
 						<div class="col-md-12">
-							<form id="submit_form" class="form-horizontal" method="POST" action="{{ url('configuration/quantitytype/save') }}" >
+							<form id="submit_form" class="form-horizontal" method="POST" action="{{ url('configuration/deliverytype/save') }}" >
 								{{ csrf_field() }}
+								<div class="alert alert-danger alert-dismissable alert_modal" hidden>
+									already exists
+								</div>
 								<input type="hidden" class="form-control base64" name="base64" value="" />
 								<div class="col-md-12">
 									<div class="form-group">
-										<label class="col-md-3 control-label"> Quantity Type <span class="required">*</span></label>
+										<label class="col-md-3 control-label"> Delivery Code <span class="required">*</span></label>
 										<div class="col-md-9">								
-											<input type="text" class="form-control type uppercase" name="type" value="" />
+											<input type="text" maxlength="5" class="form-control delivery_code uppercase" name="delivery_code" value="" />
 										</div>
 									</div>
 								</div>
 								<br /> &nbsp;
 								<div class="col-md-12">
 									<div class="form-group">
-										<label class="col-md-3 control-label"> Remarks </label>
+										<label class="col-md-3 control-label"> Type Description </label>
 										<div class="col-md-9">        
-											<input type="text" class="form-control remarks" name="remarks" value="" />
-										</div>
-									</div>
-								</div>
-								<br /> &nbsp;
-								<div class="col-md-12">
-									<div class="form-group">
-										<label class="col-md-3 control-label"> Status </label>
-										<div class="col-md-9">        
-											<select class="form-control status" name="status" >
-												<option value="1" > Active </option>
-												<option value="0" > Inactive </option>
-											</select>
+											<input type="text" maxlength="20" class="form-control type_description uppercase" name="type_description" value="" />
 										</div>
 									</div>
 								</div>
@@ -212,24 +192,56 @@ select{cursor:pointer;}
 <script type='text/javascript' src="{!! asset('joli/js/plugins/noty/layouts/topLeft.js') !!}" ></script>
 <script type='text/javascript' src="{!! asset('joli/js/plugins/noty/layouts/topRight.js') !!}" ></script>
 <script type='text/javascript' src="{!! asset('joli/js/plugins/noty/themes/default.js') !!}" ></script>
+<script type="text/javascript" src="{!! asset('joli/js/plugins/inputmask/jquery.inputmask.bundle.min.js') !!}"></script>
 <script type="text/javascript" src="{!! asset('joli/js/plugins/jquery-validation/jquery.validate.js') !!}" ></script> 
 <script>
+var baseurl = '{{ url('') }}';
 var jvalidate = $("#submit_form").validate({
 	errorPlacement: function(error,element) { return true;},
 	ignore: [],
-	rules: { type: { required: true,},}
+	rules: { delivery_code: { required: true,},}
 });
 $(function() {
+
+	$("#submit_form").submit(function(){
+		delivery_code = $(".delivery_code").val().trim();
+		base64 = $(".base64").val().trim();
+		code_exist = 0;
+		$.ajax({
+			url: baseurl + '/configuration/deliverytype/check_existcode',
+			method: "POST",
+			data: {'code': delivery_code,'base64': base64, '_token': '{{ csrf_token() }}',} ,
+			async: false,
+			success: function(result){
+				if(result == 1 || result == true)
+					code_exist = 1;
+			}
+		});
+		if(code_exist == 1){
+			$(".delivery_code").focus();
+			$("#submit_form").find(".alert_modal").html(" Delivery Code <b>"+delivery_code.toUpperCase()+"</b> already exists . ");
+			$("#submit_form").find(".alert_modal").show();
+			return false;
+		}
+		$("#submit_form").find(".alert_modal").hide();
+	});
+	
+	$('.delivery_code').inputmask({
+		"mask": "*",
+		"repeat": 30,
+		"greedy": false
+	});
+	
 	$('.table').on('click', '.confirm-delete', function(){
 		var base64data = $(this).data('base64');
-		var type = $(this).data('type');
+		var code = $(this).data('code');
 		noty({
-			text: 'Are you sure to remove <br /> ' + type + ' ?',
+			text: 'Are you sure to remove <br /> ' + code + ' ?',
 			layout: 'topRight',
 			buttons: [
 					{addClass: 'btn btn-success btn-clean', text: 'Ok', onClick: function($noty) {
 						$noty.close();
-						window.location.href = "{{ url('configuration/quantitytype/delete') }}/" + base64data;
+						window.location.href = "{{ url('configuration/deliverytype/delete') }}/" + base64data;
 					}
 					},
 					{addClass: 'btn btn-danger btn-clean', text: 'Cancel', onClick: function($noty) {
@@ -240,27 +252,25 @@ $(function() {
 		})
 	});
 	
-	$('body').on('click', '.addnewtype', function(){
+	$('body').on('click', '.addnew_deliverytype', function(){
 		// set new 
-		$('#QtyTypeModal').find('.base64').val('');
-		$('#QtyTypeModal').find('.type').val('');
-		$('#QtyTypeModal').find('.remarks').val('');
-		$('#QtyTypeModal').find('.operator').val('');
-		$('#QtyTypeModal').find('.status').val('1');
-		$('#QtyTypeModal').find('.submit-button').html('Submit');
+		$("#submit_form").find(".alert_modal").hide();
+		$('#deliverytypeModal').find('.base64').val('');
+		$('#deliverytypeModal').find('.delivery_code').val('');
+		$('#deliverytypeModal').find('.type_description').val('');
+		$('#deliverytypeModal').find('.submit-button').html('Submit');
 		
-		$('#QtyTypeModal').modal('show');
+		$('#deliverytypeModal').modal('show');
 	});
 	
-	$('body').on('click', '.edittype', function(){
-		$('#QtyTypeModal').find('.base64').val($(this).data('base64'));
-		$('#QtyTypeModal').find('.type').val($(this).data('type'));
-		$('#QtyTypeModal').find('.operator').val($(this).data('operator'));
-		$('#QtyTypeModal').find('.remarks').val($(this).data('remarks'));
-		$('#QtyTypeModal').find('.status').val($(this).data('status'));
-		$('#QtyTypeModal').find('.submit-button').html('Save');
+	$('body').on('click', '.edit_deliverytype', function(){
+		$("#submit_form").find(".alert_modal").hide();
+		$('#deliverytypeModal').find('.base64').val($(this).data('base64'));
+		$('#deliverytypeModal').find('.delivery_code').val($(this).data('code'));
+		$('#deliverytypeModal').find('.type_description').val($(this).data('name'));
+		$('#deliverytypeModal').find('.submit-button').html('Save');
 		
-		$('#QtyTypeModal').modal('show');
+		$('#deliverytypeModal').modal('show');
 	});
 });
 </script>

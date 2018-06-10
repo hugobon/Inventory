@@ -149,6 +149,16 @@
 								<a href="{{ url('configuration/stockadjustment') }}"><span class="fa fa-gear"></span> Stock Adjustment </a>
 							</li>
                         </ul>
+						<ul >
+                            <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("configuration/courier")) ? "active" : "" ; ?>">
+								<a href="{{ url('configuration/courier') }}"><span class="fa fa-gear"></span> Courier </a>
+							</li>
+                        </ul>
+						<ul >
+                            <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("configuration/deliverytype")) ? "active" : "" ; ?>">
+								<a href="{{ url('configuration/deliverytype') }}"><span class="fa fa-gear"></span> Delivery Type </a>
+							</li>
+                        </ul>
                     </li>
                 </ul>
                 <!-- END X-NAVIGATION -->

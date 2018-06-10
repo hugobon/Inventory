@@ -5,9 +5,13 @@ namespace App\Http\Controllers\Configuration;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\configuration\config_quantitytype_m;
-
+use Auth;
 class Quantitytype extends Controller
 {
+	public function __construct(){
+        $this->middleware('auth');
+    }
+	
 	public function index(){
         return redirect('configuration/quantitytype');
     }
@@ -78,16 +82,16 @@ class Quantitytype extends Controller
 		$quantitytypedata = New config_quantitytype_m;
 		$data = array(
 			'type' => strtoupper(trim($postdata->input("type"))),
-			'remarks' => $postdata->input("remarks"),
-			'status' => $postdata->input("status"),
-			'updated_by' => 1,
+			'remarks' => $postdata->input("remarks") != null ? $postdata->input("remarks") : '',
+			'status' => $postdata->input("status") != null ? $postdata->input("status") : '1',
+			'updated_by' => Auth::user()->id,
 			'updated_at' => date('Y-m-d H:i:s'),
 		);
 			
 		$base64 = $postdata->input("base64");
 		if($base64 == '' || @unserialize(base64_decode($base64)) == false){
 			#insert new Quantity Type
-			$data['created_by'] = 1;
+			$data['created_by'] = Auth::user()->id;
 			$data['created_at'] = date('Y-m-d H:i:s');
 			$quantitytypedata->insert($data);
 			
@@ -118,11 +122,6 @@ class Quantitytype extends Controller
 				return redirect('configuration/quantitytype')->with("errorid"," Data not found");
 			
 			$search = isset($datadecode['search']) ? $datadecode['search'] : '';
-			
-			if($checkquantitytype['picture_path'] != ''){
-				# remove image after delete
-				Storage::delete('public/' . $checkquantitytype['picture_path']);
-			}
 			
 			if($quantitytypedata->where('id', $selectid)->delete()){
 				if($search != '')

@@ -85,7 +85,7 @@ select{cursor:pointer;}
 							<thead>
 								<tr>
 									<th ></th>
-									<th >Id</th>
+									<th class="text-center">Id</th>
 									<th class="col-md-3">Product Category</th>
 									<th class="col-md-4">Remarks</th>
 									<th class="col-md-2">Status</th>
@@ -103,9 +103,9 @@ select{cursor:pointer;}
 										$base64data = trim(base64_encode(serialize($rowarr)), "=.");
 									?>
 									<tr>
-										<td>{{ $key + $categoryArr->firstItem() }}</td>
-										<td>{{ $row->id }}</td>
-										<td>{{ $row->category }}</td>
+										<td class="text-center">{{ $key + $categoryArr->firstItem() }}</td>
+										<td class="text-center">{{ $row->id }}</td>
+										<td >{{ $row->category }}</td>
 										<td>{{ $row->remarks }}</td>										
 										<td>{{ isset($status[$row->status]) ? $status[$row->status] : 'Active' }}</td>
 										<td>{{ !in_array($row->created_at, array('0000-00-00','','null')) ? date('d/m/Y, h:i A', strtotime($row->created_at)) : '' }}</td>
@@ -141,7 +141,7 @@ select{cursor:pointer;}
 	<!-- END RESPONSIVE TABLES -->
 	
 	<!-- Modal -->
-	<div class="modal fade" id="adjusmentModal" role="dialog">
+	<div class="modal fade" id="categoryModal" role="dialog">
 		<div class="modal-dialog">
 			<!-- Modal content-->
 			<div class="modal-content">
@@ -241,25 +241,25 @@ $(function() {
 	
 	$('body').on('click', '.addnewcategory', function(){
 		// set new 
-		$('#adjusmentModal').find('.base64').val('');
-		$('#adjusmentModal').find('.category').val('');
-		$('#adjusmentModal').find('.remarks').val('');
-		$('#adjusmentModal').find('.operator').val('');
-		$('#adjusmentModal').find('.status').val('1');
-		$('#adjusmentModal').find('.submit-button').html('Submit');
+		$('#categoryModal').find('.base64').val('');
+		$('#categoryModal').find('.category').val('');
+		$('#categoryModal').find('.remarks').val('');
+		$('#categoryModal').find('.operator').val('');
+		$('#categoryModal').find('.status').val('1');
+		$('#categoryModal').find('.submit-button').html('Submit');
 		
-		$('#adjusmentModal').modal('show');
+		$('#categoryModal').modal('show');
 	});
 	
 	$('body').on('click', '.editcategory', function(){
-		$('#adjusmentModal').find('.base64').val($(this).data('base64'));
-		$('#adjusmentModal').find('.category').val($(this).data('category'));
-		$('#adjusmentModal').find('.operator').val($(this).data('operator'));
-		$('#adjusmentModal').find('.remarks').val($(this).data('remarks'));
-		$('#adjusmentModal').find('.status').val($(this).data('status'));
-		$('#adjusmentModal').find('.submit-button').html('Save');
+		$('#categoryModal').find('.base64').val($(this).data('base64'));
+		$('#categoryModal').find('.category').val($(this).data('category'));
+		$('#categoryModal').find('.operator').val($(this).data('operator'));
+		$('#categoryModal').find('.remarks').val($(this).data('remarks'));
+		$('#categoryModal').find('.status').val($(this).data('status'));
+		$('#categoryModal').find('.submit-button').html('Save');
 		
-		$('#adjusmentModal').modal('show');
+		$('#categoryModal').modal('show');
 	});
 });
 </script>

@@ -262,7 +262,6 @@ if(isset($id) && $id > 0){
 										<th class="col-md-4"> Description </th>
 										<th class="col-md-6"> Date Range </th>
 										<th class="col-md-1"> Status </th>
-										<th ></th>
 									</tr>
 								</thead>
 								<tbody class="tbody-product">
