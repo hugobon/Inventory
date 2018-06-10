@@ -134,6 +134,20 @@ Route::get('configuration/productcategory/search/{x?}', 'Configuration\Productca
 Route::post('configuration/productcategory/form_search', 'Configuration\Productcategory@form_search');
 Route::get('configuration/productcategory/delete/{x?}', 'Configuration\Productcategory@delete');
 Route::post('configuration/productcategory/save', 'Configuration\Productcategory@save');
+// Courier
+Route::get('configuration/courier', 'Configuration\Courier@listing');
+Route::get('configuration/courier/search/{x?}', 'Configuration\Courier@search');
+Route::post('configuration/courier/form_search', 'Configuration\Courier@form_search');
+Route::get('configuration/courier/delete/{x?}', 'Configuration\Courier@delete');
+Route::post('configuration/courier/save', 'Configuration\Courier@save');
+Route::post('configuration/courier/check_existcode', 'Configuration\Courier@check_existcode');
+// Delivery Type
+Route::get('configuration/deliverytype', 'Configuration\Deliverytype@listing');
+Route::get('configuration/deliverytype/search/{x?}', 'Configuration\Deliverytype@search');
+Route::post('configuration/deliverytype/form_search', 'Configuration\Deliverytype@form_search');
+Route::get('configuration/deliverytype/delete/{x?}', 'Configuration\Deliverytype@delete');
+Route::post('configuration/deliverytype/save', 'Configuration\Deliverytype@save');
+Route::post('configuration/deliverytype/check_existcode', 'Configuration\Deliverytype@check_existcode');
 
 //=========================
 // Stock In

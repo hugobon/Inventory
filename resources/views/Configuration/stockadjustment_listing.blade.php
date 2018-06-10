@@ -111,7 +111,7 @@ select{cursor:pointer;}
 										<td>{{ !in_array($row->created_at, array('0000-00-00','','null')) ? date('d/m/Y, h:i A', strtotime($row->created_at)) : '' }}</td>
 										<td>
 											<a href="javascript:;" data-base64="{{ $base64data }}" data-adjustment="{{ $row->adjustment }}"
-												data-remarks="{{ $row->remarks }}" data-status="{{ $row->status }}" 
+												data-remarks="{{ $row->remarks }}" data-status="{{ $row->status }}" data-operator="{{ $row->operation }}"
 											title=" Edit {{ $row->adjustment }}"
 											class="btn btn-primary btn-rounded editadjustment" ><span class="fa fa-edit"></span></a>
 										</td>
@@ -210,7 +210,7 @@ select{cursor:pointer;}
 					</div>
 				</div>
 				<div class="modal-footer">
-					<bu<button type="submit" class="btn btn-primary submit-button btn-block">Save</button>
+					<button type="submit" class="btn btn-primary submit-button btn-block">Save</button>
 				</div>
 			</form>
 			</div>
