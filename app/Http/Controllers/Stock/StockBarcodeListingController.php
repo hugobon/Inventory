@@ -25,7 +25,7 @@ class StockBarcodeListingController  extends Controller
 
     public function index($product_id){
         
-        if($product_id === 'all'){
+        if($product_id === 'all' && type == 'barcode'){
             $data = product_serial_number::leftjoin('product','product.id','=','product_serial_number.product_id')
                                         ->leftjoin('stock_in','stock_in.id','product_serial_number.stock_in_id')
                                         ->select('product_serial_number.serial_number','stock_in.in_stock_date','stock_in.stock_received_number')
@@ -41,11 +41,12 @@ class StockBarcodeListingController  extends Controller
                                         ->get();
             $product_name = product_m::where('id',$product_id)->select('name')->first();
         }
+
         
         
 
         return view('Stock.stockBarcode',compact('data','product_name'));
-        // return compact('reports');
+        // return compact('data','product_name','product_id');
     }
 
 }

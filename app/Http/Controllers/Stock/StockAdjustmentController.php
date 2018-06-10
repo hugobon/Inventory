@@ -9,6 +9,8 @@ use App\inventory\stockadjustment_m;
 use App\configuration\config_stockadjustment_m;
 use App\stock_in;
 use App\product_serial_number;
+use App\product_woserialnum;
+use DB;
 
 use Auth;
 use Carbon\Carbon;
@@ -59,6 +61,15 @@ class StockAdjustmentController extends Controller
 		$stocks = $product_m->TotalProductCount()
 				->where('product.id',$product)
 				->first();
+
+				if(!$stocks){
+					$product_woserialnum = new product_woserialnum;
+					$stocks = $product_woserialnum->leftJoin('stock_in','stock_in.id','=','product_woserialnum.stock_in_id')
+                                        ->leftJoin('product','product.id','=','product_woserialnum.product_id')
+										->select(DB::raw("SUM(product_woserialnum.quantity) as stocksCount"))
+										->whereRaw('product.id ='.$product)
+										->first();
+				}
 
 		$data = array(
 			'adjustmentConfig' => $adjustmentConfig,
