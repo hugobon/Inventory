@@ -17,55 +17,19 @@ class SupplierController extends Controller
 		try{
 			
 			$supplier = supplier::get();
-			
-			$tbody = "";
 			$totalList = count($supplier);
-			if($totalList > 0){
-				foreach($supplier as $k => $v){
-					$tbody.= "<tr>";
-					$tbody.= "<td>".$v['supplier_code']."</td>";
-					$tbody.= "<td>".$v['company_name']."</td>";
-					$tbody.= "<td>".$v['tel']."</td>";
-					$tbody.= "<td>".$v['fax']."</td>";
-					$tbody.= "<td>".$v['attn_no']."</td>";
-					$tbody.= "<td>".$v['email']."</td>";
-					$tbody.= "<td>
-								<a href=".url('supplier/supplierDetail/view/'.$v['id'])." title=' View ".$v['id']." (".$v['company_name'].")' 
-								class='btn btn-info btn-rounded'><span class='fa fa-eye'></span></a>
-								<a href=".url('supplier/supplierDetail/form/'.$v['id'])." 
-								title=' Edit ".$v['supplier_code']." (".$v['company_name'].")'
-								class='btn btn-primary btn-rounded' ><span class='fa fa-edit'></span></a>
-								<a href=".url('#')." 
-								title=' Remove ".$v['supplier_code']." (".$v['company_name'].")'
-								class='btn btn-danger btn-rounded confirm-delete' ><span class='glyphicon glyphicon-trash'></span></a>
-							 </td>";
-					/*$tbody.= "<td>
-								<a href=".url('product/edit/'.$v['comp_code'])." 
-								title=' Edit ".$v['comp_code']." (".$v['comp_name'].")'
-								class='btn btn-primary btn-rounded' ><span class='fa fa-edit'></span></a>
-							 </td>";
-					$tbody.= "<td>
-								<a href=".url('product/edit/'.$v['comp_code'])." 
-								title=' Remove ".$v['comp_code']." (".$v['comp_name'].")'
-								class='btn btn-danger btn-rounded confirm-delete' ><span class='glyphicon glyphicon-trash'></span></a>
-							 </td>";*/
-					$tbody.= "</tr>";
-				}
-			}
-			else{
-				$tbody = "<tr><td colspan='7' align='center'>No Data Found</td></tr>";
-			}
+			
 			
 			$outputData = [
 				'totalList' => $totalList,
-				'tbody'		=> $tbody
+				'supplier' => $supplier
 			];
 			
 		}catch(\Exception $e){
 			return 'Error: '.$e->getMessage();
 		}		
 		
-    	return view('Supplier.supplierDetail_listing', compact('outputData'));
+		return view('Supplier.supplierDetail_listing', compact('outputData'));
     }
 	
 	public function supplierDetail_form_page($id = null){
