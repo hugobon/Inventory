@@ -33,9 +33,9 @@
                                     <tbody>
                                     @if(count($dataToReturn) > 0)
                                         @foreach($dataToReturn as $stockIn)
-                                        <tr class='click' data-href='{{$stockIn->stock_received_number}}'>
+                                        <tr class='click' data-href='{{ url('stock/in/detail/') }}/{{$stockIn->stock_received_number}}'>
                                             <td  data-order="{{ Carbon\Carbon::parse($stockIn->in_stock_date)}}">{{ Carbon\Carbon::parse($stockIn->in_stock_date)->format('d/m/Y') }}</td>
-                                            <td> <a href="#"> {{$stockIn->stock_received_number}} </a> </td>
+                                            <td> <a href="{{ url('stock/in/detail/') }}"> {{$stockIn->stock_received_number}} </a> </td>
                                             <td>{{$stockIn->description}}</td>
                                             <td>{{$stockIn->amount}}</td>
                                         </tr>

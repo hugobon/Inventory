@@ -164,6 +164,7 @@ Route::post('configuration/deliverytype/check_existcode', 'Configuration\Deliver
  Route::get('stock/in/create', function(){
 	return view('Stock.stockInNew');
  });
+ Route::get('stock/in/detail/{x?}', 'Stock\StockInDetailController@index');
 
 
  
@@ -192,6 +193,7 @@ Route::post('stock/report/balance', 'Stock\StockReportController@index');
 Route::get('stock/report/receive', 'Stock\StockInReportController@index');
 Route::get('stock/report/sales', 'Stock\StockSalesReportController@index');
 Route::get('stock/barcode/{x?}', 'Stock\StockBarcodeListingController@index');
+
 
 
 
