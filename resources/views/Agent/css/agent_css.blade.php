@@ -88,7 +88,7 @@
 	.price-text-color{
 
 	    color: #219FD1;
-	    font-size: 14px;
+	    font-size: 12px;
 	    font-style: normal;
 	}
 
@@ -247,6 +247,12 @@
 
 .address-content{
 
+	height: 400px;
+	overflow: auto;
+}
+
+.package-content{
+
 	height: 300px;
 	overflow: auto;
 }
@@ -376,6 +382,45 @@ div.section > div > input {margin:0;padding-left:5px;font-size:10px;padding-righ
     }            
     .section{width:104%;}
     .menu-items{padding-left:0;}
+}
+
+
+/*for promotion purpose*/
+
+.shape{    
+    border-style: solid; 
+    border-width: 0 90px 90px 0; 
+    float:right; height: 0px; 
+    width: 0px;
+    -webkit-transform: rotate(360deg);  
+    -moz-transform: rotate(360deg);  
+    -o-transform: rotate(360deg);  
+    transform: rotate(360deg);
+    position: absolute;
+    margin-left: 140px;
+    text-align: center;
+}
+.shape-text{
+    color:#fff; font-size:12px; 
+    font-weight:bold; 
+    position:relative; 
+    right:-35px; 
+    top:-1px; 
+    white-space: nowrap;
+	-ms-transform:rotate(30deg); /* IE 9 */
+	-o-transform: rotate(360deg);  /* Opera 10.5 */
+	-webkit-transform:rotate(46deg); /* Safari and Chrome */
+	transform:rotate(46deg);
+	font-size: 14px;
+}
+.shape {
+	border-color: rgba(255,255,255,0) #d9534f rgba(255,255,255,0) rgba(255,255,255,0);
+}
+.offer-info {	
+	border-color: #5bc0de;
+}
+.offer-info .shape{
+	border-color: transparent #5bc0de transparent transparent;
 }
 
 </style>

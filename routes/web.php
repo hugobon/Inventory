@@ -45,6 +45,8 @@ Route::post('agent/procced_to_payment', 'Agent\AgentController@fn_proceed_to_pay
 Route::get('agent/get_delivery_status/{order_no?}', 'Agent\AgentController@fn_get_delivery_status');
 Route::get('agent/get_address','Agent\AgentController@fn_get_address');
 Route::get('agent/get_order_list/{agent_id?}', 'Agent\AgentController@fn_get_order_list');
+Route::get('agent/get_product_package', 'Agent\AgentController@fn_get_product_package');
+
 
 //=========================
 // Supplier :: Zul

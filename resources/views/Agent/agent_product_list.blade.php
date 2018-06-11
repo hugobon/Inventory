@@ -1,6 +1,7 @@
 @extends('header')
 @include('Agent.js.agent_control')
 @include('Agent.css.agent_css')
+@include('Agent.modal_dialog_package_list')
 @section('title','Product Listing')
 @section('content')
 
@@ -50,7 +51,12 @@
 							<div class='row'>
 								@foreach($product as $key => $value)
 								<div class="col-md-3" style="width: 250px; min-width:260px;">
-									<div class="panel panel-default item-content">
+									<div class="panel panel-default item-content offer-info">
+										<div class="shape" {{ $value['type'] == 'Product' ? "hidden":"" }}>
+											<div class="shape-text">
+												Promotion								
+											</div>
+										</div>
 								        <div class="panel-heading">
 								            <div class="media clearfix" style="height: 20px; word-wrap: break-word;">
 								                <h3 class="font-bold" style="font-size: 15px;">{{ $value['name'] }}</h3>
@@ -72,11 +78,11 @@
 								       		</table> -->
 										</div>		
 								        <div class="panel-footer">
-								        	<div class="col-md-12">
+								        	<div class="col-md-12" style="">
 								        		<div class="row">
-													<div class="col-md-12">
+													<div class="col-md-7" style="">
 														<div class="info">
-											                <table style="margin-top: 20px;">
+											                <table style="margin-top: 20px; margin-left:-5px;">
 												       			<tr>
 												       				<td><h4 class="font-bold price-text-color">WM </h4></td>
 												    				<td><h4 class="font-bold price-text-color">: RM{{ $value['wm_aftergst'] }}</h4></td>
@@ -88,11 +94,19 @@
 												       		</table>
 												       	</div>
 											       	</div>
+											       	<div class="col-md-5">
+											       		<div style="margin-top: 20px;">
+											       			<span {{ $value['type'] == 'Package' ? "":"hidden" }}>
+												       			<button class="btn btn-secondary pack-list" type="button" style="font-size: 10px;">Package
+												       			</button>
+												       		</span>
+											       		</div>
+											       	</div>
 											    </div>
-								                <form action="javascript:;" class="save-item">
+								                <form action="javascript:;" class="save-item" style="">
 													<input type="hidden" name="id" id="id" value="{{ $value['id'] }}">
 													<div class="row item-row">
-														<div class="col-md-8 info" style="margin: 5px;">
+														<div class="col-md-8 info" style="margin: 5px; margin-top: -1em">
 															<div class="form-group info-detail">
 												                <label class="control-label">Quantity</label>
 												                <div class="input-group col-md-12 qty">
@@ -125,9 +139,6 @@
 		</div>
 	</div>
 </div>
-
-<button type="button" class="btn btn-default mb-control" data-box="#message-box-default">Default</button>
-
 
 <div class="message-box animated fadeIn open promo-advs" id="message-box-default" hidden>
     <div class="mb-container">
@@ -207,6 +218,62 @@
 		var product_id = $(this).closest('.item-content').find('input#id').val();
 		console.log(product_id)
 		window.location.href = "{{ url('agent/get_product_details') }}"+"/"+product_id;
+	});
+
+	$(document).on('click','button.pack-list', function(){
+
+		var product_id = $(this).closest('.item-content').find('input#id').val();
+		console.log(product_id)
+		// window.location.href = "{{ url('agent/get_product_package') }}"+"/"+product_id;
+		var data = {
+
+			_token : "{!! csrf_token() !!}",
+			product_id : product_id
+		};
+
+		$.ajax({
+
+			url 	: "/agent/get_product_package",
+			type 	: "GET",
+			data 	: data,
+			dataType: "json",
+			contentType: "application/json",
+
+		}).done(function(respone){
+
+			if(respone.return.status == "01"){
+
+				var package1 = respone.package;
+				var tag = "";	
+				console.log(package1);
+
+				Object.keys(package1).forEach(function(el){
+					console.log("el",el);
+					var urlimg = "{!!asset('')!!}";
+					var img = package1[el].image;
+
+					tag += "<table class='col-md-12'>";
+					tag += "<tr>";
+					tag += "<td style='width:150px;'>";
+					tag += "<img class='media-object' src='"+urlimg+img+"' style='height: 150px;'>";
+					tag += "</td>";
+					tag += "<td style='' valign='top'>";
+					tag += "<h4 style='margin-left:5px;'>"+package1[el].name+"</h4>";
+					tag += "</td>";
+					tag += "</tr>";
+					tag += "</table>";
+				})
+
+				console.log(tag)
+				$('div.package-list').html(tag);
+			}
+			setTimeout(function(){
+	            $("#PackageList").modal();
+	        },500);
+
+		}).fail(function(respone){
+
+		});
 	});
 	
 	// var itemCount = 0;
