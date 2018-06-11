@@ -42,8 +42,18 @@ textarea {
                 <h2>Stock Summary</h2>
                 <form name="filter" class="navbar-form navbar-left" method="POST" action="{{url('stock/report/balance')}}" >
                     {{ csrf_field() }}
+                    {{-- <input type="text" class="form-control datepromotion" name="daterange" 
+					value="{{ isset($start) && isset($end) ? date('d/m/Y h:i A', strtotime($start)) . ' - '. date('d/m/Y h:i A', strtotime($end)) : '' }}"/> --}}
+                    
                     <select name="year" id="year" size="1" class="form-control" >
-                        <option value="2018" selected >2018</option>
+                        @php
+                        $firstYear = (int)date('Y') - 5;
+                        $lastYear = (int)date('Y') + 5;
+                        @endphp
+
+                        @for($i=$firstYear;$i<=$lastYear;$i++)
+                        <option value="{{$i}}" @if(date('Y') == $i ) selected @endif> {{$i}} </option>
+                        @endfor
                     </select>
                     <select name="month" id="month" size="1" class="form-control" >
                         <option value="01" >January</option>
@@ -59,41 +69,9 @@ textarea {
                         <option value="11"  >November</option>
                         <option value="12"  >December</option>
                     </select>
-                    <button type="submit" class="btn btn-success">Apply Filter</button>
-                    <!--button id="resetSort" type="button" class="btn btn-info">Default Sort</button>
-                    <input type="button" class="btn btn-default" value="Select All"
-                       onclick="selectElementContents( document.getElementById('table') );"-->
-                    
-                    
-                    </form>
-                </div>
-</div>
- <div class="row">
-  <div class="col-md-12">
-              {{--  <div class="table-responsive">
-                <table class="table table-bordered datatable">
-                    <thead>
-                        <tr>
-                           <td>Doc Date</td>                            
-                           <td>Doc No</td>
-                           <td>Description</td>
-                           <td>Amount</td>
-                        </tr>
-                    </thead>
-                        <tbody>
-                           
-                        </tbody>
 
-                </table>
-            </div>    --}}
-            <div>
-                <div class="table-responsive">
-                <table class="table table-hover text-center table-bordered  table-condensed  datatable">
-                    <thead>
-                        <tr>
-                            <td>Product Name</td>
-                            @php  
-
+                    <select name="sday" id="sday" size="1" class="form-control" >
+                        @php
                                 $startdate = date('Y-m-01');
                                 $enddate = date("Y-m-t");
                                 $start = strtotime($startdate);
@@ -103,31 +81,80 @@ textarea {
                                 while($currentdate <= $end)
                                 {
                                         $cur_date = date('d', $currentdate);                                
-                                        echo "<td>".$cur_date . "</td>";
+                                        echo '<option value="'.$cur_date.'">'.$cur_date.'</option>';
+                                        $currentdate = strtotime('+1 day', $currentdate);
+                                }
+                        @endphp             
+
+                    </select>
+                     - 
+                    <select name="eday" id="eday" size="1" class="form-control" >
+                        @php
+                                $startdate = date('Y-m-01');
+                                $enddate = date("Y-m-t");
+                                $start = strtotime($startdate);
+                                $end = strtotime($enddate);
+                                
+                                $currentdate = $start;
+                                while($currentdate <= $end)
+                                {
+                                        $cur_date = date('d', $currentdate);                                
+                                        echo '<option value="'.$cur_date.'">'.$cur_date.'</option>';
+                                        $currentdate = strtotime('+1 day', $currentdate);
+                                }
+                        @endphp                       
+
+                    </select>
+                    <button type="submit" class="btn btn-success">Apply Filter</button>                    
+                    
+                    </form>
+                </div>
+</div>
+ <div class="row">
+  <div class="col-md-12">
+        <div class="panel panel-default">
+                <div class="panel-body panel-body-table">
+                <div class="table-responsive">
+                <table class="table table-hover table-bordered text-center datatable"  style="/*height: 80vh*/">
+                    <thead>
+                        <tr>
+                            <td>Product Name</td>
+                            @php  
+
+                                $startdate = $sdate;
+                                $enddate = $edate;
+                                $start = strtotime($startdate);
+                                $end = strtotime($enddate);
+                                
+                                $currentdate = $start;
+                                while($currentdate <= $end)
+                                {
+                                        $cur_date = date('d', $currentdate);                                
+                                        echo "<td width='50px'>".$cur_date . "</td>";
                                         $currentdate = strtotime('+1 day', $currentdate);
                                 }
                                 
                                 @endphp
-                           <td class="bg-primary">Stock In Month</td>
+                           <td class="bg-primary">Stocks Available</td>
                            <td class="bg-success">Total Adjustment In Month (-)</td>
                            <td class="bg-danger">Total Adjustment In Month (+)</td>
-                           <td class="bg-warning">Stock Balance In Month</td>
+                           <td class="bg-warning">Stock Balance</td>
                         </tr>
                     </thead>
                         <tbody>
                             @foreach($reports as $report)
                             <tr>
                                 <td>{{$report->name}}</td>
-                                @foreach($report->stockAdjustmentValue as $stockAdjust)
-                                <td><span class="text-success">{{$stockAdjust['day_add']}}</span><br><span class="text-danger">{{$stockAdjust['day_minus']}}<span></td>
+                                @foreach($report->stock_adjustment_value as $stockAdjust)
+                            <td><span class="text-success">{{ $stockAdjust['day_add']!="0" ? $stockAdjust['day_add'] : "" }}</span><br><span data-toggle="tooltip" title="{{$stockAdjust['adjustment_tooltip']}}" data-html="true" class="text-danger">{{ $stockAdjust['day_minus'] !="0" ? $stockAdjust['day_minus'] : "" }}<span></td>
                                 @endforeach
-                            <td >{{$report->stockInMonth}}</td>
-                            <td  >{{$report->totalAdjustmentminus}}</td>
-                            <td >{{$report->totalAdjustmentadd}}</td>
-                            <td >{{$report->stockBalance}}</td>
+                            <td >{{$report->stock_in_month}}</td>
+                            <td  >{{$report->total_adjustment_minus}}</td>
+                            <td >{{$report->total_adjustment_add}}</td>
+                            <td >{{$report->stock_balance}}</td>
                             </tr>
                             @endforeach
-                        </tbody>
+                        {{-- </tbody>
                         <tfoot>
                             <tr>
                                 <td>Product Name</td>
@@ -152,7 +179,7 @@ textarea {
                                <td class="bg-danger">Total Adjustment In Month (+)</td>
                                <td class="bg-warning">Stock Balance In Month</td>
                                 </tr>
-                        </tfoot>
+                        </tfoot> --}}
 
 
                 </table>
@@ -171,14 +198,25 @@ textarea {
 <script src="https://cdn.datatables.net/responsive/2.1.1/js/dataTables.responsive.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.1.1/js/responsive.bootstrap.min.js"></script>
 <script src="https://cdn.datatables.net/fixedcolumns/3.2.2/js/dataTables.fixedColumns.min.js"></script>
-
+<script type="text/javascript" src="{!! asset('joli/js/daterangepicker/moment.min.js') !!}" ></script> 
+<script type="text/javascript" src="{!! asset('joli/js/daterangepicker/daterangepicker.js') !!}" ></script>
 <script>
         $(document).ready(function() {
+            $('input[name="daterange"]').daterangepicker({
+                timePicker: true,
+                timePickerIncrement: 1,
+                locale: {
+                    format: 'DD/MM/YYYY h:mm A'
+                }
+            });
             var staff =0;
-            $('select[name="month"]').first().val("{{$date}}");
+            $('select[name="month"]').first().val("{{ $month }}");
+            $('select[name="sday"]').first().val("{{ $sday }}");
+            $('select[name="eday"]').first().val("{{ $eday }}");
      
             
             var t = $('.datatable').DataTable({
+                /*
               "footerCallback": function ( row, data, start, end, display ) {
                 var api = this.api();
                 var colNumber = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35];
@@ -224,6 +262,7 @@ textarea {
               ); 
           }
         }
+        */
             });
 
         });

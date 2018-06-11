@@ -19,112 +19,38 @@
                         <div class="panel-heading">
                         <h3 class="panel-title">Stock In Listing as {{date('d/m/Y')}}</h3>
                         </div>
-                        <div class="panel-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    {{--  <div class="form-group">
-                                        <label class="col-md-3 control-label">Purchase Date</label>
-                                        <div class="col-md-9">
-                                            <input type="text" class="form-control" name="purchase_date">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-md-3 control-label">Delivery Type</label>
-                                        <div class="col-md-9">
-                                            <select class="form-control">
-                                                <option></option>
-                                                <option>Self Collect</option>
-                                                <option>Delivery</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-md-3 control-label">Invoice No.</label>
-                                        <div class="col-md-9">
-                                            <input type="text" class="form-control" name="inv_no">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-md-3 control-label">Agent Code</label>
-                                        <div class="col-md-9">
-                                            <input type="text" class="form-control" name="agent_code">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="col-md-3 control-label">Delivery Address</label>
-                                        <div class="col-md-9">
-                                            <input type="text" name="street1" class="form-control" placeholder="Street 1">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-md-3 control-label"></label>
-                                        <div class="col-md-9">
-                                            <input type="text" name="street2" class="form-control" placeholder="Street 2">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-md-3 control-label"></label>
-                                        <div class="col-md-4">
-                                            <input type="text" name="poscode" class="form-control" placeholder="Postal Code">
-                                        </div>
-                                        <div class="col-md-5">
-                                            <input type="text" name="city" class="form-control" placeholder="City">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-md-3 control-label"></label>
-                                        <div class="col-md-4">
-                                            <input type="text" name="state" class="form-control" placeholder="State">
-                                        </div>
-                                        <div class="col-md-5">
-                                            <input type="text" name="country" class="form-control" placeholder="Country">
-                                        </div>
-                                    </div>  --}}
-                                   <!--  <div class="form-group">
-                                        <label class="col-md-3 control-label">Courier Service</label>
-                                        <div class="col-md-9">
-                                            <input type="text" class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-md-3 control-label">Tracking No</label>
-                                        <div class="col-md-9">
-                                            <input type="text" class="form-control">
-                                        </div>
-                                    </div> -->
-                                </div>
-                            </div>
-                        </div>
-                        <div class="panel-body">
+                        <div class="panel-body panel-body-table">
                             <div class="table-responsive">
-                                <table class="table table-bordered">
+                                <table class="table table-hover table-striped datatable">
                                     <thead>
                                         <tr>
                                             <th>Stock In Date</th>
                                             <th>Stock Received No</th>
                                             <th>Description</th>
                                             <th>Amount</th>
-                                            <th></th>
-                                        <tr>
+                                        </tr>
                                     </thead>
                                     <tbody>
+                                    @if(count($dataToReturn) > 0)
                                         @foreach($dataToReturn as $stockIn)
-                                        <tr>
-                                        <td>{{$stockIn->in_stock_date}}</td>
-                                        <td>{{$stockIn->stock_received_number}}</td>
-                                        <td>{{$stockIn->description}}</td>
-                                        <td></td>
+                                        <tr class='click' data-href='{{$stockIn->stock_received_number}}'>
+                                            <td  data-order="{{ Carbon\Carbon::parse($stockIn->in_stock_date)}}">{{ Carbon\Carbon::parse($stockIn->in_stock_date)->format('d/m/Y') }}</td>
+                                            <td> <a href="#"> {{$stockIn->stock_received_number}} </a> </td>
+                                            <td>{{$stockIn->description}}</td>
+                                            <td>{{$stockIn->amount}}</td>
                                         </tr>
                                         @endforeach
+                                        @else
+                                        <tr>
+                                            <td colspan="9" class="text-center"> No Data Found <br />
+                                        </tr>
+                                        @endif
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                         <div class="panel-footer">
-                            <button type="button" class="btn btn-default" onclick="fn_clear()">Clear Form</button>
-                            <button class="btn btn-primary pull-right">Save</button>
+                            <a href="{{ url('stock/barcode/all') }}" class="btn btn-primary pull-right">Show All Barcode</a>
                         </div>
                     </div>
                 </form>
@@ -137,6 +63,19 @@
     $(function() {
         $('input[name="purchase_date"]').daterangepicker();
         
+    });
+
+    $(document).ready(function($) {
+        var t = $('.datatable').DataTable({
+                    "order": [],
+                    "columnDefs": [
+                                { targets: 'no-sort', orderable: false }
+                                ]
+                });
+
+    $(".click").click(function() {
+            window.location = $(this).data("href");
+        });
     });
     
     function fn_clear(){

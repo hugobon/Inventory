@@ -5,9 +5,13 @@ namespace App\Http\Controllers\Configuration;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\configuration\config_productcategory_m;
-
+use Auth;
 class Productcategory extends Controller
 {
+	public function __construct(){
+        $this->middleware('auth');
+    }
+	
 	public function index(){
         return redirect('configuration/productcategory');
     }
@@ -78,17 +82,17 @@ class Productcategory extends Controller
     public function save(Request $postdata){
 		$productcategorydata = New config_productcategory_m;
 		$data = array(
-			'category' => trim($postdata->input("category")),
-			'remarks' => $postdata->input("remarks"),
-			'status' => $postdata->input("status"),
-			'updated_by' => 1,
+			'category' => strtoupper(trim($postdata->input("category"))),
+			'remarks' => $postdata->input("remarks") != null ? $postdata->input("remarks") : '',
+			'status' => $postdata->input("status") != null ? $postdata->input("status") : '1',
+			'updated_by' => Auth::user()->id,
 			'updated_at' => date('Y-m-d H:i:s'),
 		);
 			
 		$base64 = $postdata->input("base64");
 		if($base64 == '' || @unserialize(base64_decode($base64)) == false){
 			#insert new Product Category
-			$data['created_by'] = 1;
+			$data['created_by'] = Auth::user()->id;
 			$data['created_at'] = date('Y-m-d H:i:s');
 			$productcategorydata->insert($data);
 			
@@ -119,12 +123,6 @@ class Productcategory extends Controller
 				return redirect('configuration/productcategory')->with("errorid"," Data not found");
 			
 			$search = isset($datadecode['search']) ? $datadecode['search'] : '';
-			
-			if($checkproductcategory['picture_path'] != ''){
-				# remove image after delete
-				Storage::delete('public/' . $checkproductcategory['picture_path']);
-			}
-			
 			if($productcategorydata->where('id', $selectid)->delete()){
 				if($search != '')
 					return redirect('configuration/productcategory/search/' . $search)->with("info","Product Category " . $checkproductcategory['category'] . " Deleted Successfully!!");

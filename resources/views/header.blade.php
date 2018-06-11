@@ -70,15 +70,18 @@
                                 <a href="javascript:;"><span class="glyphicon glyphicon-shopping-cart"></span> Stock </a>
                                 <ul>
                                 <li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("stock/listing")) ? "active" : "" ; ?>">
-                                            <a href="{{ url('stock/listing') }}"><span class="glyphicon glyphicon-list-alt"></span> Current Stock </a>
+                                            <a href="{{ url('stock/listing') }}"><span class="glyphicon glyphicon-list"></span> Current Stock </a>
                                 </li>
 
                                 <li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("stock/report/receive")) ? "active" : "" ; ?>">
-                                    <a href="{{ url('stock/report/receive') }}"><span class="glyphicon glyphicon-list-alt"></span> Stock Received Listing </a>
+                                    <a href="{{ url('stock/report/receive') }}"><span class="glyphicon glyphicon-list"></span> Stock In Listing </a>
                                 </li>
-                                <li><a href="{{ url('stock/report/balance') }}"><span class="fa fa-search"></span> Stock Balance Report </a></li>
+                                <li><a href="{{ url('stock/report/balance') }}"><span class="fa fa-list-alt"></span> Stock Balance Report </a></li>
+                                <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("stock/report/sales")) ? "active" : "" ; ?>">
+								    <a href="{{ url('stock/report/sales') }}"><span class="fa fa-list-alt"></span>Stock Sales Report</a>
+							    </li>
                                 <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("stock/in")) ? "active" : "" ; ?>">
-								    <a href="{{ url('stock/in/new') }}"><span class="fa fa-plus"></span>Stock Received</a>
+								    <a href="{{ url('stock/in/new') }}"><span class="fa fa-plus"></span>Stock In</a>
 							    </li>
 								<li class="<?php echo in_array(Request::segment(1) . '/' . Request::segment(2), array("stock/adjustment")) ? "active" : "" ; ?>">
 										<a href="{{ url('stock/adjustment/') }}"><span class="fa fa-plus"></span> Stock Adjustment </a>
@@ -146,10 +149,15 @@
 								<a href="{{ url('configuration/stockadjustment') }}"><span class="fa fa-gear"></span> Stock Adjustment </a>
 							</li>
                         </ul>
-                        <ul >
-                            <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("configuration/stockadjustment")) ? "active" : "" ; ?>">
-                                <a href="{{ url('configuration/stockadjustment') }}"><span class="fa fa-gear"></span> Create Number Range </a>
-                            </li>
+						<ul >
+                            <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("configuration/courier")) ? "active" : "" ; ?>">
+								<a href="{{ url('configuration/courier') }}"><span class="fa fa-gear"></span> Courier </a>
+							</li>
+                        </ul>
+						<ul >
+                            <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("configuration/deliverytype")) ? "active" : "" ; ?>">
+								<a href="{{ url('configuration/deliverytype') }}"><span class="fa fa-gear"></span> Delivery Type </a>
+							</li>
                         </ul>
                     </li>
                 </ul>

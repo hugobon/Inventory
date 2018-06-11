@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Configuration;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\configuration\config_stockadjustment_m;
-
+use Auth;
 class Stockadjustment extends Controller
 {
+	public function __construct(){
+        $this->middleware('auth');
+    }
 	public function index(){
         return redirect('configuration/stockadjustment');
     }
@@ -92,17 +95,17 @@ class Stockadjustment extends Controller
 		$stockadjustmentdata = New config_stockadjustment_m;
 		$data = array(
 			'adjustment' => $postdata->input("adjustment"),
-			'remarks' => $postdata->input("remarks"),
-			'operation' => $postdata->input("operator"),
-			'status' => $postdata->input("status"),
-			'updated_by' => 1,
+			'remarks' => $postdata->input("remarks") != null ? $postdata->input("remarks") : '',
+			'operation' => $postdata->input("operator") != null ? $postdata->input("operator") : '',
+			'status' => $postdata->input("status") != null ? $postdata->input("status") : '1',
+			'updated_by' => Auth::user()->id,
 			'updated_at' => date('Y-m-d H:i:s'),
 		);
 			
 		$base64 = $postdata->input("base64");
 		if($base64 == '' || @unserialize(base64_decode($base64)) == false){
 			#insert new stock stockadjustment
-			$data['created_by'] = 1;
+			$data['created_by'] = Auth::user()->id;
 			$data['created_at'] = date('Y-m-d H:i:s');
 			$stockadjustmentdata->insert($data);
 			

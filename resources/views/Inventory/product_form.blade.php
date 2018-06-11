@@ -315,7 +315,7 @@ select, .checkbox-label{cursor:pointer;}
 										<div class="col-md-6">
 											<div class="input-group ">
 												<span class="input-group-addon"><i class="glyphicon glyphicon-bookmark"></i></span>
-												<div class="form-control mask_number text-right" >{{ isset($quantity) ? $quantity : '0' }}</div>		
+												<div class="form-control mask_number text-right" >{{ isset($inventorytotal) ? $inventorytotal : '0' }}</div>		
 											</div>
 										</div>
 									</div>
@@ -453,7 +453,7 @@ $(function() {
 	else
 		$('.price-required').show();
 			
-	$( ".checkbox-label" ).click(function() {
+	$( ".checkbox-label").click(function() {
 		if($(this).find('.product-notforsale').is(':checked'))
 			$('.price-required').show();
 		else{

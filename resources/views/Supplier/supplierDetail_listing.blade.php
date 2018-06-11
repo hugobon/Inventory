@@ -48,7 +48,7 @@
 					<div class="panel-body">
 						Company List: {!! $outputData['totalList'] !!}
 						<div class="table-responsive">
-							<table class="table table-bordered">
+							<table class="table table-hover table-striped">
 								<thead>
 									<tr>
 										<th>Supplier Code</th>
@@ -61,7 +61,33 @@
 									<tr>
 								</thead>
 								<tbody>
-									{!! $outputData['tbody'] !!}
+										@if(count($outputData['supplier']) > 0)
+											@foreach($outputData['supplier'] as $k => $v)
+												<tr>
+													<td>{{ $v['supplier_code'] }}</td>
+													<td>{{ $v['company_name'] }}</td>
+													<td>{{ $v['tel'] }}</td>
+													<td>{{ $v['fax'] }}</td>
+													<td>{{ $v['attn_no'] }}</td>
+													<td>{{ $v['email'] }}</td>
+													<td><a href="{{ url('supplier/supplierDetail/view/'.$v['id']) }}" 
+														title=" View {{ $v['id'].' ('.$v['company_name'].')' }}"
+														class=""><span class="fa fa-eye"></span></a>
+													</td>
+													<td><a href="{{ url('product/edit/'.$v['comp_code']) }}" 
+															title=' Edit ".$v['comp_code']." (".$v['comp_name'].")'
+															class='' ><span class='fa fa-edit'></span></a>
+													</td>
+													<td><a href="{{ url('product/edit/'.$v['comp_code']) }}" 
+															title=' Remove ".$v['comp_code']." (".$v['comp_name'].")'
+															class='confirm-delete' ><span class='glyphicon glyphicon-trash'></span></a>
+													</td>
+												</tr>
+												@endforeach
+											@else
+												<tr><td colspan='7' align='center'>No Data Found</td>
+												</tr>
+												@endif
 								</tbody>
 							</table>
 						</div>

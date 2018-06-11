@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AlterProductWoserialnum extends Migration
+class AlterStockAdjustmentRemoveNotnullRemarks extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class AlterProductWoserialnum extends Migration
      */
     public function up()
     {
-        Schema::table('product_woserialnum', function (Blueprint $table) {
+        Schema::table('stockadjustment', function (Blueprint $table) {
             //
-            $table->integer('quantity_reduced')->nullable()->after('quantity');
+            $table->string('remarks',5)->nullable()->change();
         });
     }
 
@@ -26,7 +26,7 @@ class AlterProductWoserialnum extends Migration
      */
     public function down()
     {
-        Schema::table('product_woserialnum', function (Blueprint $table) {
+        Schema::table('stockadjustment', function (Blueprint $table) {
             //
         });
     }

@@ -9,6 +9,8 @@ use App\inventory\stockadjustment_m;
 use App\configuration\config_stockadjustment_m;
 use App\stock_in;
 use App\product_serial_number;
+use App\product_woserialnum;
+use DB;
 
 use Auth;
 use Carbon\Carbon;
@@ -60,6 +62,15 @@ class StockAdjustmentController extends Controller
 				->where('product.id',$product)
 				->first();
 
+				if(!$stocks){
+					$product_woserialnum = new product_woserialnum;
+					$stocks = $product_woserialnum->leftJoin('stock_in','stock_in.id','=','product_woserialnum.stock_in_id')
+                                        ->leftJoin('product','product.id','=','product_woserialnum.product_id')
+										->select(DB::raw("SUM(product_woserialnum.quantity) as stocksCount"))
+										->whereRaw('product.id ='.$product)
+										->first();
+				}
+
 		$data = array(
 			'adjustmentConfig' => $adjustmentConfig,
 			'stocks' => $stocks
@@ -106,9 +117,11 @@ class StockAdjustmentController extends Controller
 		// }
 		$serialNumberIdBucket = $postdata->input('serial_number_scan_json');   
 		$serialNumberIdArray = json_decode($serialNumberIdBucket);
-				foreach($serialNumberIdArray as $stockQty){
-			$product_serial_number->where('id',$stockQty)->update(['status'=>'03','updated_by'=>Auth::user()->id,'updated_at'	=> Carbon::now()]);
-		}
+		if(is_array($serialNumberIdArray)){
+			foreach($serialNumberIdArray as $stockQty){
+				$product_serial_number->where('id',$stockQty)->update(['status'=>'03','updated_by'=>Auth::user()->id,'updated_at'	=> Carbon::now()]);
+			}
+		}				
 		
 		return redirect('stock/adjustment')
 		->with("message","Success Submit Product ".$checkproduct["code"]." (".$checkproduct["description"]."),

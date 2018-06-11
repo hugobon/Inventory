@@ -112,7 +112,7 @@ if(isset($outputData)){
 									</div>
 								</div>
 								<div class="form-group">
-									<label class="col-md-3 control-label">Attn no</label>
+									<label class="col-md-3 control-label">Attn To</label>
 									<div class="col-md-9">
 										<input name="attn_no" type="text" class="form-control" value="{!! isset($outputData) ? $outputData->attn_no : '' !!}">
 									</div>
@@ -121,6 +121,7 @@ if(isset($outputData)){
 									<label class="col-md-3 control-label">Email</label>
 									<div class="col-md-9">
 										<input name="email" type="email" class="form-control" value="{!! isset($outputData) ? $outputData->email : '' !!}">
+										<input name="id" type="hidden" class="form-control" value="{!! isset($outputData) ? $outputData->id : '' !!}">
 									</div>
 								</div>
 								
