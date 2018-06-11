@@ -240,6 +240,19 @@ class AgentController extends Controller
 
             $data = (new Product)->all_data_product();
 
+            foreach ($data['productArr']['Product'] as $key1 => $value) {
+                
+                $data['productArr']['Product'][$key1]['type'] = "Product";
+            }
+            foreach ($data['productArr']['Package'] as $key2 => $value) {
+                
+                $data['productArr']['Package'][$key2]['type'] = "Package";
+            }
+            foreach ($data['productArr']['Promotion'] as $key3 => $value) {
+                
+                $data['productArr']['Promotion'][$key3]['type'] = "Promotion";
+            }
+
             // echo "<pre>";
             // echo print_r($data);
             // echo "</pre>";
@@ -629,6 +642,44 @@ class AgentController extends Controller
 
         dd($return,$data);
         return view('Agent.agent_product_detail',compact('data'));
+    }
+
+    public function fn_get_product_package(Request $request){
+
+        $product_id = $request->get('product_id');
+
+        try {
+            
+            $data = (new Product)->single_data_product($product_id);
+            $package = [];
+            if(!empty($data)){
+
+                $package = $data['productArr'];
+
+                foreach ($package as $key => $value) { 
+                    
+                    $image = product_image_m::select('type','description','file_name','path')
+                                        ->where('product_id',$value['id'])
+                                        ->orderBy('status','desc')
+                                        ->first();
+
+                    $package[$key]['image'] = ($image['path'] == null ? '' : $image['path']);
+                }
+            }
+
+            // dd($data['productArr']);
+
+            $return['message'] = "succssfuly retrived";
+            $return['status'] = "01";
+        }
+        catch(\Exception $e){
+            
+            $return['message'] = $e->getMessage();
+            $return['status'] = "02";
+        }
+
+        // dd($return,$data);
+        return compact('return','package','data');
     }
 
     private function fn_calc_total_price($quantity,$price){

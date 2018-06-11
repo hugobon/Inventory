@@ -482,7 +482,7 @@
                     tag += "</diV>";
                    
                 }
-                 $('div.address-row').html(tag);
+                $('div.address-row').html(tag);
             }
 
         }).fail(function(){

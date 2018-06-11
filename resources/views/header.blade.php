@@ -146,6 +146,11 @@
 								<a href="{{ url('configuration/stockadjustment') }}"><span class="fa fa-gear"></span> Stock Adjustment </a>
 							</li>
                         </ul>
+                        <ul >
+                            <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("configuration/stockadjustment")) ? "active" : "" ; ?>">
+                                <a href="{{ url('configuration/stockadjustment') }}"><span class="fa fa-gear"></span> Create Number Range </a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
                 <!-- END X-NAVIGATION -->
