@@ -159,6 +159,11 @@
 								<a href="{{ url('configuration/deliverytype') }}"><span class="fa fa-gear"></span> Delivery Type </a>
 							</li>
                         </ul>
+                        <ul >
+                            <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("configuration/deliverytype")) ? "active" : "" ; ?>">
+                                <a href="{{ url('configuration/deliverytype') }}"><span class="fa fa-gear"></span> Number Range </a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
                 <!-- END X-NAVIGATION -->

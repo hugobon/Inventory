@@ -255,7 +255,7 @@
 					tag += "<table class='col-md-12'>";
 					tag += "<tr>";
 					tag += "<td style='width:150px;'>";
-					tag += "<img class='media-object' src='"+urlimg+img+"' style='height: 150px;'>";
+					tag += "<img class='media-object' src='"+urlimg+img+"' style='height: 150px; margin-bottom:10px;'>";
 					tag += "</td>";
 					tag += "<td style='' valign='top'>";
 					tag += "<h4 style='margin-left:5px;'>"+package1[el].name+"</h4>";
