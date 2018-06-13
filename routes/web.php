@@ -150,6 +150,8 @@ Route::post('configuration/deliverytype/form_search', 'Configuration\Deliverytyp
 Route::get('configuration/deliverytype/delete/{x?}', 'Configuration\Deliverytype@delete');
 Route::post('configuration/deliverytype/save', 'Configuration\Deliverytype@save');
 Route::post('configuration/deliverytype/check_existcode', 'Configuration\Deliverytype@check_existcode');
+//Number Range
+Route::get('configuration/numberrange', 'Configuration\NumberRange@fn_get_nr_list');
 
 //=========================
 // Stock In

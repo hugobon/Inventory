@@ -247,22 +247,36 @@
 				var tag = "";	
 				console.log(package1);
 
+				tag += "<table class='col-md-12 table-package'>";
+				tag += "<thead class='thead-package'>";
+				tag += "<tr class='tr-package'>";
+				tag += "<th colspan='2' class='th-package'>";
+				tag += "Product";
+				tag += "</th>";
+				tag += "<th class='th-package'>";
+				tag += "Quantity";
+				tag += "</th>";
+				tag += "</tr>";
+				tag += "</thead>";
+				tag += "<tbody class='tbody-package'>";
 				Object.keys(package1).forEach(function(el){
-					console.log("el",el);
+					// console.log("el",el);
 					var urlimg = "{!!asset('')!!}";
 					var img = package1[el].image;
-
-					tag += "<table class='col-md-12'>";
-					tag += "<tr>";
-					tag += "<td style='width:150px;'>";
-					tag += "<img class='media-object' src='"+urlimg+img+"' style='height: 150px;'>";
+					tag += "<tr class='tr-package'>";
+					tag += "<td style='width:150px;' class='td-package'>";
+					tag += "<img class='media-object' src='"+urlimg+img+"' style='height: 150px; margin-bottom:10px;'>";
 					tag += "</td>";
-					tag += "<td style='' valign='top'>";
+					tag += "<td style='' class='td-package'>";
 					tag += "<h4 style='margin-left:5px;'>"+package1[el].name+"</h4>";
 					tag += "</td>";
+					tag += "<td style='width:150px;' class='td-package'>";
+					tag += "<h4 style='margin-left:5px;'>"+package1[el].package_quantity+"</h4>";
+					tag += "</td>";
 					tag += "</tr>";
-					tag += "</table>";
-				})
+				});
+				tag += "</tbody>";
+				tag += "</table>";
 
 				console.log(tag)
 				$('div.package-list').html(tag);

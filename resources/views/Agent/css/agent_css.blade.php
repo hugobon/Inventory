@@ -251,11 +251,11 @@
 	overflow: auto;
 }
 
-.package-content{
+/*.package-content{
 
 	height: 300px;
 	overflow: auto;
-}
+}*/
 
 .address-field{
 
@@ -421,6 +421,63 @@ div.section > div > input {margin:0;padding-left:5px;font-size:10px;padding-righ
 }
 .offer-info .shape{
 	border-color: transparent #5bc0de transparent transparent;
+}
+
+/*package ui*/
+
+table.table-package {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 1px;
+}
+
+table.table-package thead.thead-package {
+  flex: 0 0 auto;
+  width: calc(100% - 0.9em);
+}
+
+table.table-package tbody.tbody-package {
+  flex: 1 1 auto;
+  display: block;
+  overflow-y: scroll;
+}
+
+table.table-package tbody.tbody-package tr.tr-package {
+  width: 100%;
+}
+
+table.table-package thead.thead-package,
+table.table-package tbody.tbody-package tr.tr-package {
+  display: table;
+  table-layout: fixed;
+}
+
+tbody.tbody-package td.td-package,
+thead.thead-package th.th-package {
+  border-right: 1px solid transparent;
+  vertical-align: top;
+}
+
+thead.thead-package th.th-package {
+  height: 35px;
+  font-size: 16px;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+tbody.tbody-package td.td-package {
+  text-align: left;
+  height: 30px;
+  /*background: #d5d5d5;*/
+}
+
+
+.package-list {
+  width: 100%;
+  height: 350px;
 }
 
 </style>
