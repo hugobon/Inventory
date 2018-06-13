@@ -40,7 +40,7 @@ class DeliveryOrderController extends Controller
                         })
                         ->join('delivery_type', 'delivery_type.id','=','order_hdr.delivery_type')
                         ->leftJoin('do_hdr','do_hdr.order_no','=','order_hdr.order_no')
-                        ->select('order_hdr.order_no','order_hdr.delivery_type','order_hdr.invoice_no','order_hdr.status','users.code','users.name','global_status.description','delivery_type.type_description','do_hdr.do_no')
+                        ->select('order_hdr.order_no','order_hdr.delivery_type','order_hdr.invoice_no','order_hdr.status','order_hdr.purchase_date','users.code','users.name','global_status.description','delivery_type.type_description','do_hdr.do_no')
                         ->orderBy('order_hdr.order_no', 'desc');
                         
         if(is_null($purchase_date)){
@@ -120,6 +120,7 @@ class DeliveryOrderController extends Controller
         }
 
         $outputData = [
+            'orderList'     => $order_hdr,
             'doListing'     => $doListing,
             'totalDO'       => count($order_hdr),
             'agentListing'  => $agentListing,
