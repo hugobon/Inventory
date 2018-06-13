@@ -3154,6 +3154,7 @@ blockquote.pull-right {
   padding: 0px 0px 5px;
   border-bottom: 1px solid #E5E5E5;
   font-size: 12px;
+  height: 38px;
 }
 .dataTables_length label,
 .dataTables_filter label {
@@ -3175,6 +3176,7 @@ blockquote.pull-right {
   padding: 0px 0px 5px;
   border-bottom: 1px solid #E5E5E5;
   font-size: 12px;
+  height: 38px;
 }
 .dataTables_filter label {
   float: right;

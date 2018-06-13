@@ -166,19 +166,19 @@ $(function() {
 
         //Datatables
         var uiDatatable = function(){
-            if($(".datatable").length > 0){                
-                $(".datatable").dataTable();
-                $(".datatable").on('page.dt',function () {
-                    onresize(100);
-                });
-            }
+        //     if($(".datatable").length > 0){                
+        //         $(".datatable").dataTable();
+        //         $(".datatable").on('page.dt',function () {
+        //             onresize(100);
+        //         });
+        //     }
             
-            if($(".datatable_simple").length > 0){                
-                $(".datatable_simple").dataTable({"ordering": false, "info": false, "lengthChange": false,"searching": false});
-                $(".datatable_simple").on('page.dt',function () {
-                    onresize(100);
-                });                
-            }            
+        //     if($(".datatable_simple").length > 0){                
+        //         $(".datatable_simple").dataTable({"ordering": false, "info": false, "lengthChange": false,"searching": false});
+        //         $(".datatable_simple").on('page.dt',function () {
+        //             onresize(100);
+        //         });                
+        //     }            
         }//END Datatable        
         
         //RangeSlider // This function can be removed or cleared.

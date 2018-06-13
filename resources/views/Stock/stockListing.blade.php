@@ -40,7 +40,6 @@ textarea {
 
     <div class="row">
             <div class="col-md-12">
-
                     <div class="panel panel-default">
                             <div class="panel-heading">
                                     <h3 class="panel-title">Current Stock Listing</h3>
@@ -128,14 +127,14 @@ textarea {
                                         <div class="table-responsive">
                                             <table class="table table-hover table-striped datatable" id="table_listing">
                                                 <thead>
-                                                    <tr>
-                                                        <th width="5px" class="no-sort">No.</th>
-                                                        <th>Code</th>
-                                                        <th>Product Name</th>
-                                                        <th>Stock left</th>                                           
-                                                        <th width="5px" class="no-sort"></th>
-                                                        <th width="5px" class="no-sort"></th>                                                    
-                                                    </tr>
+                                                        <tr>
+                                                                <th  class="no-sort">Name</th>
+                                                                <th >Code</th>
+                                                                <th >Product Name</th>
+                                                                <th >Stock left</th>   
+                                                                <th  class="no-sort">Actions</th>
+                                                                <th  class="no-sort"></th>
+                                                            </tr>
                                                 </thead>
                                                 <tbody>
                                                 @if(count($data) > 0)

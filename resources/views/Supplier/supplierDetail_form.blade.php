@@ -1,4 +1,4 @@
-<?php
+@php
 
 $breadcrumb = "New Supplier Detail";
 $title = "Supplier Form";
@@ -11,7 +11,7 @@ if(isset($outputData)){
 	$url = url('supplier/supplierDetail/update_comp');
 }
 
-?>
+@endphp
 
 @extends('header')
 @section('title','Supplier')
@@ -130,7 +130,7 @@ if(isset($outputData)){
                     </div>
                     <div class="panel-footer">
                         <button class="btn btn-default">Clear Form</button>
-                        <button class="btn btn-primary pull-right">Submit</button>
+                        <button class="btn btn-primary pull-right">@if(isset($outputData)) Save @else Submit @endif</button>
                     </div>
                 </div>
             </form>

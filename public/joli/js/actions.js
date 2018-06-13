@@ -221,7 +221,7 @@ $(document).ready(function(){
     
     /* DATATABLES/CONTENT HEIGHT FIX */
     $(".dataTables_length select").on("change",function(){
-        onresize();
+        // onresize();
     });
     /* END DATATABLES/CONTENT HEIGHT FIX */
     

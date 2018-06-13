@@ -18,6 +18,10 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                         <h3 class="panel-title">Stock In Listing as {{date('d/m/Y')}}</h3>
+                        <div class="actions pull-right">
+                                <a href="{{ url('stock/barcode/all') }}" class="btn btn-default  btn-sm btn-circle" title="Show All Barcode">
+                                    <i class="fa fa-list"></i> Show All Barcode </a>
+                        </div>
                         </div>
                         <div class="panel-body panel-body-table">
                             <div class="table-responsive">
@@ -33,9 +37,9 @@
                                     <tbody>
                                     @if(count($dataToReturn) > 0)
                                         @foreach($dataToReturn as $stockIn)
-                                        <tr class='click' data-href='{{ url('stock/in/detail/') }}/{{$stockIn->stock_received_number}}'>
+                                        <tr class='click' data-href='{{ url('stock/in/detail/'.$stockIn->stock_received_number) }}'>
                                             <td  data-order="{{ Carbon\Carbon::parse($stockIn->in_stock_date)}}">{{ Carbon\Carbon::parse($stockIn->in_stock_date)->format('d/m/Y') }}</td>
-                                            <td> <a href="{{ url('stock/in/detail/') }}"> {{$stockIn->stock_received_number}} </a> </td>
+                                        <td> <a href="{{ url('stock/in/detail/'.$stockIn->stock_received_number) }}">{{$stockIn->stock_received_number}}</a> </td>
                                             <td>{{$stockIn->description}}</td>
                                             <td>{{$stockIn->amount}}</td>
                                         </tr>
@@ -48,9 +52,6 @@
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
-                        <div class="panel-footer">
-                            <a href="{{ url('stock/barcode/all') }}" class="btn btn-primary pull-right">Show All Barcode</a>
                         </div>
                     </div>
                 </form>
