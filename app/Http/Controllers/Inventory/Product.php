@@ -1105,7 +1105,6 @@ class Product extends Controller{
 						foreach($product_list->all() as $key => $row){
 							$package_item = $productdata->where('id', $row->product_id)->where('type','<>', 2)->first();
 							$productArr[$package_item['id']] = $package_item;
-							
 							$price_wm2 = $package_item['price_wm'];
 							$price_em2 = $package_item['price_em'];
 							$price_staff2 = $package_item['price_staff'];
@@ -1132,6 +1131,7 @@ class Product extends Controller{
 							$productArr[$package_item['id']]['price_staff'] = number_format($price_staff2, 2, '.', '');
 							$productArr[$package_item['id']]['staff_gst'] = number_format($staff_gst2, 2, '.', '');
 							$productArr[$package_item['id']]['staff_aftergst'] = number_format($staff_aftergst2, 2, '.', '');
+							$productArr[$package_item['id']]['package_quantity'] = $row->quantity;
 						}
 					}
 					$data['productArr'] = $productArr;
@@ -1173,6 +1173,7 @@ class Product extends Controller{
 							$productArr[$package['id']]['price_staff'] = number_format($price_staff2, 2, '.', '');
 							$productArr[$package['id']]['staff_gst'] = number_format($staff_gst2, 2, '.', '');
 							$productArr[$package['id']]['staff_aftergst'] = number_format($staff_aftergst2, 2, '.', '');
+							$productArr[$package_item['id']]['package_quantity'] = $row->quantity;
 						}
 					}
 							
