@@ -102,7 +102,7 @@ class DeliveryOrderController extends Controller
                 
 
                 $doListing.= "<tr>";
-                $doListing.= "<td>".$v['order_no']."</td>";
+                $doListing.= "<td><a href='javascript:;' onclick='fn_openSO(event)'>".$v['order_no']."</a></td>";
                 $doListing.= "<td>".(new \DateTime($v['purchase_date']))->format('d M Y')."</td>";
                 $doListing.= "<td>".$v['type_description']."</td>";
                 $doListing.= "<td>".$v['do_no']."</td>";
