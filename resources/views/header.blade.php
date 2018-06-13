@@ -120,11 +120,10 @@
                                 <!-- <a href="javascript:;" onclick="$('#so').submit();"><span class="fa fa-puzzle-piece"></span>Delivery Order Listing</a> -->
                                 
                             </li>
-                            <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("delivery_order/form")) ? "active" : "" ; ?>">
-                                <!-- <a href="{{ url('delivery_order/form') }}"><span class="fa fa-puzzle-piece"></span>Create Delivery Order</a> -->
+                           <!--  <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("delivery_order/form")) ? "active" : "" ; ?>">
                                 <a href="#" onclick="$('#cdo').click();"><span class="fa fa-puzzle-piece"></span>Create Delivery Order</a>
                                 <button id="cdo" type="button" class="btn btn-default mb-control" data-box="#create_delivery_order" style="display: none;">Create Delivery Order</button>
-                            </li>
+                            </li> -->
                         </ul>
                     </li>
 					<li class="xn-openable <?php echo in_array(Request::segment(1), array("configuration")) ? "active" : "" ; ?>">
