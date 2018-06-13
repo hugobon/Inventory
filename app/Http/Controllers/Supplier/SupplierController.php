@@ -119,7 +119,8 @@ class SupplierController extends Controller
 		}
 		
 		$outputData = $this->fn_get_detail($id);
-		return view('Supplier.supplierDetail_view',compact('outputData'));
+		// return view('Supplier.supplierDetail_view',compact('outputData'));
+		return redirect('supplier/supplierDetail/view/'.$id);
 	}
 	
 	public function fn_get_detail($id = null){
@@ -129,7 +130,8 @@ class SupplierController extends Controller
 			$outputData = supplier::where('id',$id)->first();
 			
 			// return 
-			return $outputData;
+			// return $outputData;
+			return view('Supplier.supplierDetail_view',compact('outputData'));
 			
 			
 		}catch(\Exception $e){

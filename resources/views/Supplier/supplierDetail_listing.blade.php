@@ -57,7 +57,7 @@
 										<th>Fax No.</th>
 										<th>Attn No.</th>
 										<th>Email</th>
-										<th></th>
+										<th colspan="3">Actions</th>
 									<tr>
 								</thead>
 								<tbody>
@@ -74,12 +74,12 @@
 														title=" View {{ $v['id'].' ('.$v['company_name'].')' }}"
 														class=""><span class="fa fa-eye"></span></a>
 													</td>
-													<td><a href="{{ url('product/edit/'.$v['comp_code']) }}" 
-															title=' Edit ".$v['comp_code']." (".$v['comp_name'].")'
+													<td><a href="{{ url('supplier/supplierDetail/form/'.$v['id']) }}" 
+															title=' Edit {{$v['comp_code']}} ({{$v['comp_name']}})'
 															class='' ><span class='fa fa-edit'></span></a>
 													</td>
-													<td><a href="{{ url('product/edit/'.$v['comp_code']) }}" 
-															title=' Remove ".$v['comp_code']." (".$v['comp_name'].")'
+													<td><a href="{{ url('supplier/supplierDetail/edit/'.$v['comp_code']) }}" 
+															title=' Remove {{$v['comp_code']}} ({{$v['comp_name']}})'
 															class='confirm-delete' ><span class='glyphicon glyphicon-trash'></span></a>
 													</td>
 												</tr>

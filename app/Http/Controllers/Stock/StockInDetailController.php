@@ -22,11 +22,15 @@ class StockInDetailController extends Controller
         $this->middleware('auth');
     }
 
-    public function index(){
+    public function index($id=""){
+        $stock_in_detail = stock_in::where('stock_in.stock_received_number',$id)->first();
+        $stocks = stock_in::leftjoin('supplier','supplier.id','=','stock_in.supplier_id')
+        ->leftjoin('product_serial_number','product_serial_number.stock_in_id','=','stock_in.id')
+        ->leftjoin('product','product.id','=','product_serial_number.product_id')        
+        ->where('stock_in.stock_received_number',$id)
+        ->get();
 
-        $stocks = stock_in::leftjoin('supplier','supplier.id','=','stock_in.supplier_id')->get();
-
-        return view('Stock.stock_in_detail',compact('stocks'));
+        return view('Stock.stock_in_detail',compact('stocks','stock_in_detail'));
 
         
     }
