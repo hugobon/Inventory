@@ -109,21 +109,17 @@
                         </ul>
                     </li>
 
-                    <li class="xn-openable <?php echo in_array(Request::segment(1), array("delivery_order")) ? "active" : "" ; ?>">
-                        <a href="{{ url('delivery_order/listing') }}"><span class="fa fa-truck"></span> <span class="xn-text">Delivery Order</span></a>
+                    <li class="xn-openable <?php echo in_array(Request::segment(1), array("order_management")) ? "active" : "" ; ?>">
+                        <a href="{{ url('order/sales/listing') }}"><span class="fa fa-truck"></span> <span class="xn-text">Order Management</span></a>
                         <ul>
-                            <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("delivery_order/listing")) ? "active" : "" ; ?>">
-                                <form id="so" action="{{ url('delivery_order/listing') }}" method="post" style="display: none;">
-                                    {{ csrf_field() }}
-                                </form>
-                                <a href="javascript:;" onclick="$('#so').submit();"><span class="fa fa-puzzle-piece"></span>Create Delivery Order</a>
-                                <!-- <a href="javascript:;" onclick="$('#so').submit();"><span class="fa fa-puzzle-piece"></span>Delivery Order Listing</a> -->
+                            <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("order/sales/listing")) ? "active" : "" ; ?>">
+                                <a href="{{ url('order/sales/listing') }}"><span class="fa fa-gear"></span> Sales Order Listing </a>
                                 
                             </li>
-                           <!--  <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("delivery_order/form")) ? "active" : "" ; ?>">
+                           <li class="<?php echo in_array(Request::segment(1).'/'.Request::segment(2), array("delivery_order/form")) ? "active" : "" ; ?>">
                                 <a href="#" onclick="$('#cdo').click();"><span class="fa fa-puzzle-piece"></span>Create Delivery Order</a>
                                 <button id="cdo" type="button" class="btn btn-default mb-control" data-box="#create_delivery_order" style="display: none;">Create Delivery Order</button>
-                            </li> -->
+                            </li> 
                         </ul>
                     </li>
 					<li class="xn-openable <?php echo in_array(Request::segment(1), array("configuration")) ? "active" : "" ; ?>">
