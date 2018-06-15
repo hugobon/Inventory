@@ -302,6 +302,7 @@ class AgentController extends Controller
             $totalPrice_em = 0.00;
             $grandTotalPrice_wm = 0.00;
             $grandTotalPrice_em = 0.00;
+            $shipping_fee = 0.00;
             foreach ($cartItems as $key => $value){
 
                 $cartItems[$key]['price_wm'] = $this->fn_calc_gst_price($cartItems[$key]['price_wm']);
@@ -325,13 +326,19 @@ class AgentController extends Controller
 
             }
 
-            if($totalPrice_wm < 300.00 || $totalPrice_em < 300.00){
+            if($totalPrice_wm != 0.00 && $totalPrice_em != 0.00){
+                if($totalPrice_wm < 300.00 || $totalPrice_em < 300.00){
 
-                $shipping_fee = number_format(10.00,2);
+                    $shipping_fee = number_format(10.00,2);
+                }
+                else{
+
+                    $shipping_fee = number_format(0.00,2);
+                }
             }
             else{
 
-                $shipping_fee = number_format(0.00,2);
+                 $shipping_fee = number_format(0.00,2);
             }
 
             $totalPrice_wm = round($totalPrice_wm,2);
@@ -369,6 +376,8 @@ class AgentController extends Controller
 
             $return['message'] = $e->getMessage();
             $return['status'] = "02";
+
+            // dd($return);
         }
         
         // dd($return,$cartItems,$returnData,$totalPrice_wm,$totalPrice_em);
@@ -467,6 +476,7 @@ class AgentController extends Controller
             // dd($addressData);
             $totalPrice = 0.00;
             $grandTotalPrice = 0.00;
+            $shipping_fee = 0.00;
             foreach ($cartItems as $key => $value){
 
                 if(strtolower($addressData->state) == strtolower("Sabah") || strtolower($addressData->state) ==  strtolower("Sarawak")){
@@ -497,13 +507,20 @@ class AgentController extends Controller
 
             // dd($cartItems,$prdimage,$totalPrice);
             //shipping fee
-            if($totalPrice < 300.00){
 
-                $shipping_fee = number_format(10.00,2);
+            if($totalPrice != 0.00){
+                if($totalPrice < 300.00){
+
+                    $shipping_fee = number_format(10.00,2);
+                }
+                else{
+
+                    $shipping_fee = number_format(0.00,2);
+                }
             }
             else{
 
-                $shipping_fee = number_format(0.00,2);
+                 $shipping_fee = number_format(0.00,2);
             }
 
             //total price
@@ -944,7 +961,7 @@ class AgentController extends Controller
                             ->select('order_hdr.order_no','order_hdr.agent_id','order_hdr.agent_id','order_hdr.invoice_no','order_hdr.total_items','order_hdr.total_price','order_hdr.delivery_type','order_hdr.purchase_date','order_hdr.status','delivery_type.type_description','global_status.description')
                             ->where('order_no','=',$order_no)
                             ->first();
-            dd($orderHdr);
+            // dd($orderHdr);
 
             $date = new \DateTime($orderHdr->purchase_date);
             $orderHdr->purchase_date = $date->format('d M Y');
