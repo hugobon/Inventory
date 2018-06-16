@@ -74,7 +74,8 @@ Route::post('delivery_order/search_so', 'DeliveryOrder\DeliveryOrderController@s
 Route::get('order/sales/listing','DeliveryOrder\SalesOrderListingController@index');
 Route::post('order/sales/listing/process?','DeliveryOrder\SalesOrderListingController@process');
 Route::get('order/sales/detail/{order_no?}','DeliveryOrder\SalesOrderListingController@getOrderDetails');
-
+Route::get('order/invoice/detail/{order_no?}','DeliveryOrder\InvoiceOrderDetailController@index');
+Route::post('order/sales/generate_do','DeliveryOrder\SalesOrderListingController@generateDO');
 
 //=========================
 // Inventory :: Aqi
