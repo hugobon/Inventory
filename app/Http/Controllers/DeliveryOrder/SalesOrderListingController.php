@@ -186,11 +186,97 @@ class SalesOrderListingController  extends Controller
                 ->where('global_status.table','=',"order_hdr");
         })
         ->join('delivery_type', 'delivery_type.id','=','order_hdr.delivery_type')
-        ->where('order_hdr.order_no',$order_no)->first();
+        ->leftjoin('address','address.id','=','order_hdr.ship_address')
+        // ->select('order_hdr.order_no','product.name as prod_name','users.name as user','order_hdr.created_at','order_hdr.purchase_date','order_hdr.delivery_code'
+        //         'address.street1','address.street2','address.state')
+        ->where('order_hdr.order_no',$order_no)
+        ->first();
 
         $item = order_item::leftjoin('product','product.id','=','order_item.product_id')
         ->where('order_no',$order_no)->get();
         return compact('data','item');
+    }
+
+    public function generateDO(Request $request){
+        $data = $request->get('data');
+        $do = $this->generate_orderno('DO')['data'];
+        try{
+            do_hdr::insert([
+                "do_no" => $do,
+                "order_no" => str_replace(array( '(', ')' ), '', $data['header']['order_no']),
+                "tracking_no"  => $data['header']['tracking_no'],
+                "courier_id" => $data['header']['courier_id'],
+                "delivery_status" => "01",
+                "created_by" => Auth::user()->id,
+                "created_at" => Carbon::now()
+            ]);
+
+            foreach($data['item'] as $item){
+                do_item::insert([
+                    "do_no" => $do,
+                    "order_item_id" => $item['id'],
+                    "serial_no" => $item['serial'],                    
+                "created_by" => Auth::user()->id,
+                "created_at" => Carbon::now()
+                ]);
+            }
+            $return = [
+                'status'    => "01",
+                'error'     => false,
+                'message'   => "Success"
+            ];
+        }catch(\Exception $e){
+            $return = [
+                'status'    => "02",
+                'error'     => true,
+                'message'   => "Failed to retrieve all value help. Error: ".$e->getMessage()
+            ];
+        }
+        return compact('return');
+    }
+
+    public function generate_orderno($order_typ){
+
+        try{
+
+            // Generate new order no
+            $global_nr = global_nr::where('nrcode',$order_typ)->first();
+            $current_date = Carbon::now(new \DateTimeZone('Asia/Kuala_Lumpur'));
+
+            if($current_date->format('m') > substr($global_nr->current_date, 4, 2)){
+                $next_no = str_pad($global_nr->nrfrom + $global_nr->nritem, 5, '0', STR_PAD_LEFT);
+            }
+            else{
+                $next_no = str_pad($global_nr->nrcurrent + $global_nr->nritem, 5, '0', STR_PAD_LEFT);
+            }
+
+            $dataToReturn = $global_nr->nrcode.$current_date->format('Ymd').$next_no;
+
+            // Update global_nr table with new order no
+            global_nr::where('id',$global_nr->id)
+                    ->update([
+                        'current_date'  => $current_date->format('Ymd'),
+                        'nrcurrent'     => $next_no,
+                        'updated_by'    => Auth::user()->id,
+                        'updated_at'    => Carbon::now()
+                    ]);
+
+            $return = [
+                'status'    => "01",
+                'error'     => false,
+                'message'   => "Successfully generate new order no for ".$order_typ,
+                'data'      => $dataToReturn
+            ];
+        }catch(\Exception $e){
+            $return = [
+                'status'    => "02",
+                'error'     => true,
+                'message'   => "Failed to generate new order no for ".$order_typ.". Error: ".$e->getMessage(),
+                'data'      => ""
+            ];
+        }
+
+        return $return;
     }
 
 }

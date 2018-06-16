@@ -120,7 +120,7 @@ textarea {
                                                     @foreach($data as $order)       
                                                                               
                                                         <tr>
-                                                            <td>{{ $order['order_no'] }} </td>
+                                                            <td><a href="{{ url('order/invoice/detail')."/".$order["order_no"] }}" >{{ $order['order_no'] }} </a></td>
                                                             <td>{{ $order['purchase_date'] }} </td>
                                                             <td>{{ $order['type_description']}} </td>
                                                             
@@ -225,7 +225,7 @@ textarea {
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label">Courier Service</label>
                                                     <div class="col-md-9">
-                                                        <p class="form-control-static"  id="courier_service_info">TEST</p>
+                                                        <p class="form-control-static"  id="courier_service_info">1</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -243,7 +243,7 @@ textarea {
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label">Shipping Address</label>
                                                     <div class="col-md-9">
-                                                        <p class="form-control-static">TEST</p>
+                                                        <p class="form-control-static" id="shipping_address_info">TEST</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -251,7 +251,7 @@ textarea {
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label">Billing Address</label>
                                                     <div class="col-md-9">
-                                                        <p class="form-control-static">TEST</p>
+                                                        <p class="form-control-static" id="billing_address_info">TEST</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -288,7 +288,7 @@ textarea {
             </div>
             <div class="modal-footer">
                     <button class="btn btn-default" data-dismiss="modal" onclick="$('#generate_do_modal').modal().hide();">Cancel</button>
-                    <button class="btn btn-primary pull-right">Create</button>
+                    <button class="btn btn-primary pull-right" onclick="createDO()">Create</button>
             </div>
           </div>
       
@@ -328,14 +328,14 @@ textarea {
 
                 $('.generate_do_btn').click(function(){
                    let order_no =  $(this).data("order")
-                   console.log(order_no)
+                   
                     $.ajax({
                             "url": "detail/"+order_no.trim(),
                             "type": "GET",
                             
                     }).done(function(result){
                         $('#so_no_title').text("("+result.data.order_no+")")
-                        $('#ship_to_title').text("ship_to_title: "+result.data.name)
+                        $('#ship_to_title').text("Ship to: "+result.data.name)
                         $('#sales_order_date_title').text("Sales Order Date: "+result.data.created_at)
                         // $('#contact_title').text("Contact No: "+result.data.order_no)
                         // $('#referal_title').text("Referral: "+result.data.order_no)
@@ -343,17 +343,62 @@ textarea {
                         $('#purchase_date_info').text(result.data.purchase_date)
                         $('#delivery_type_info').text(result.data.delivery_code)
                         // $('#courier_service_info').text(result.data.order_no)
+                        $('#shipping_address_info').text(result.data.street1+',\n'+result.data.street2+',\n'+result.data.state)
+                        $('#billing_address_info').text(result.data.street1+',\n'+result.data.street2+',\n'+result.data.state)
                          console.log(result)
                          $("#order_item_table > tbody").html("");
+                         var no = 0;
+                         var product_name,product_description,product_qty
                         result.item.forEach(function(el){
+                             no++;
+                             product_name = el.name || ""
+                             product_description = el.description || ""
+                             product_qty = el.product_qty || ""
+                             product_id = el.id || ""
+
                             
-                        $('#order_item_table > tbody:last-child').append('<tr><td>'+el.id+'</td<td>'+el.name+'</td><td>'+el.description+'</td><td>'+el.product_qty+'</td></tr>');
+                        $('#order_item_table > tbody:last-child').append('<tr><td>'+no+'</td><td contenteditable="true"></td><td>'+product_name+'</td><td>'+product_qty+'</td><td></td><td class="hide">'+product_id+'</td></tr>');
                         })
                         $('#generate_do_modal').modal().show();
                     })
                 
             })
             })
+
+            function createDO(){
+
+                var items = [];
+                $('#order_item_table >tbody tr').each(function () {
+                    items.push(
+                        {
+                            "serial" : $(this).find('td').eq(1).text(),
+                            "id"     : $(this).find('td').eq(5).text()
+                        }
+                        );
+                });
+
+
+                let data = {
+                    "header" : {
+                        "order_no"      : $('#so_no_title').text(),
+                        "tracking_no"   : "",//$('#so_no_title').text()
+                        "courier_id"    : $('#courier_service_info').text()
+                    },
+                    "item"  :   items
+                }
+
+                console.log(data)
+
+                $.ajax({
+                            "headers": {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                            "url": "generate_do",
+                            "type": "POST",
+                            "data":{"data":data}
+                            
+                    }).done(function(result){
+                        location.reload();
+            })
+            }
 
             
 
