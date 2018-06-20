@@ -70,7 +70,7 @@ select{cursor:pointer;}
 					<div class="panel-body">
 					&nbsp; Total deliverytype: <b>{{ $counttype }}</b>
 					<div class="table-responsive">
-						<table class="table table-bordered table-striped table-actions">
+						<table class="table table-bordered table-striped">
 							<thead>
 								<tr>
 									<th ></th>
@@ -96,19 +96,19 @@ select{cursor:pointer;}
 										<td class="text-center">{{ $row->delivery_code }}</td>
 										<td>{{ $row->type_description }}</td>
 										<td>{{ !in_array($row->created_at, array('0000-00-00','','null')) ? date('d/m/Y, h:i A', strtotime($row->created_at)) : '' }}</td>
-										<td>
+										<td class="text-center">
 											<a href="javascript:;" data-base64="{{ $base64data }}" 
 												data-code="{{ $row->delivery_code }}" data-name="{{ $row->type_description }}" 
 												data-address="{{ $row->address }}" data-tel="{{ $row->tel }}" 
 												data-fax="{{ $row->fax }}"  data-email="{{ $row->email }}" 
 											title=" Edit {{ $row->type_description . " (" . $row->delivery_code . ")" }}"
-											class="btn btn-primary btn-rounded edit_deliverytype" ><span class="fa fa-edit"></span></a>
+											class="edit_deliverytype" ><span class="fa fa-edit text-info"></span></a>
 										</td>
-										<td>
+										<td class="text-center">
 											<a href="javascript:;" data-base64="{{ $base64data }}" 
 											data-code="{{ $row->type_description . " (" . $row->delivery_code . ")" }}"
 											title=" Remove {{ $row->type_description . " (" . $row->delivery_code . ")" }}"
-											class="btn btn-danger btn-rounded confirm-delete" ><span class="glyphicon glyphicon-trash"></span></a>
+											class="confirm-delete" ><span class="glyphicon glyphicon-trash text-danger"></span></a>
 										</td>
 									</tr>
 								@endforeach

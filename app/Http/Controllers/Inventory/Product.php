@@ -36,8 +36,21 @@ class Product extends Controller{
 					'12' => 'December',
 				);
 				
+	private $typeArr = array( 
+			'0' => '', 
+			'1' => '<span class="font-orange bold" title="Product Item" > Item </span>',
+			'2' => '<span class="font-darkblue bold" title="Product Package" > Package </span>',
+		);
+			
+	private $statusArr = array( 
+		'1' => '<span class="text-success bold"> Active </span>',
+		'0' => '<span class="text-danger bold"> Inactive </span>',
+	);
+				
 	public function __construct(){
         $this->middleware('auth');
+		
+		$this->generate_autooffpromotion();
     }
 	
     public function index(){
@@ -56,8 +69,8 @@ class Product extends Controller{
 		$data = array(
 			'countproduct' => $productdata->count(),
 			'productArr' => $productdata->orderBy('id', 'desc')->paginate(20),
-			'typeArr' => array( '0' => '', '1' => 'Item','2' => 'Package '),
-			'statusArr' => array( '0' => 'Inactive', '1' => 'Active'),
+			'typeArr' => $this->typeArr,
+			'statusArr' => $this->statusArr,
 			'categoryArr' => $categoryArr,
 		);
         return view('Inventory/product_listing',$data);
@@ -104,8 +117,8 @@ class Product extends Controller{
 		$data = array(
 			'countproduct' => $countproduct,
 			'productArr' => $productArr,
-			'typeArr' => array( '0' => '', '1' => 'Item','2' => 'Package'),
-			'statusArr' => array( '0' => 'Inactive', '1' => 'Active'),
+			'typeArr' => $this->typeArr,
+			'statusArr' => $this->statusArr,
 			'search' => $search,
 			'type' => $type,
 			'category' => $category,
@@ -305,7 +318,7 @@ class Product extends Controller{
 			$data['updated_by_name'] = $updated_by_name;
 			$data['imageArr'] = $imagedata->where('product_id',$id)->orderBy('status', 'desc')->orderBy('id', 'desc')->get();
 			$data['promotion_list'] = $promotiondata->where('product_id',$id)->orderBy('id', 'desc')->get();
-			$data['statusArr'] = array('1' => 'Active', '0' => 'Inactive');
+			$data['statusArr'] = $this->statusArr;
 			$data['packageArr'] = $packageArr;
 			$data['gstpercentage'] = $gstpercentage;
 			$data['monthArr'] = $this->monthArr;
@@ -549,7 +562,7 @@ class Product extends Controller{
 			$data['updated_by_name'] = $updated_by_name;
 			$data['imageArr'] = $imagedata->where('product_id',$id)->orderBy('id', 'desc')->get();
 			$data['promotion_list'] = $promotiondata->where('product_id',$id)->orderBy('id', 'desc')->get();
-			$data['statusArr'] = array('1' => 'Active', '0' => 'Inactive');
+			$data['statusArr'] = $this->statusArr;
 			$data['gstpercentage'] = $gstpercentage;
 			$data['monthArr'] = $this->monthArr;
 			$data['product_list'] = $product_list;
@@ -1245,6 +1258,18 @@ class Product extends Controller{
 			}
 		}
 		return $data;
+    }
+	
+	public function generate_autooffpromotion(){
+		# Ambil waktu sekarang 
+		$nowdatetime =  date('Y-m-d H:i:s');
+		# This Function guna untuk tukar status dri On ke Off bila Promotion hbis..
+		$promotiondata = New product_promotion_m;
+		
+		$updatestatus = array(
+			'status' => 0,
+		);
+		$promotiondata->where('status','1')->where('end','<=',$nowdatetime)->update($updatestatus); // Update All Status On dan end promotion sudah habis
     }
 	
 	function datepicker2mysql($date_dmY){

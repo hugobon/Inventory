@@ -90,14 +90,14 @@
 					<div class="panel-body">
 					&nbsp; Total Product Promotion: <b>{{ $countpromotion }}</b>
 					<div class="table-responsive">
-						<table class="table table-bordered table-striped table-actions">
+						<table class="table table-bordered table-striped">
 							<thead>
 								<tr>
 									<th ></th>
-									<th >Id</th>
-									<th class="col-md-4">Product / Package </th>
-									<th class="col-md-6">Date Range</th>
-									<th class="col-md-1">Status</th>
+									<th class='text-center'>Id</th>
+									<th class="col-md-5">Product / Package </th>
+									<th class="col-md-4">Date Range</th>
+									<th class="text-center col-md-1">Status</th>
 									<th ></th>
 									<th ></th>
 									<th ></th>
@@ -105,7 +105,6 @@
 							</thead>
 							<tbody>
 							@if(count($promotionArr) > 0)
-								
 								@foreach($promotionArr->all() as $key => $row)
 									<?php
 										$rowarr = array('delete' => 'promotion','deleteid' => $row->id,'search' => Request::segment(4));
@@ -113,26 +112,30 @@
 									?>
 									<tr>
 										<td>{{ $key + $promotionArr->firstItem() }}</td>
-										<td>{{ $row->id }}</td>
-										<td>{{ isset($productArr[$row->product_id]) ? $productArr[$row->product_id] : $row->product_name }}</td>
-										<td>{{ date('d/m/Y h:i A', strtotime($row->start)) . ' - '. date('d/m/Y h:i A', strtotime($row->end)) }}</td>
-										<td>{{ isset($statusArr[$row->status]) ? $statusArr[$row->status] : 'Unknown' }}</td>
+										<td class='text-center'>{{ $row->id }}</td>
 										<td>
 											<a href="{{ url('product/promotion/view/' . $row->id) }}" 
-											title=" View {{ $row->code.' ('.$row->description.')' }}"
-											class="btn btn-info btn-rounded"><span class="fa fa-eye"></span></a>
+												title=" View {{ $row->code.' ('.$row->description.')' }}"
+												class="">{{ isset($productArr[$row->product_id]) ? $productArr[$row->product_id] : $row->product_name }}</a>
 										</td>
-										<td>
+										<td>{{ date('d/m/Y h:i A', strtotime($row->start)) . ' - '. date('d/m/Y h:i A', strtotime($row->end)) }}</td>
+										<td class='text-center'><?php echo isset($statusArr[$row->status]) ? $statusArr[$row->status] : 'Unknown' ?></td>
+										<td class="text-center">
+											<a href="{{ url('product/promotion/view/' . $row->id) }}" 
+											title=" View {{ $row->code.' ('.$row->description.')' }}"
+											class=""><span class="fa fa-eye text-secondary"></span></a>
+										</td>
+										<td class="text-center">
 											<a href="{{ url('product/promotion/edit/' . $row->id) }}" 
 											title=" Edit {{ $row->code.' ('.$row->description.')' }}"
-											class="btn btn-primary btn-rounded" ><span class="fa fa-edit"></span></a>
+											class="" ><span class="fa fa-edit text-info"></span></a>
 										</td>
-										<td>
+										<td class="text-center">
 											<a href="javascript:;" data-base64="{{ $base64data }}" 
 											data-product="{{ isset($productArr[$row->product_id]) ? $productArr[$row->product_id] : $row->product_name }}"
 											data-daterange="{{ date('d/m/Y h:i A', strtotime($row->start)) . ' - '. date('d/m/Y h:i A', strtotime($row->end)) }}"
 											title=" Remove {{ isset($productArr[$row->product_id]) ? $productArr[$row->product_id] : $row->product_name }}"
-											class="btn btn-danger btn-rounded confirm-delete" ><span class="glyphicon glyphicon-trash"></span></a>
+											class="confirm-delete" ><span class="glyphicon glyphicon-trash text-danger"></span></a>
 										</td>
 									</tr>
 								@endforeach

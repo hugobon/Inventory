@@ -5,6 +5,7 @@
 <style>
 select{cursor:pointer;}
 .required{ color: #ff0000;}
+.bold{ font-weight: bold;}
 </style>
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
@@ -48,16 +49,16 @@ select{cursor:pointer;}
 						{{ csrf_field() }}
 						<div class="panel-body">
 							<div class="row">
-								<div class="col-md-5">
+								<div class="col-md-6">
 									<div class="form-group">
-										<label class="col-md-4 control-label"> Search </label>
-										<div class="col-md-8">        
+										<label class="col-md-3 control-label"> Search </label>
+										<div class="col-md-9">        
 											<input type="text" class="form-control category-search" name="search" 
 											placeholder=" Category / Remarks " value="{{ isset($search) ? $search : '' }}" />									
 										</div>
 									</div>
 								</div>
-								<div class="col-md-5">
+								<div class="col-md-4">
 									<div class="form-group">
 										<label class="col-md-4 control-label"> Status </label>
 										<div class="col-md-8">        
@@ -81,14 +82,14 @@ select{cursor:pointer;}
 					<div class="panel-body">
 					&nbsp; Total Product Category: <b>{{ $countcategory }}</b>
 					<div class="table-responsive">
-						<table class="table table-bordered table-striped table-actions">
+						<table class="table table-bordered table-striped">
 							<thead>
 								<tr>
 									<th ></th>
 									<th class="text-center">Id</th>
 									<th class="col-md-3">Product Category</th>
 									<th class="col-md-4">Remarks</th>
-									<th class="col-md-2">Status</th>
+									<th class="col-md-2 text-center">Status</th>
 									<th class="col-md-2">Create at</th>
 									<th ></th>
 									<th ></th>
@@ -107,18 +108,18 @@ select{cursor:pointer;}
 										<td class="text-center">{{ $row->id }}</td>
 										<td >{{ $row->category }}</td>
 										<td>{{ $row->remarks }}</td>										
-										<td>{{ isset($status[$row->status]) ? $status[$row->status] : 'Active' }}</td>
+										<td class="text-center"><?php echo isset($status[$row->status]) ? $status[$row->status] : 'Active'; ?></td>
 										<td>{{ !in_array($row->created_at, array('0000-00-00','','null')) ? date('d/m/Y, h:i A', strtotime($row->created_at)) : '' }}</td>
-										<td>
+										<td class="text-center">
 											<a href="javascript:;" data-base64="{{ $base64data }}" data-category="{{ $row->category }}"
 												data-remarks="{{ $row->remarks }}" data-status="{{ $row->status }}" 
 											title=" Edit {{ $row->category }}"
-											class="btn btn-primary btn-rounded editcategory" ><span class="fa fa-edit"></span></a>
+											class="editcategory" ><span class="fa fa-edit text-info"></span></a>
 										</td>
-										<td>
+										<td class="text-center">
 											<a href="javascript:;" data-base64="{{ $base64data }}" data-category="{{ $row->category }}"
 											title=" Remove {{ $row->category }}"
-											class="btn btn-danger btn-rounded confirm-delete" ><span class="glyphicon glyphicon-trash"></span></a>
+											class="confirm-delete" ><span class="glyphicon glyphicon-trash text-danger"></span></a>
 										</td>
 									</tr>
 								@endforeach
