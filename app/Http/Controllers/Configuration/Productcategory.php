@@ -8,6 +8,12 @@ use App\configuration\config_productcategory_m;
 use Auth;
 class Productcategory extends Controller
 {
+
+	private $statusArr = array( 
+		'1' => '<span class="text-success bold"> Active </span>',
+		'0' => '<span class="text-danger bold"> Inactive </span>',
+	);
+	
 	public function __construct(){
         $this->middleware('auth');
     }
@@ -22,7 +28,7 @@ class Productcategory extends Controller
 			'countcategory' => $productcategorydata->count(),
 			'startcount' => 0,
 			'categoryArr' => $productcategorydata->orderBy('id', 'desc')->paginate(20),
-			'status' => array( '1' => 'Active','0' => 'Inactive'),
+			'status' => $this->statusArr,
 		);
 		return view('Configuration/productcategory_listing',$data);
     }
@@ -55,7 +61,7 @@ class Productcategory extends Controller
 			'countcategory' => $countcategory,
 			'startcount' => 0,
 			'categoryArr' => $categoryArr,
-			'status' => array( '1' => 'Active','0' => 'Inactive'),
+			'status' => $this->statusArr,
 			'search' => $search,
 			'search_status' => $search_status,
 		);

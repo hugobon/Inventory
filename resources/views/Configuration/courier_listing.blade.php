@@ -70,7 +70,7 @@ select{cursor:pointer;}
 					<div class="panel-body">
 					&nbsp; Total Courier: <b>{{ $counttype }}</b>
 					<div class="table-responsive">
-						<table class="table table-bordered table-striped table-actions">
+						<table class="table table-bordered table-striped">
 							<thead>
 								<tr>
 									<th ></th>
@@ -98,19 +98,19 @@ select{cursor:pointer;}
 										<td>{{ $row->courier_name }}</td>										
 										<td>{{ $row->tel }}</td>
 										<td>{{ $row->email }}</td>
-										<td>
+										<td class="text-center">
 											<a href="javascript:;" data-base64="{{ $base64data }}" 
 												data-code="{{ $row->courier_code }}" data-name="{{ $row->courier_name }}" 
 												data-address="{{ $row->address }}" data-tel="{{ $row->tel }}" 
 												data-fax="{{ $row->fax }}"  data-email="{{ $row->email }}" 
 											title=" Edit {{ $row->courier_name . " (" . $row->courier_code . ")" }}"
-											class="btn btn-primary btn-rounded edit_courier" ><span class="fa fa-edit"></span></a>
+											class="edit_courier" ><span class="fa fa-edit text-info"></span></a>
 										</td>
-										<td>
+										<td class="text-center">
 											<a href="javascript:;" data-base64="{{ $base64data }}" 
 											data-code="{{ $row->courier_name . " (" . $row->courier_code . ")" }}"
 											title=" Remove {{ $row->courier_name . " (" . $row->courier_code . ")" }}"
-											class="btn btn-danger btn-rounded confirm-delete" ><span class="glyphicon glyphicon-trash"></span></a>
+											class="confirm-delete" ><span class="glyphicon glyphicon-trash text-danger"></span></a>
 										</td>
 									</tr>
 								@endforeach

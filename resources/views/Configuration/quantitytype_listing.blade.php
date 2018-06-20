@@ -6,6 +6,7 @@
 select{cursor:pointer;}
 .required{ color: #ff0000;}
 .uppercase{text-transform: uppercase;}
+.bold{ font-weight: bold;}
 </style>
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
@@ -49,16 +50,16 @@ select{cursor:pointer;}
 						{{ csrf_field() }}
 						<div class="panel-body">
 							<div class="row">
-								<div class="col-md-5">
+								<div class="col-md-6">
 									<div class="form-group">
-										<label class="col-md-4 control-label"> Search </label>
-										<div class="col-md-8">        
+										<label class="col-md-3 control-label"> Search </label>
+										<div class="col-md-9">        
 											<input type="text" class="form-control type-search" name="search" 
 											placeholder=" Type / Remarks " value="{{ isset($search) ? $search : '' }}" />									
 										</div>
 									</div>
 								</div>
-								<div class="col-md-5">
+								<div class="col-md-4">
 									<div class="form-group">
 										<label class="col-md-4 control-label"> Status </label>
 										<div class="col-md-8">        
@@ -82,14 +83,14 @@ select{cursor:pointer;}
 					<div class="panel-body">
 					&nbsp; Total Quantity Type: <b>{{ $counttype }}</b>
 					<div class="table-responsive">
-						<table class="table table-bordered table-striped table-actions">
+						<table class="table table-bordered table-striped">
 							<thead>
 								<tr>
 									<th ></th>
 									<th >Id</th>
 									<th class="col-md-3">Quantity Type</th>
 									<th class="col-md-4">Remarks</th>
-									<th class="col-md-2">Status</th>
+									<th class="col-md-2 text-center">Status</th>
 									<th class="col-md-2">Create at</th>
 									<th ></th>
 									<th ></th>
@@ -97,7 +98,6 @@ select{cursor:pointer;}
 							</thead>
 							<tbody>
 							@if(count($typeArr) > 0)
-								
 								@foreach($typeArr->all() as $key => $row)
 									<?php
 										$rowarr = array('selectid' => $row->id,'search' => Request::segment(4));
@@ -108,18 +108,18 @@ select{cursor:pointer;}
 										<td>{{ $row->id }}</td>
 										<td>{{ $row->type }}</td>
 										<td>{{ $row->remarks }}</td>										
-										<td>{{ isset($status[$row->status]) ? $status[$row->status] : 'Active' }}</td>
+										<td class="text-center"><?php echo isset($status[$row->status]) ? $status[$row->status] : 'Active'; ?></td>
 										<td>{{ !in_array($row->created_at, array('0000-00-00','','null')) ? date('d/m/Y, h:i A', strtotime($row->created_at)) : '' }}</td>
-										<td>
+										<td class="text-center">
 											<a href="javascript:;" data-base64="{{ $base64data }}" data-type="{{ $row->type }}"
 												data-remarks="{{ $row->remarks }}" data-status="{{ $row->status }}" 
 											title=" Edit {{ $row->type }}"
-											class="btn btn-primary btn-rounded edittype" ><span class="fa fa-edit"></span></a>
+											class="edittype" ><span class="fa fa-edit text-info"></span></a>
 										</td>
-										<td>
+										<td class="text-center">
 											<a href="javascript:;" data-base64="{{ $base64data }}" data-type="{{ $row->type }}"
 											title=" Remove {{ $row->type }}"
-											class="btn btn-danger btn-rounded confirm-delete" ><span class="glyphicon glyphicon-trash"></span></a>
+											class="confirm-delete" ><span class="glyphicon glyphicon-trash text-danger"></span></a>
 										</td>
 									</tr>
 								@endforeach

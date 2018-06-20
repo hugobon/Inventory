@@ -8,9 +8,21 @@ use App\configuration\config_stockadjustment_m;
 use Auth;
 class Stockadjustment extends Controller
 {
+	private $statusArr = array( 
+		'1' => '<span class="text-success bold"> Active </span>',
+		'0' => '<span class="text-danger bold"> Inactive </span>',
+	);
+	
+	private $OperatorArr = array( 
+		'0' => '', 
+		'-' => '<span class="font-orange bold" title="Adjustment - " > Minus </span>',
+		'+' => '<span class="font-darkblue bold" title="Adjustment + " > Add </span>',
+	);
+	
 	public function __construct(){
         $this->middleware('auth');
     }
+	
 	public function index(){
         return redirect('configuration/stockadjustment');
     }
@@ -21,7 +33,8 @@ class Stockadjustment extends Controller
 			'countadjustment' => $stockadjustmentdata->count(),
 			'startcount' => 0,
 			'adjustmentArr' => $stockadjustmentdata->orderBy('id', 'desc')->paginate(10),
-			'status' => array( '1' => 'Active','0' => 'Inactive'),
+			'status' => $this->statusArr,
+			'OperatorArr' => $this->OperatorArr,
 		);
 		return view('Configuration/stockadjustment_listing',$data);
     }
@@ -67,8 +80,9 @@ class Stockadjustment extends Controller
 			'countadjustment' => $countadjustment,
 			'startcount' => 0,
 			'adjustmentArr' => $adjustmentArr,
-			'status' => array( '1' => 'Active','0' => 'Inactive'),
+			'status' => $this->statusArr,
 			'search' => $search,
+			'OperatorArr' => $this->OperatorArr,
 			'search_status' => $search_status,
 		);
         return view('Configuration/stockadjustment_listing',$data);

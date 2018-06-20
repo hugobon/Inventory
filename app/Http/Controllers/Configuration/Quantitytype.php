@@ -8,6 +8,11 @@ use App\configuration\config_quantitytype_m;
 use Auth;
 class Quantitytype extends Controller
 {
+	private $statusArr = array( 
+		'1' => '<span class="text-success bold"> Active </span>',
+		'0' => '<span class="text-danger bold"> Inactive </span>',
+	);
+	
 	public function __construct(){
         $this->middleware('auth');
     }
@@ -22,7 +27,7 @@ class Quantitytype extends Controller
 			'counttype' => $quantitytypedata->count(),
 			'startcount' => 0,
 			'typeArr' => $quantitytypedata->orderBy('id', 'desc')->paginate(20),
-			'status' => array( '1' => 'Active','0' => 'Inactive'),
+			'status' => $this->statusArr,
 		);
 		return view('Configuration/quantitytype_listing',$data);
     }
@@ -54,7 +59,7 @@ class Quantitytype extends Controller
 			'counttype' => $counttype,
 			'startcount' => 0,
 			'typeArr' => $typeArr,
-			'status' => array( '1' => 'Active','0' => 'Inactive'),
+			'status' => $this->statusArr,
 			'search' => $search,
 			'search_status' => $search_status,
 		);

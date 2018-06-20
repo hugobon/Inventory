@@ -25,6 +25,7 @@ if(isset($id) && $id > 0){
 	.panel-heading{ background-color: #ccffe6 !important; }
 	.btn-default{ background-color: #99ffcc !important; }
 	.btn-default:hover{ background-color: #80ffbf !important; }
+	.bold{ font-weight: bold;}
 </style>
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
@@ -82,7 +83,7 @@ if(isset($id) && $id > 0){
 							<div class="form-group">
 								<label class="col-md-3 control-label"> Status </label>
 								<div class="col-md-7 control-label text-left">
-									{{ isset($statusArr[$status]) ? $statusArr[$status] : '' }}
+									<?php echo isset($statusArr[$status]) ? $statusArr[$status] : ''; ?>
 								</div>
 							</div>
 							<div class="form-group promotion">

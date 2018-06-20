@@ -27,6 +27,7 @@ if(isset($id) && $id > 0){
 	.panel-heading{ background-color: #fff5e6 !important; }
 	.btn-default{ background-color: #ffe0b3 !important; }
 	.btn-default:hover{ background-color: #ffd699 !important; }
+	.bold{ font-weight: bold;}
 </style>
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
@@ -86,7 +87,7 @@ if(isset($id) && $id > 0){
 						<div class="col-md-6">
 							<div class="form-group">
 								<label class="col-md-4 control-label"> Status: </label>
-								<div class="col-md-8 control-label text-left">{{ isset($statusArr[$status]) ? $statusArr[$status] : '' }}</div>
+								<div class="col-md-8 control-label text-left"><?php echo isset($statusArr[$status]) ? $statusArr[$status] : ''; ?></div>
 							</div>
 							<div class="form-group">
 								<label class="col-md-4 control-label"> Qty Type: </label>
@@ -235,7 +236,7 @@ if(isset($id) && $id > 0){
 												title=" View {{ $row->code.' ('.$row->description.')' }}"
 												class="">{{ $row->description }}</a></td>
 											<td>{{ date('d/m/Y h:i A', strtotime($row->start)) . ' - '. date('d/m/Y h:i A', strtotime($row->end)) }}</td>
-											<td>{{ $row->status == 1 ? 'On' : ($row->status == 0 ? 'Off' : 'Unknown') }}</td>
+											<td><?php echo $row->status == 1 ? '<span class="text-success bold"> On </span>' : ($row->status == 0 ? '<span class="text-danger bold"> Off </span>' : 'Unknown'); ?></td>
 										</tr>
 										@endforeach
 									@else

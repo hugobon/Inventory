@@ -9,12 +9,17 @@ use App\inventory\product_promotion_m;
 use App\inventory\product_promotion_gift_m;
 use App\configuration\config_tax_m;
 use App\User_m;
-
+use Auth;
 class Product_promotion extends Controller
 {
+	private $statusOnOff = array( '1' => '<span class="text-success bold"> On </span>','0' => '<span class="text-danger bold"> Off </span>');
+	
 	public function __construct(){
         $this->middleware('auth');
+		
+		$this->generate_autooffpromotion();
     }
+	
     public function index(){
         return redirect('product/promotion/listing');
     }
@@ -32,7 +37,7 @@ class Product_promotion extends Controller
 			'countpromotion' => $promotiondata->count(),
 			'promotionArr' => $promotiondata->orderBy('id', 'desc')->paginate(20),
 			'productArr' => $productArr,
-			'statusArr' => array( '1' => 'On','0' => 'Off'),
+			'statusArr' => $this->statusOnOff,
 		);
         return view('Inventory/promotion_listing',$data);
     }
@@ -68,7 +73,7 @@ class Product_promotion extends Controller
 			'countpromotion' => $countpromotion,
 			'promotionArr' => $promotionArr,
 			'productArr' => $productArr,
-			'statusArr' => array( '1' => 'On','0' => 'Off'),
+			'statusArr' => $this->statusOnOff,
 			'search_product' => $search_product,
 			'search_status' => $search_status,
 		);
@@ -155,7 +160,6 @@ class Product_promotion extends Controller
 			$data = $promotion;
 			$data['gstpercentage'] = $gstpercentage;
 			$data['productArr'] = $productArr;
-			$data['statusArr'] = array( '1' => 'On','0' => 'Off');
 			$data['gift_list'] = $giftdata->where('promotion_id', $id)->get();
 			$data['productGiftArr'] = $productGiftArr;
 			return view('Inventory/product_promotion_form',$data);
@@ -211,7 +215,7 @@ class Product_promotion extends Controller
 			$data['productArr'] = $productArr;
 			$data['gift_list'] = $gift_list;
 			$data['productGiftArr'] = $productGiftArr;
-			$data['statusArr'] = array( '1' => 'On','0' => 'Off');
+			$data['statusArr'] = $this->statusOnOff;
 			return view('Inventory/product_promotion_view',$data);
 		}
 		return redirect("product/promotion/listing");
@@ -250,9 +254,9 @@ class Product_promotion extends Controller
 			'price_em' => $postdata->input("price_em"),
 			'price_staff' => $postdata->input("price_staff") != null ? $postdata->input("price_staff") : '0',
 			'status' => $postdata->input("status") != null ? $postdata->input("status") : '1',
-			'created_by' => 1,
+			'created_by' => Auth::user()->id,
 			'created_at' => date('Y-m-d H:i:s'),
-			'updated_by' => 1,
+			'updated_by' => Auth::user()->id,
 			'updated_at' => date('Y-m-d H:i:s'),
 		);
 		$promotiondata = New product_promotion_m;
@@ -271,9 +275,9 @@ class Product_promotion extends Controller
 						'product_id' => $promotiongift[$k],
 						'quantity' => $promotionquantity[$k] > 0 ? $promotionquantity[$k] : 1,
 						'description' => $promotiondescription[$k] != null ? $promotiondescription[$k] : '',
-						'created_by' => 1,
+						'created_by' => Auth::user()->id,
 						'created_at' => date('Y-m-d H:i:s'),
-						'updated_by' => 1,
+						'updated_by' => Auth::user()->id,
 						'updated_at' => date('Y-m-d H:i:s'),
 					);
 					$giftdata->insert($datagift);
@@ -356,9 +360,9 @@ class Product_promotion extends Controller
 						'product_id' => $promotiongift[$k],
 						'quantity' => $promotionquantity[$k] > 0 ? $promotionquantity[$k] : 1,
 						'description' => $promotiondescription[$k] != null ? trim($promotiondescription[$k]) : '',
-						'created_by' => 1,
+						'created_by' => Auth::user()->id,
 						'created_at' => date('Y-m-d H:i:s'),
-						'updated_by' => 1,
+						'updated_by' => Auth::user()->id,
 						'updated_at' => date('Y-m-d H:i:s'),
 					);
 					$v = $giftdata->insertGetId($datagift);
@@ -404,6 +408,18 @@ class Product_promotion extends Controller
 			}
 		}
 		return redirect("product/promotion/listing");
+    }
+	
+	public function generate_autooffpromotion(){
+		# Ambil waktu sekarang 
+		$nowdatetime =  date('Y-m-d H:i:s');
+		# This Function guna untuk tukar status dri On ke Off bila Promotion hbis..
+		$promotiondata = New product_promotion_m;
+		
+		$updatestatus = array(
+			'status' => 0,
+		);
+		$promotiondata->where('status','1')->where('end','<=',$nowdatetime)->update($updatestatus); // Update All Status On dan end promotion sudah habis
     }
 	
 	function daterangepickermysql($datetime){

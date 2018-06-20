@@ -5,6 +5,9 @@
 <style>
 	select{cursor:pointer;}
 	.table-hover2 tr:hover{ background-color:red !important;}
+	.font-orange{ color: #ff9900 }
+	.font-darkblue{ color: #6666ff }
+	.bold{ font-weight: bold;}
 </style>
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
@@ -103,9 +106,9 @@
 									<th class='text-center'>Id</th>
 									<th class="col-md-1">Code</th>
 									<th class="col-md-5">Name</th>
-									<th class="col-md-1">Type</th>
+									<th class="text-center col-md-1">Type</th>
 									<th class="col-md-2">Category</th>
-									<th class="col-md-1">Status</th>
+									<th class="text-center col-md-1">Status</th>
 									<th ></th>
 									<th ></th>
 									<th ></th>
@@ -122,32 +125,40 @@
 									<tr>
 										<td class='text-center'>{{ $key + $productArr->firstItem() }}</td>
 										<td class='text-center'>{{ $row->id }}</td>
-										<td>{{ $row->code }}</td>
-										<td>{{ $row->name }}</td>
-										<td>{{ isset($typeArr[$row->type]) ? $typeArr[$row->type] : '' }}</td>
-										<td>{{ isset($categoryArr[$row->category]) ? $categoryArr[$row->category] : '' }}</td>
-										<td>{{ isset($statusArr[$row->status]) ? $statusArr[$row->status] : '' }}</td>
 										<td>
 											<a href="{{ url('product/view/' . $row->id) }}" 
 											title=" View {{ $row->code.' ('.$row->name.')' }}"
-											class=""><span class="fa fa-eye"></span></a>
+											class="">{{ $row->code }}</a>
 										</td>
 										<td>
+											<a href="{{ url('product/view/' . $row->id) }}" 
+											title=" View {{ $row->code.' ('.$row->name.')' }}"
+											class="">{{ $row->name }}</a>
+										</td>
+										<td class='text-center'><?php echo isset($typeArr[$row->type]) ? $typeArr[$row->type] : ''; ?></td>
+										<td>{{ isset($categoryArr[$row->category]) ? $categoryArr[$row->category] : '' }}</td>
+										<td class='text-center'><?php echo isset($statusArr[$row->status]) ? $statusArr[$row->status] : ''; ?></td>
+										<td class="text-center">
+											<a href="{{ url('product/view/' . $row->id) }}" 
+											title=" View {{ $row->code.' ('.$row->name.')' }}"
+											class=""><span class="fa fa-eye text-secondary"></span></a>
+										</td>
+										<td class="text-center">
 											<a href="{{ url('product/edit/' . $row->id) }}" 
 											title=" Edit {{ $row->code.' ('.$row->name.')' }}"
-											class="" ><span class="fa fa-edit"></span></a>
+											class="" ><span class="fa fa-edit text-info"></span></a>
 										</td>
-										<td>
+										<td class="text-center">
 											<a href="javascript:;" data-base64="{{ $base64data }}" data-code="{{ $row->code }}" data-name="{{ $row->name }}"
 											title=" Remove {{ $row->code.' ('.$row->name.')' }}"
-											class="confirm-delete" ><i class="glyphicon glyphicon-trash"></i></a>
+											class="confirm-delete" ><i class="glyphicon glyphicon-trash text-danger"></i></a>
 										</td>
 									</tr>
 								@endforeach
 							@else
 							<tr>
 								<td colspan="10" class="text-center"> No Data Found <br />
-								<a href="{{ url('product/form') }}"><span class="fa fa-plus"></span> Add new product</a></td>
+								<a href="{{ url('product/form') }}"><span class="fa fa-plus bold"></span> Add new product</a></td>
 							</tr>
 							@endif
 							</tbody>

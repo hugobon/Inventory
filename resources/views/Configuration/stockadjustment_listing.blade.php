@@ -3,8 +3,11 @@
 
 @section('content')
 <style>
-select{cursor:pointer;}
-.required{ color: #ff0000;}
+	select{cursor:pointer;}
+	.required{ color: #ff0000;}
+	.font-orange{ color: #ff9900 }
+	.font-darkblue{ color: #6666ff }
+	.bold{ font-weight: bold;}
 </style>
 <!-- START BREADCRUMB -->
 <ul class="breadcrumb">
@@ -48,16 +51,16 @@ select{cursor:pointer;}
 						{{ csrf_field() }}
 						<div class="panel-body">
 							<div class="row">
-								<div class="col-md-5">
+								<div class="col-md-6">
 									<div class="form-group">
-										<label class="col-md-4 control-label"> Search </label>
-										<div class="col-md-8">        
+										<label class="col-md-3 control-label"> Search </label>
+										<div class="col-md-9">        
 											<input type="text" class="form-control adjustment-search" name="search" 
 											placeholder=" Adjustment / Remarks " value="{{ isset($search) ? $search : '' }}" />									
 										</div>
 									</div>
 								</div>
-								<div class="col-md-5">
+								<div class="col-md-4">
 									<div class="form-group">
 										<label class="col-md-4 control-label"> Status </label>
 										<div class="col-md-8">        
@@ -81,15 +84,15 @@ select{cursor:pointer;}
 					<div class="panel-body">
 					&nbsp; Total Stock Adjustment type: <b>{{ $countadjustment }}</b>
 					<div class="table-responsive">
-						<table class="table table-bordered table-striped table-actions table-condensed">
+						<table class="table table-bordered table-striped">
 							<thead>
 								<tr>
 									<th ></th>
 									<th class="col-md-3">Adjustment</th>
 									<th class="col-md-4">Remarks</th>
-									<th class="col-md-2">Status</th>
-									<th class="col-md-2">Operator</th>
-									<th class="col-md-2">Created at</th>
+									<th class="col-md-1 text-center">Status</th>
+									<th class="col-md-1 text-center">Operator</th>
+									<th class="col-md-3">Created at</th>
 									<th ></th>
 									<th ></th>
 								</tr>
@@ -106,19 +109,19 @@ select{cursor:pointer;}
 										<td>{{ $key + $adjustmentArr->firstItem() }}</td>
 										<td>{{ $row->adjustment }}</td>
 										<td>{{ $row->remarks }}</td>										
-										<td>{{ isset($status[$row->status]) ? $status[$row->status] : 'Active' }}</td>
-										<td>@if($row->operation == "-")Minus @elseif($row->operation == "+")Add  @endif</td>
+										<td class="text-center"><?php echo isset($status[$row->status]) ? $status[$row->status] : 'Active'; ?></td>
+										<td class="text-center"><?php echo isset($OperatorArr[$row->operation]) ? $OperatorArr[$row->operation] : ''; ?></td>
 										<td>{{ !in_array($row->created_at, array('0000-00-00','','null')) ? date('d/m/Y, h:i A', strtotime($row->created_at)) : '' }}</td>
-										<td>
+										<td class="text-center">
 											<a href="javascript:;" data-base64="{{ $base64data }}" data-adjustment="{{ $row->adjustment }}"
 												data-remarks="{{ $row->remarks }}" data-status="{{ $row->status }}" data-operator="{{ $row->operation }}"
 											title=" Edit {{ $row->adjustment }}"
-											class="btn btn-primary btn-rounded editadjustment" ><span class="fa fa-edit"></span></a>
+											class="editadjustment" ><span class="fa fa-edit text-info"></span></a>
 										</td>
-										<td>
+										<td class="text-center">
 											<a href="javascript:;" data-base64="{{ $base64data }}" data-adjustment="{{ $row->adjustment }}"
 											title=" Remove {{ $row->adjustment }}"
-											class="btn btn-danger btn-rounded confirm-delete" ><span class="glyphicon glyphicon-trash"></span></a>
+											class="confirm-delete" ><span class="glyphicon glyphicon-trash text-danger"></span></a>
 										</td>
 									</tr>
 								@endforeach
