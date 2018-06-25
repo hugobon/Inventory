@@ -7,6 +7,12 @@
 textarea {
    resize: none;
 }
+
+.tab-pane{
+  height:300px;
+  overflow-y:scroll;
+  width:100%;
+}
 </style>
 @section('content')
 
@@ -102,7 +108,7 @@ textarea {
                             
                     </div>
                 </div>
-                <div class="panel-body">
+                <div class="panel-body tab-pane">
                         <form class="form-horizontal">
                                 @foreach($do_hdr as $order)       
                                 <div class="form-group">
@@ -171,18 +177,22 @@ textarea {
                                     <thead>
                                         <tr>
                                             <th width="20">No</th>
-                                            <th width="200">Serial Code</th>
+                                            <th width="200">Item Code</th>
                                             <th>Product Name</th>
                                             <th>Quantity</th>
                                             <th>Status</th>
                                         <tr>
                                     </thead>
                                     <tbody>
+                                            @foreach($item as $itm)   
+                                            <tr>
+                                    <td></td>
+                                        <td>{{$itm->code}}</td>
+                                        <td>{{$itm->name}}</td>
+                                        <td>{{$itm->quantity}}</td>
                                         <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
+                                            </tr>
+                                            @endforeach
                                     </tbody>
                                 </table>
                             </div>

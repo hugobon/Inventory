@@ -40,10 +40,11 @@ class InvoiceOrderDetailController  extends Controller
             "order" => $order_hdr
         ];
 
+        $item = order_item::leftjoin('product','product.id','=','order_item.product_id')->where('order_no',$order_no)->get();
         
 
-        // return compact('data');
-        return view('DeliveryOrder.invoice-details',compact('data','do_hdr'));
+        // return compact('data','do_hdr','item');
+        return view('DeliveryOrder.invoice-details',compact('data','do_hdr','item'));
     }
 
 }

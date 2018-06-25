@@ -266,12 +266,14 @@ textarea {
                                                         <tr>
                                                             <th width="20">No</th>
                                                             <th width="200">Item Code</th>
+                                                            <th width="200">Product Barcode</th>
                                                             <th>Description</th>
                                                             <th>Quantity</th>
                                                             <th>Status</th>
                                                         <tr>
                                                     </thead>
                                                     <tbody id="tbody_item">
+                                                        <td></td>
                                                         <td></td>
                                                         <td></td>
                                                         <td></td>
@@ -348,16 +350,17 @@ textarea {
                          console.log(result)
                          $("#order_item_table > tbody").html("");
                          var no = 0;
-                         var product_name,product_description,product_qty
+                         var product_name,product_description,product_qty,product_code
                         result.item.forEach(function(el){
                              no++;
                              product_name = el.name || ""
                              product_description = el.description || ""
                              product_qty = el.product_qty || ""
                              product_id = el.id || ""
+                             product_code = el.code || ""
 
                             
-                        $('#order_item_table > tbody:last-child').append('<tr><td>'+no+'</td><td contenteditable="true"></td><td>'+product_name+'</td><td>'+product_qty+'</td><td></td><td class="hide">'+product_id+'</td></tr>');
+                        $('#order_item_table > tbody:last-child').append('<tr><td>'+no+'</td><td>'+product_code+'</td><td contenteditable="true"></td><td>'+product_name+'</td><td>'+product_qty+'</td><td></td><td class="hide">'+product_id+'</td></tr>');
                         })
                         $('#generate_do_modal').modal().show();
                     })
