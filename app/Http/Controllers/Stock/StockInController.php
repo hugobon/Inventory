@@ -182,6 +182,7 @@ class StockInController extends Controller
                                             'product_id'=>$product_id,
                                             'quantity'=>$quantity,
                                             'stock_in_id'=>$stock_in_id,
+                                            'quantity_reduced'=>0,
                                             'created_at'=>Carbon::now(),
                                             'created_by'=>Auth::user()->id
                                             ]);
@@ -190,7 +191,7 @@ class StockInController extends Controller
                  return $message;
 			
 		}catch(\Exception $e){
-			return;
+            return;
 		}
     }
 }

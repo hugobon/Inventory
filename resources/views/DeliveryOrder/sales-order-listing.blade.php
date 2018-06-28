@@ -299,6 +299,8 @@ textarea {
       <script type='text/javascript' src="{!! asset('joli/js/plugins/validationengine/jquery.validationEngine.js') !!}"></script>   
       <script>
             $(document).ready(function() {
+
+
                 $('input[name="purchase_date"]').daterangepicker({
                     locale: {
                     format: 'DD/MM/YYYY'
@@ -360,7 +362,7 @@ textarea {
                              product_code = el.code || ""
 
                             
-                        $('#order_item_table > tbody:last-child').append('<tr><td>'+no+'</td><td>'+product_code+'</td><td contenteditable="true"></td><td>'+product_name+'</td><td>'+product_qty+'</td><td></td><td class="hide">'+product_id+'</td></tr>');
+                        $('#order_item_table > tbody:last-child').append('<tr><td>'+no+'</td><td>'+product_code+'</td><td contenteditable="true" class="input_barcode"></td><td>'+product_name+'</td><td>'+product_qty+'</td><td></td><td class="hide">'+product_id+'</td></tr>');
                         })
                         $('#generate_do_modal').modal().show();
                     })
@@ -402,6 +404,8 @@ textarea {
                         location.reload();
             })
             }
+
+            
 
             
 
